@@ -1,0 +1,51 @@
+[
+  {"id":"m1","cat":"mobiles","brand":"Novatel","title":"Nova X12 5G (8GB RAM, 128GB, Midnight Blue)","price":15999,"mrp":24999,"rating":4.3,"reviews":8342,"img":"https://picsum.photos/seed/nova-x12/400/400","deal":true},
+  {"id":"m2","cat":"mobiles","brand":"Pixelio","title":"Pixelio Air 5 (12GB RAM, 256GB, Storm Grey)","price":28999,"mrp":36999,"rating":4.5,"reviews":5211,"img":"https://picsum.photos/seed/pixelio-air5/400/400"},
+  {"id":"m3","cat":"mobiles","brand":"Orbiq","title":"Orbiq Lite 4G (4GB RAM, 64GB, Coral)","price":8499,"mrp":10999,"rating":4.0,"reviews":3021,"img":"https://picsum.photos/seed/orbiq-lite/400/400","deal":true},
+  {"id":"m4","cat":"mobiles","brand":"Novatel","title":"Nova Fold (12GB RAM, 512GB, Onyx Black)","price":89999,"mrp":109999,"rating":4.6,"reviews":941,"img":"https://picsum.photos/seed/nova-fold/400/400"},
+  {"id":"m5","cat":"mobiles","brand":"Zenphone","title":"Zenphone S3 (6GB RAM, 128GB, Sunrise Gold)","price":13999,"mrp":17999,"rating":4.1,"reviews":2210,"img":"https://picsum.photos/seed/zenphone-s3/400/400"},
+  {"id":"m6","cat":"mobiles","brand":"Pixelio","title":"Pixelio Nano (6GB RAM, 128GB, Sea Green)","price":11499,"mrp":15499,"rating":3.9,"reviews":1875,"img":"https://picsum.photos/seed/pixelio-nano/400/400"},
+
+  {"id":"e1","cat":"electronics","brand":"Beatbox","title":"Beatbox Pulse Wireless Headphones, 40H Battery","price":1799,"mrp":3999,"rating":4.2,"reviews":12043,"img":"https://picsum.photos/seed/beatbox-pulse/400/400","deal":true},
+  {"id":"e2","cat":"electronics","brand":"Streamline","title":"Streamline 43\" 4K Smart LED TV","price":22990,"mrp":34990,"rating":4.4,"reviews":3987,"img":"https://picsum.photos/seed/streamline-tv/400/400"},
+  {"id":"e3","cat":"electronics","brand":"CoreTech","title":"CoreTech AirBook 14\" Laptop (i5, 16GB, 512GB SSD)","price":52999,"mrp":64999,"rating":4.5,"reviews":1654,"img":"https://picsum.photos/seed/coretech-airbook/400/400"},
+  {"id":"e4","cat":"electronics","brand":"Beatbox","title":"Beatbox Boom Portable Bluetooth Speaker","price":1299,"mrp":2299,"rating":4.1,"reviews":6720,"img":"https://picsum.photos/seed/beatbox-boom/400/400","deal":true},
+  {"id":"e5","cat":"electronics","brand":"Pixelio","title":"Pixelio Watch Fit 2 (Smartwatch, GPS)","price":3499,"mrp":5999,"rating":4.0,"reviews":4102,"img":"https://picsum.photos/seed/pixelio-watch/400/400"},
+  {"id":"e6","cat":"electronics","brand":"CoreTech","title":"CoreTech PowerBank 20000mAh Fast Charge","price":999,"mrp":1799,"rating":4.3,"reviews":9021,"img":"https://picsum.photos/seed/coretech-powerbank/400/400"},
+
+  {"id":"mn1","cat":"mens","subcat":"shirts","brand":"Urban Weave","title":"Men's Slim Fit Cotton Casual Shirt","price":599,"mrp":1499,"rating":4.0,"reviews":2310,"img":"https://picsum.photos/seed/urbanweave-shirt/400/400","deal":true},
+  {"id":"mn2","cat":"mens","subcat":"shirts","brand":"Urban Weave","title":"Men's Checked Formal Shirt, Full Sleeve","price":749,"mrp":1699,"rating":4.2,"reviews":1543,"img":"https://picsum.photos/seed/urbanweave-checkshirt/400/400"},
+  {"id":"mn3","cat":"mens","subcat":"pants","brand":"Urban Weave","title":"Men's Slim Fit Denim Jeans","price":899,"mrp":1999,"rating":4.1,"reviews":3305,"img":"https://picsum.photos/seed/urbanweave-jeans/400/400"},
+  {"id":"mn4","cat":"mens","subcat":"pants","brand":"Stridewell","title":"Men's Regular Fit Formal Trousers","price":799,"mrp":1799,"rating":4.0,"reviews":987,"img":"https://picsum.photos/seed/stridewell-trousers/400/400","deal":true},
+  {"id":"mn5","cat":"mens","subcat":"tshirts","brand":"Stridewell","title":"Men's Round Neck Cotton T-Shirt, Pack of 2","price":499,"mrp":999,"rating":4.3,"reviews":5210,"img":"https://picsum.photos/seed/stridewell-tshirt/400/400"},
+  {"id":"mn6","cat":"mens","subcat":"tshirts","brand":"Urban Weave","title":"Men's Polo T-Shirt, Pique Cotton","price":649,"mrp":1299,"rating":4.1,"reviews":2109,"img":"https://picsum.photos/seed/urbanweave-polo/400/400","deal":true},
+
+  {"id":"wm1","cat":"womens","subcat":"silk-sarees","brand":"Saanvi","title":"Kanjivaram Silk Saree with Zari Border","price":3499,"mrp":6999,"rating":4.6,"reviews":812,"img":"https://picsum.photos/seed/saanvi-kanjivaram/400/400"},
+  {"id":"wm2","cat":"womens","subcat":"silk-sarees","brand":"Saanvi","title":"Banarasi Silk Saree, Woven Design","price":2999,"mrp":5999,"rating":4.5,"reviews":654,"img":"https://picsum.photos/seed/saanvi-banarasi/400/400","deal":true},
+  {"id":"wm3","cat":"womens","subcat":"cotton-sarees","brand":"Saanvi","title":"Handloom Cotton Saree, Everyday Wear","price":899,"mrp":1799,"rating":4.3,"reviews":1980,"img":"https://picsum.photos/seed/saanvi-handloom/400/400"},
+  {"id":"wm4","cat":"womens","subcat":"cotton-sarees","brand":"Saanvi","title":"Chettinad Cotton Saree, Checked Pattern","price":1099,"mrp":2199,"rating":4.4,"reviews":1342,"img":"https://picsum.photos/seed/saanvi-chettinad/400/400","deal":true},
+  {"id":"wm5","cat":"womens","subcat":"kurtis","brand":"Saanvi","title":"Women's Printed A-Line Kurta","price":749,"mrp":1899,"rating":4.3,"reviews":4109,"img":"https://picsum.photos/seed/saanvi-kurta/400/400"},
+  {"id":"wm6","cat":"womens","subcat":"kurtis","brand":"Saanvi","title":"Women's Anarkali Kurti, Embroidered","price":1099,"mrp":2399,"rating":4.2,"reviews":2033,"img":"https://picsum.photos/seed/saanvi-anarkali/400/400"},
+  {"id":"wm7","cat":"womens","subcat":"poonam-sarees","brand":"Poonam Sarees","title":"Poonam Sarees Georgette Saree, Floral Print","price":1299,"mrp":2599,"rating":4.4,"reviews":1120,"img":"https://picsum.photos/seed/poonam-georgette/400/400","deal":true},
+  {"id":"wm8","cat":"womens","subcat":"poonam-sarees","brand":"Poonam Sarees","title":"Poonam Sarees Designer Party Wear Saree","price":1899,"mrp":3799,"rating":4.5,"reviews":764,"img":"https://picsum.photos/seed/poonam-designer/400/400"},
+
+  {"id":"h1","cat":"home","brand":"Homery","title":"Non-Stick Cookware Set, 5 Pieces","price":1499,"mrp":2999,"rating":4.3,"reviews":2871,"img":"https://picsum.photos/seed/homery-cookware/400/400","deal":true},
+  {"id":"h2","cat":"home","brand":"CozyNest","title":"Memory Foam Pillow, Pack of 2","price":799,"mrp":1599,"rating":4.1,"reviews":4021,"img":"https://picsum.photos/seed/cozynest-pillow/400/400"},
+  {"id":"h3","cat":"home","brand":"Homery","title":"Stainless Steel Insulated Water Bottle, 1L","price":399,"mrp":799,"rating":4.5,"reviews":7654,"img":"https://picsum.photos/seed/homery-bottle/400/400"},
+  {"id":"h4","cat":"home","brand":"BrightHome","title":"LED Study Lamp with Adjustable Arm","price":549,"mrp":1199,"rating":4.0,"reviews":1230,"img":"https://picsum.photos/seed/brighthome-lamp/400/400","deal":true},
+  {"id":"h5","cat":"home","brand":"CozyNest","title":"Cotton Bedsheet Set, Queen Size (King Fits Too)","price":899,"mrp":2199,"rating":4.2,"reviews":3410,"img":"https://picsum.photos/seed/cozynest-bedsheet/400/400"},
+  {"id":"h6","cat":"home","brand":"Homery","title":"Compact Storage Organizer, 3 Tier","price":699,"mrp":1399,"rating":3.9,"reviews":845,"img":"https://picsum.photos/seed/homery-organizer/400/400"},
+
+  {"id":"b1","cat":"beauty","brand":"Petalskin","title":"Vitamin C Brightening Face Serum, 30ml","price":449,"mrp":899,"rating":4.4,"reviews":5601,"img":"https://picsum.photos/seed/petalskin-serum/400/400","deal":true},
+  {"id":"b2","cat":"beauty","brand":"Meraki","title":"Matte Finish Lipstick Combo, Set of 3","price":599,"mrp":1299,"rating":4.2,"reviews":2980,"img":"https://picsum.photos/seed/meraki-lipstick/400/400"},
+  {"id":"b3","cat":"beauty","brand":"Petalskin","title":"Aloe Hydrating Face Wash, 150ml","price":249,"mrp":449,"rating":4.3,"reviews":6120,"img":"https://picsum.photos/seed/petalskin-facewash/400/400"},
+  {"id":"b4","cat":"beauty","brand":"Meraki","title":"Argan Oil Hair Serum, 100ml","price":349,"mrp":699,"rating":4.1,"reviews":1876,"img":"https://picsum.photos/seed/meraki-hairoil/400/400","deal":true},
+  {"id":"b5","cat":"beauty","brand":"Petalskin","title":"SPF 50 Sunscreen Gel, 75g","price":399,"mrp":799,"rating":4.5,"reviews":3320,"img":"https://picsum.photos/seed/petalskin-sunscreen/400/400"},
+
+  {"id":"he1","cat":"health","brand":"VitaCare","title":"Multivitamin Tablets, 60 Count","price":349,"mrp":599,"rating":4.4,"reviews":3140,"img":"https://picsum.photos/seed/vitacare-multivitamin/400/400","deal":true},
+  {"id":"he2","cat":"health","brand":"WellnessPro","title":"Whey Protein Powder, 1kg, Chocolate","price":1899,"mrp":2799,"rating":4.5,"reviews":5210,"img":"https://picsum.photos/seed/wellnesspro-whey/400/400"},
+  {"id":"he3","cat":"health","brand":"MediSafe","title":"Digital Infrared Thermometer","price":799,"mrp":1299,"rating":4.3,"reviews":2870,"img":"https://picsum.photos/seed/medisafe-thermometer/400/400"},
+  {"id":"he4","cat":"health","brand":"MediSafe","title":"Hand Sanitizer, 500ml, Pack of 3","price":299,"mrp":499,"rating":4.2,"reviews":4021,"img":"https://picsum.photos/seed/medisafe-sanitizer/400/400","deal":true},
+  {"id":"he5","cat":"health","brand":"VitaCare","title":"Immunity Booster Effervescent Tablets","price":399,"mrp":699,"rating":4.1,"reviews":1980,"img":"https://picsum.photos/seed/vitacare-immunity/400/400"},
+  {"id":"he6","cat":"health","brand":"MediSafe","title":"Compact First Aid Kit, 40 Pieces","price":549,"mrp":999,"rating":4.4,"reviews":1230,"img":"https://picsum.photos/seed/medisafe-firstaid/400/400"}
+]
