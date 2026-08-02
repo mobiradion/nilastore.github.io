@@ -18,7 +18,9 @@ const CATEGORIES = [
     subcats: [
       { id: "silk-sarees",   label: "Silk Sarees" },
       { id: "cotton-sarees", label: "Cotton Sarees" },
-      { id: "kurtis",        label: "Kurtis" },
+      { id: "kurtis",        label: "Kurtis", children: [
+          { id: "anarkali-kurtis", label: "Anarkali Kurtis" },
+        ] },
       { id: "poonam-sarees", label: "Poonam Sarees" },
     ] },
   { id: "home",        label: "Home & Kitchen", emoji: "🛋️", color: "#E9F6FF" },
@@ -98,16 +100,26 @@ let PRODUCTS = [
 /* ============ State ============ */
 // Robust persisted state with basic validation
 let cart = {};
-// PRODUCTS are loaded from an external JSON file to make data maintenance easier.
+// PRODUCTS are loaded from external JSON files to make data maintenance easier.
 const WHATSAPP_NUMBER = '918610769343';
+async function loadJson(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch ${url}`);
+  return res.json();
+}
 async function loadProducts() {
-  try {
-    const res = await fetch('data/products.json');
-    if (!res.ok) throw new Error('Failed to fetch products');
-    PRODUCTS = await res.json();
-  } catch (err) {
-    console.error('Could not load data/products.json —', err);
-    // Keep the embedded product list as a fallback.
+  const sources = ['data/products.json', 'data/anarkali-products.json'];
+  const loaded = [];
+  for (const source of sources) {
+    try {
+      const data = await loadJson(source);
+      if (Array.isArray(data)) loaded.push(...data);
+    } catch (err) {
+      console.warn(`Could not load ${source} —`, err);
+    }
+  }
+  if (loaded.length) {
+    PRODUCTS = loaded;
   }
 }
 
@@ -278,97 +290,162 @@ function closeModal() {
   if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') lastFocusedElement.focus();
 }
 
+function previewProducts(items, limit = 5) {
+  return [...items]
+    .sort((a, b) => {
+      if ((a.deal ? 1 : 0) !== (b.deal ? 1 : 0)) return b.deal - a.deal;
+      if (b.rating !== a.rating) return b.rating - a.rating;
+      return b.reviews - a.reviews;
+    })
+    .slice(0, limit);
+}
+
+function parseQueryParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    cat: params.get('cat'),
+    subcat: params.get('subcat'),
+    subsubcat: params.get('subsubcat'),
+  };
+}
+
+function renderCategoryPage() {
+  const pageContent = document.getElementById('categoryPageContent');
+  const pageTitle = document.getElementById('categoryPageTitle');
+  const pageDesc = document.getElementById('categoryPageDescription');
+  if (!pageContent || !pageTitle || !pageDesc) return;
+
+  const { cat, subcat, subsubcat } = parseQueryParams();
+  const category = CATEGORIES.find(c => c.id === cat);
+  if (!category) {
+    pageTitle.textContent = 'Category not found';
+    pageDesc.textContent = 'Please return to the homepage and choose a category.';
+    pageContent.innerHTML = `<div class="empty-state"><div class="big-emoji">⚠️</div><h3>Unknown category</h3><p>Use the homepage to find available collections.</p><a href="index.html" class="btn btn-outline">Back to home</a></div>`;
+    return;
+  }
+
+  const parentSubcat = category.subcats?.find(s => s.id === subcat);
+  const childSubcat = parentSubcat?.children?.find(ch => ch.id === subsubcat);
+  const items = PRODUCTS.filter(p =>
+    p.cat === cat &&
+    (!subcat || p.subcat === subcat) &&
+    (!subsubcat || p.subsubcat === subsubcat)
+  );
+
+  const titleParts = [category.label];
+  if (parentSubcat) titleParts.push(parentSubcat.label);
+  if (childSubcat) titleParts.push(childSubcat.label);
+  pageTitle.textContent = titleParts.join(' › ');
+  pageDesc.textContent = `${items.length} product${items.length === 1 ? '' : 's'}${childSubcat ? ` in ${childSubcat.label}` : parentSubcat ? ` in ${parentSubcat.label}` : ''}.`;
+
+  if (!items.length) {
+    pageContent.innerHTML = `<div class="empty-state"><div class="big-emoji">😕</div><h3>No products found</h3><p>Try a different category or go back to the homepage.</p><a href="index.html" class="btn btn-outline">Back to home</a></div>`;
+    return;
+  }
+
+  pageContent.innerHTML = `<div class="product-grid">${items.map(productCard).join('')}</div>`;
+}
+
 function renderCategoryChrome() {
-  const rail = document.getElementById("categoryRail");
+  const rail = document.getElementById('categoryRail');
   if (!rail) return;
 
   rail.innerHTML = CATEGORIES.map(c => {
     const hasSub = Array.isArray(c.subcats) && c.subcats.length > 0;
     return `
       <div class="cat-chip-wrap" data-parent="${c.id}">
-        <button type="button" class="cat-chip${hasSub ? " has-sub" : ""}" aria-expanded="false">
+        <button type="button" class="cat-chip${hasSub ? ' has-sub' : ''}" aria-expanded="false">
           <span class="emoji">${c.emoji}</span>
           ${c.label}
-          ${hasSub ? '<span class="chevron">▾</span>' : ""}
+          ${hasSub ? '<span class="chevron">▾</span>' : ''}
         </button>
         ${hasSub ? `
           <div class="cat-dropdown">
-            ${c.subcats.map(s => `<a href="#cat-${c.id}-${s.id}" data-sub="${s.id}">${s.label}</a>`).join("")}
-          </div>` : ""}
+            ${c.subcats.map(s => s.children ? `
+              <div class="dropdown-group">
+                <span class="dropdown-heading">${s.label}</span>
+                ${s.children.map(child => `<a href="#cat-${c.id}-${s.id}-${child.id}" data-target="${c.id}-${s.id}-${child.id}">${child.label}</a>`).join('')}
+              </div>` : `<a href="#cat-${c.id}-${s.id}" data-target="${c.id}-${s.id}">${s.label}</a>`).join('')}
+          </div>` : ''}
       </div>`;
-  }).join("");
+  }).join('');
 
-  const wraps = rail.querySelectorAll(".cat-chip-wrap");
+  const wraps = rail.querySelectorAll('.cat-chip-wrap');
   wraps.forEach(wrap => {
-    const btn = wrap.querySelector(".cat-chip");
-    const dropdown = wrap.querySelector(".cat-dropdown");
+    const btn = wrap.querySelector('.cat-chip');
+    const dropdown = wrap.querySelector('.cat-dropdown');
     if (!btn || !dropdown) return;
 
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const isOpen = wrap.classList.contains("open");
-      wraps.forEach(w => w.classList.remove("open"));
+      const isOpen = wrap.classList.contains('open');
+      wraps.forEach(w => w.classList.remove('open'));
       if (!isOpen) {
         positionDropdown(btn, dropdown);
-        wrap.classList.add("open");
-        btn.setAttribute("aria-expanded", "true");
+        wrap.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
       } else {
-        btn.setAttribute("aria-expanded", "false");
+        btn.setAttribute('aria-expanded', 'false');
       }
     });
 
-    wrap.querySelectorAll(".cat-dropdown a").forEach(a => {
-      a.addEventListener("click", () => {
+    wrap.querySelectorAll('.cat-dropdown a').forEach(a => {
+      a.addEventListener('click', () => {
         setActiveChip(btn);
-        wrap.classList.remove("open");
-        btn.setAttribute("aria-expanded", "false");
-        const target = document.getElementById(`cat-${a.dataset.sub}`);
-        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        wrap.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        const target = document.getElementById(`cat-${a.dataset.target}`);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
   });
 
-  document.addEventListener("click", () => {
-    wraps.forEach(w => w.classList.remove("open"));
-    rail.querySelectorAll(".cat-chip").forEach(btn => btn.setAttribute("aria-expanded", "false"));
+  document.addEventListener('click', () => {
+    wraps.forEach(w => w.classList.remove('open'));
+    rail.querySelectorAll('.cat-chip').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
   });
-  window.addEventListener("scroll", () => wraps.forEach(w => w.classList.remove("open")), { passive: true });
-  window.addEventListener("resize", () => wraps.forEach(w => w.classList.remove("open")));
+  window.addEventListener('scroll', () => wraps.forEach(w => w.classList.remove('open')), { passive: true });
+  window.addEventListener('resize', () => wraps.forEach(w => w.classList.remove('open')));
 
   function positionDropdown(btn, dropdown) {
     const rect = btn.getBoundingClientRect();
     dropdown.style.top = `${rect.bottom + 8}px`;
     let left = rect.left;
-    const maxLeft = window.innerWidth - 210; // keep within viewport (dropdown min-width 190 + margin)
+    const maxLeft = window.innerWidth - 210;
     if (left > maxLeft) left = Math.max(8, maxLeft);
     dropdown.style.left = `${left}px`;
   }
 
   function setActiveChip(btn) {
-    rail.querySelectorAll(".cat-chip").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+    rail.querySelectorAll('.cat-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   }
 
-  const tileGrid = document.getElementById("tileGrid");
-  tileGrid.innerHTML = CATEGORIES.map(c => `
-    <a class="tile" href="#cat-${c.id}">
-      <div class="tile-icon" style="background:${c.color}">${c.emoji}</div>
-      <span class="tile-label">${c.label}</span>
-    </a>`).join("");
+  const tileGrid = document.getElementById('tileGrid');
+  if (tileGrid) {
+    tileGrid.innerHTML = CATEGORIES.map(c => `
+      <a class="tile" href="#cat-${c.id}">
+        <div class="tile-icon" style="background:${c.color}">${c.emoji}</div>
+        <span class="tile-label">${c.label}</span>
+      </a>`).join('');
+  }
 
-  document.getElementById("mobileNavList").innerHTML = CATEGORIES.map(c => {
-    if (c.subcats) {
-      return `
-        <div class="mobile-nav-group">
-          <a href="#cat-${c.id}" class="mobile-nav-link mobile-nav-parent"><span class="emoji">${c.emoji}</span> ${c.label}</a>
-          <div class="mobile-nav-sublist">
-            ${c.subcats.map(s => `<a href="#cat-${c.id}-${s.id}" class="mobile-nav-link mobile-nav-sub">${s.label}</a>`).join("")}
-          </div>
-        </div>`;
-    }
-    return `<a href="#cat-${c.id}" class="mobile-nav-link"><span class="emoji">${c.emoji}</span> ${c.label}</a>`;
-  }).join("");
-  document.querySelectorAll(".mobile-nav-link").forEach(a => a.addEventListener("click", closeMobileNav));
+  const mobileNavList = document.getElementById('mobileNavList');
+  if (mobileNavList) {
+    mobileNavList.innerHTML = CATEGORIES.map(c => {
+      if (c.subcats) {
+        return `
+          <div class="mobile-nav-group">
+            <a href="#cat-${c.id}" class="mobile-nav-link mobile-nav-parent"><span class="emoji">${c.emoji}</span> ${c.label}</a>
+            <div class="mobile-nav-sublist">
+              ${c.subcats.map(s => s.children ? `<a href="#cat-${c.id}-${s.id}" class="mobile-nav-link mobile-nav-sub">${s.label}</a>${s.children.map(child => `<a href="#cat-${c.id}-${s.id}-${child.id}" class="mobile-nav-link mobile-nav-sub mobile-nav-deep">${child.label}</a>`).join('')}` : `<a href="#cat-${c.id}-${s.id}" class="mobile-nav-link mobile-nav-sub">${s.label}</a>`).join('')}
+            </div>
+          </div>`;
+      }
+      return `<a href="#cat-${c.id}" class="mobile-nav-link"><span class="emoji">${c.emoji}</span> ${c.label}</a>`;
+    }).join('');
+    document.querySelectorAll('.mobile-nav-link').forEach(a => a.addEventListener('click', closeMobileNav));
+  }
 }
 
 /* ============ Product card ============ */
@@ -410,15 +487,18 @@ function attachCardEvents(root) {
 
 /* ============ Deals row ============ */
 function renderDeals() {
+  const row = document.getElementById('dealsRow');
+  if (!row) return;
   const deals = PRODUCTS.filter(p => p.deal);
-  const row = document.getElementById("dealsRow");
-  row.innerHTML = deals.map(productCard).join("");
+  row.innerHTML = deals.map(productCard).join('');
   // Events handled via delegation
 }
 
 /* ============ Category sections ============ */
 function renderCategorySections() {
-  const container = document.getElementById("categorySections");
+  const container = document.getElementById('categorySections');
+  if (!container) return;
+
   container.innerHTML = CATEGORIES.map(c => {
     if (c.subcats) {
       const total = PRODUCTS.filter(p => p.cat === c.id).length;
@@ -432,14 +512,41 @@ function renderCategorySections() {
               </div>
             </div>
             ${c.subcats.map(s => {
+              if (Array.isArray(s.children) && s.children.length > 0) {
+                const directItems = PRODUCTS.filter(p => p.cat === c.id && p.subcat === s.id && !p.subsubcat);
+                const directContent = directItems.length ? `
+                    <div class="product-grid">${directItems.map(productCard).join('')}</div>` : '';
+
+                const childBlocks = s.children.map(child => {
+                  const items = PRODUCTS.filter(p => p.cat === c.id && p.subcat === s.id && p.subsubcat === child.id);
+                  if (!items.length) return '';
+                  const preview = previewProducts(items);
+                  return `
+                    <div class="subsubcat-block" id="cat-${c.id}-${s.id}-${child.id}">
+                      <div class="subsubcat-header">
+                        <h4>${child.label}</h4>
+                        <a href="category.html?cat=${c.id}&subcat=${s.id}&subsubcat=${child.id}" class="btn btn-outline">View all</a>
+                      </div>
+                      <div class="product-grid">${preview.map(productCard).join('')}</div>
+                    </div>`;
+                }).join('');
+
+                if (!directContent && !childBlocks) return '';
+                return `
+                  <div class="subcat-block" id="cat-${c.id}-${s.id}">
+                    <h3 class="subcat-title">${s.label}</h3>
+                    ${directContent}
+                    ${childBlocks}
+                  </div>`;
+              }
               const items = PRODUCTS.filter(p => p.cat === c.id && p.subcat === s.id);
-              if (!items.length) return "";
+              if (!items.length) return '';
               return `
                 <div class="subcat-block" id="cat-${c.id}-${s.id}">
                   <h3 class="subcat-title">${s.label}</h3>
-                  <div class="product-grid">${items.map(productCard).join("")}</div>
+                  <div class="product-grid">${items.map(productCard).join('')}</div>
                 </div>`;
-            }).join("")}
+            }).join('')}
           </div>
         </section>`;
     }
@@ -452,13 +559,12 @@ function renderCategorySections() {
               <h2>${c.emoji} ${c.label}</h2>
               <p class="section-sub">${items.length} handpicked products</p>
             </div>
-            <a href="#" class="btn btn-outline">View all</a>
+            <a href="category.html?cat=${c.id}" class="btn btn-outline">View all</a>
           </div>
-          <div class="product-grid">${items.map(productCard).join("")}</div>
+          <div class="product-grid">${items.map(productCard).join('')}</div>
         </div>
       </section>`;
-  }).join("");
-  // Events handled via delegation
+  }).join('');
 }
 
 /* ============ Hero carousel ============ */
@@ -470,8 +576,9 @@ const SLIDES = [
 
 let carIndex = 0, carTimer;
 function renderCarousel() {
-  const track = document.getElementById("carouselTrack");
-  const dots = document.getElementById("carDots");
+  const track = document.getElementById('carouselTrack');
+  const dots = document.getElementById('carDots');
+  if (!track || !dots) return;
   track.innerHTML = SLIDES.map((s,i) => `
     <div class="slide" style="background:${s.bg}">
       <div class="slide-copy">
@@ -481,11 +588,11 @@ function renderCarousel() {
         <a href="#" class="slide-cta">${esc(s.cta)} →</a>
       </div>
       <div class="slide-visual"><img src="${s.img}" alt="${esc(s.title)}" width="500" height="500" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async"></div>
-    </div>`).join("");
-  dots.innerHTML = SLIDES.map((_, i) => `<button data-i="${i}" class="${i === 0 ? 'active' : ''}"></button>`).join("");
-  dots.querySelectorAll("button").forEach(b => b.addEventListener("click", () => goToSlide(+b.dataset.i)));
-  document.getElementById("carPrev").addEventListener("click", () => goToSlide(carIndex - 1));
-  document.getElementById("carNext").addEventListener("click", () => goToSlide(carIndex + 1));
+    </div>`).join('');
+  dots.innerHTML = SLIDES.map((_, i) => `<button data-i="${i}" class="${i === 0 ? 'active' : ''}"></button>`).join('');
+  dots.querySelectorAll('button').forEach(b => b.addEventListener('click', () => goToSlide(+b.dataset.i)));
+  document.getElementById('carPrev')?.addEventListener('click', () => goToSlide(carIndex - 1));
+  document.getElementById('carNext')?.addEventListener('click', () => goToSlide(carIndex + 1));
   startCarouselAuto();
 }
 function goToSlide(i) {
@@ -821,7 +928,11 @@ async function init() {
   renderCategoryChrome();
   renderCarousel();
   renderDeals();
-  renderCategorySections();
+  if (document.getElementById('categoryPageContent')) {
+    renderCategoryPage();
+  } else {
+    renderCategorySections();
+  }
   renderCart();
   startCountdown();
 
@@ -847,15 +958,15 @@ async function init() {
     if (remWish) { e.preventDefault(); toggleWishlist(remWish.dataset.removeWish, remWish); renderWishlist(); return; }
   });
 
-  document.getElementById("cartToggle").addEventListener("click", openCart);
-  document.getElementById("wishlistToggle").addEventListener("click", openWishlist);
-  document.getElementById("cartClose").addEventListener("click", closeCart);
-  document.getElementById("wishlistClose").addEventListener("click", closeWishlist);
-  document.getElementById("drawerOverlay").addEventListener("click", () => { closeCart(); closeWishlist(); closeModalIfOpen(); closeMobileNav(); });
-  document.getElementById("modalOverlay").addEventListener("click", (e) => { if (e.target.id === "modalOverlay") closeModal(); });
-  document.getElementById("menuToggle").addEventListener("click", openMobileNav);
-  document.getElementById("mobileNavClose").addEventListener("click", closeMobileNav);
-  document.getElementById("mobileNavOverlay").addEventListener("click", closeMobileNav);
+  document.getElementById("cartToggle")?.addEventListener("click", openCart);
+  document.getElementById("wishlistToggle")?.addEventListener("click", openWishlist);
+  document.getElementById("cartClose")?.addEventListener("click", closeCart);
+  document.getElementById("wishlistClose")?.addEventListener("click", closeWishlist);
+  document.getElementById("drawerOverlay")?.addEventListener("click", () => { closeCart(); closeWishlist(); closeModalIfOpen(); closeMobileNav(); });
+  document.getElementById("modalOverlay")?.addEventListener("click", (e) => { if (e.target.id === "modalOverlay") closeModal(); });
+  document.getElementById("menuToggle")?.addEventListener("click", openMobileNav);
+  document.getElementById("mobileNavClose")?.addEventListener("click", closeMobileNav);
+  document.getElementById("mobileNavOverlay")?.addEventListener("click", closeMobileNav);
   document.getElementById("checkoutBtn").addEventListener("click", () => {
     renderCart();
     if (Object.keys(cart).length === 0) {

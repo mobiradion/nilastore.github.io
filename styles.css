@@ -290,9 +290,20 @@ img{max-width:100%;display:block;}
 }
 .cat-dropdown a:hover{background:var(--surface);color:var(--brand);}
 
-/* Subcategory rows within Men's / Women's sections */
+.dropdown-group{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.dropdown-heading{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-muted);padding:0 8px;}
+
 .subcat-block{margin-bottom:32px;}
 .subcat-block:last-child{margin-bottom:0;}
+.subsubcat-block{margin-bottom:24px;}
+.subsubcat-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;}
+.subsubcat-header h4{margin:0;font-size:15px;font-weight:700;color:var(--ink);}
+
+.mobile-nav-deep{padding-left:20px;}
+
+.category-page-heading{padding:36px 0 24px;}
+.category-page-heading h1{margin:0 0 8px;font-size:2rem;}
+.category-page-heading p{margin:0;color:var(--ink-muted);font-size:0.97rem;}
 .subcat-title{
   font-size:15px;
   font-weight:700;
