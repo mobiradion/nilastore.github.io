@@ -1,0 +1,2799 @@
+{
+    "enable": false,
+    "catalogs": [
+        {
+            "doMarker": false,
+            "id": 484464579,
+            "hero_pid": 938540149,
+            "name": " Bluetooth Speakers",
+            "category_id": 5178,
+            "sub_sub_category_name": "Tower Speakers",
+            "min_catalog_price": 383,
+            "min_product_price": 383,
+            "description": " Bluetooth Speakers",
+            "full_details": "Aux: Yes\nBIS/ISI Certification Number: 81020036\nBluetooth Range: 11 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Assorted\nCompatibility: All Mobile Devices\nConfiguration: 5.1\nControl Button: Yes\nFrequency: 30 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: No\nMicro SD: Yes\nModel Name: T-123 Army\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: Wireless\nType Of Water Resistance: IPX6\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: Yes\nBIS/ISI Certification Number: 0\nBluetooth Range: 11 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Multi\nCompatibility: All Mobile Devices\nConfiguration: Mono\nControl Button: Yes\nFrequency: 30 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: No\nMicro SD: Yes\nModel Name: T-123 Army\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: Wireless\nType Of Water Resistance: IPX6\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/484464579/cover/1/2/2ddb4ae1ac60216176225233a01089a304ede2cfa7d59730abaf00dd3ade796164bea3f9276f6965d72d17abda0e18341a04daa359ab415435323b320b848c9f_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/484464579/collages/1/1/2ddb4ae1ac60216176225233a01089a304ede2cfa7d59730abaf00dd3ade796164bea3f9276f6965d72d17abda0e18341a04daa359ab415435323b320b848c9f.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-05-12 02:28:54",
+            "created_iso": "2026-05-12T02:28:54+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "rating_count_map": {
+                    "1": 86,
+                    "2": 34,
+                    "3": 83,
+                    "4": 162,
+                    "5": 465
+                },
+                "average_rating": 4.1,
+                "absolute_average_rating": 5,
+                "average_rating_str": "4.1",
+                "rating_scale": 5,
+                "review_count": 297,
+                "rating_count": 830
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 938540149,
+                    "url": "https://images.meesho.com/images/products/938540149/hpycu_512.jpg"
+                }
+            ],
+            "activated": "2026-05-12 02:29:03",
+            "activated_iso": "2026-05-12T02:29:03+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹318 with 2 Special Offers",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 46
+                    },
+                    {
+                        "type": "return_options",
+                        "amount": 19
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/fis67p?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 11 Mtr",
+                "Bluetooth: 5.1"
+            ],
+            "hero_product_name": "T-113 Pro Type-c Charging Portable wireless Mini Small Bluetooth Travel speaker with clear stereo audio sound & balanced bass 9",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/938540149/hpycu_512.jpg"
+            ],
+            "product_id": "fis67p",
+            "slug": "t-113-pro-type-c-charging-portable-wireless-mini-small-bluetooth-travel-speaker-with-clear-stereo-audio-sound-balanced-bass-9",
+            "original_slug": "t-113-pro-type-c-charging-portable-wireless-mini-small-bluetooth-travel-speaker-with-clear-stereo-audio-sound-balanced-bass-9",
+            "isAdProduct": false,
+            "original_product_id": 938540149,
+            "catalogId": 484464579
+        },
+        {
+            "doMarker": false,
+            "id": 272857555,
+            "hero_pid": 671137342,
+            "name": " Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 247,
+            "min_product_price": 247,
+            "description": " Bluetooth Speakers",
+            "full_details": "Aux: Yes\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.0\nCharging Type: Type C\nColor: Multi\nCompatibility: All Mobile Devices\nConfiguration: 5.1\nControl Button: Yes\nFrequency: 10 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: 1N\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair or Replacement\nWarranty Period: 1 Year\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: Yes\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.0\nCharging Type: Type C\nColor: Multi\nCompatibility: All Mobile Devices\nConfiguration: 5.1\nControl Button: Yes\nFrequency: 10 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: 1N\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair or Replacement\nWarranty Period: 1 Year\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/272857555/cover/1/2/a3d082b34bf5ebaa42f53faffac748c6240839e7ecc9c4b077fdbccee5d1235233814f53043ac19a27f4b1aae6677a1bc2c0c5e906311722d3ce9be0d2eb217d_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/272857555/collages/1/1/a3d082b34bf5ebaa42f53faffac748c6240839e7ecc9c4b077fdbccee5d1235233814f53043ac19a27f4b1aae6677a1bc2c0c5e906311722d3ce9be0d2eb217d.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2025-12-27 12:02:55",
+            "created_iso": "2025-12-27T12:02:55+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "rating_count_map": {
+                    "1": 936,
+                    "2": 428,
+                    "3": 664,
+                    "4": 1114,
+                    "5": 5480
+                },
+                "average_rating": 4.1,
+                "absolute_average_rating": 5,
+                "average_rating_str": "4.1",
+                "rating_scale": 5,
+                "review_count": 4059,
+                "rating_count": 8622
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 671137342,
+                    "url": "https://images.meesho.com/images/products/671137342/0xzjz_512.jpg"
+                }
+            ],
+            "activated": "2025-12-30 12:40:57",
+            "activated_iso": "2025-12-30T12:40:57+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹212 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 35
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/b3ksvy?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 5.0"
+            ],
+            "hero_product_name": "Mini Portable Wireless Bluetooth Speaker with LED Light – Metallic Finish (Multicolor) Bluetooth speaker, wireless speaker, mini speaker",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "MH",
+            "affiliate_commission_text": "4.00% Commission",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/671137342/0xzjz_512.jpg"
+            ],
+            "product_id": "b3ksvy",
+            "slug": "mini-portable-wireless-bluetooth-speaker-with-led-light-metallic-finish-multicolor-bluetooth-speaker-wireless-speaker-mini-speaker",
+            "original_slug": "mini-portable-wireless-bluetooth-speaker-with-led-light-metallic-finish-multicolor-bluetooth-speaker-wireless-speaker-mini-speaker",
+            "isAdProduct": false,
+            "original_product_id": 671137342,
+            "catalogId": 272857555
+        },
+        {
+            "doMarker": false,
+            "id": 414284077,
+            "hero_pid": 844649272,
+            "name": " Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 358,
+            "min_product_price": 358,
+            "description": " Bluetooth Speakers",
+            "full_details": "Aux: Yes\nBIS/ISI Certification Number: 81020036\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Assorted\nCompatibility: All Mobile Devices\nConfiguration: 5.1\nControl Button: Yes\nFrequency: 80 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: No\nMicro SD: Yes\nModel Name: T-113\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: Wireless\nType Of Water Resistance: IPX4\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: Yes\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Black\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nFrequency: 80 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: No\nMicro SD: Yes\nModel Name: T-113\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: Wireless\nType Of Water Resistance: IPX4\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/414284077/cover/1/2/bf162dcd762a5127e60bf2cd47c6032de8202ac8cf38cca270f89c4495e2b62b58b080e57d0110262b8b4750d8bed57d4586a47f6eaf4d182c0f5baedc584f11_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/414284077/collages/1/1/bf162dcd762a5127e60bf2cd47c6032de8202ac8cf38cca270f89c4495e2b62b58b080e57d0110262b8b4750d8bed57d4586a47f6eaf4d182c0f5baedc584f11.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-03-18 18:45:47",
+            "created_iso": "2026-03-18T18:45:47+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "rating_count_map": {
+                    "1": 327,
+                    "2": 126,
+                    "3": 280,
+                    "4": 493,
+                    "5": 1395
+                },
+                "average_rating": 4,
+                "absolute_average_rating": 5,
+                "average_rating_str": "4.0",
+                "rating_scale": 5,
+                "review_count": 863,
+                "rating_count": 2621
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 844649272,
+                    "url": "https://images.meesho.com/images/products/844649272/azoie_512.jpg"
+                }
+            ],
+            "activated": "2026-03-19 21:31:02",
+            "activated_iso": "2026-03-19T21:31:02+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹298 with 2 Special Offers",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 41
+                    },
+                    {
+                        "type": "return_options",
+                        "amount": 19
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/dyvrjs?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 5.1"
+            ],
+            "hero_product_name": "T-113 Pro Type-c Charging Portable wireless Mini Small Bluetooth Travel speaker with clear stereo audio sound & balanced bass 9 (Black,Blue or red color according to stock avaialble)",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/844649272/azoie_512.jpg"
+            ],
+            "product_id": "dyvrjs",
+            "slug": "t-113-pro-type-c-charging-portable-wireless-mini-small-bluetooth-travel-speaker-with-clear-stereo-audio-sound-balanced-bass-9-blackblue-or-red-color-according-to-stock-avaialble",
+            "original_slug": "t-113-pro-type-c-charging-portable-wireless-mini-small-bluetooth-travel-speaker-with-clear-stereo-audio-sound-balanced-bass-9-blackblue-or-red-color-according-to-stock-avaialble",
+            "isAdProduct": false,
+            "original_product_id": 844649272,
+            "catalogId": 414284077
+        },
+        {
+            "doMarker": false,
+            "id": 198218442,
+            "hero_pid": 561787861,
+            "name": " Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 228,
+            "min_product_price": 228,
+            "description": " Bluetooth Speakers",
+            "full_details": "Aux: No\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Assorted\nCompatibility: All Mobile Devices\nConfiguration: Mono\nControl Button: Yes\nFrequency: 10 Hz\nMaterial: Metal\nMic: Yes\nMicro SD: No\nModel Name: AE_MINI_BOOST4_(MULTI)\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair or Replacement\nType: TWS\nWarranty Period: 1 Month\nWarranty Type: On Site\nWater Resistant: No\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: No\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Assorted\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nFrequency: 10 Hz\nMaterial: Metal\nMic: Yes\nMicro SD: No\nModel Name: AE_MINI_BOOST4_(MULTI)\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair or Replacement\nType: TWS\nWarranty Period: 1 Month\nWarranty Type: On Site\nWater Resistant: No\n\nDispatch: 0 Days\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/198218442/cover/1/2/8e5a47db0f9124819eb01af07fa089df94259f928a61da569b4cf23cb831aa89fb7d4e1731307dd3c220774e7dde7be035c7202bc0343253c6b1592f0fb8ab5d_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/198218442/collages/1/1/8e5a47db0f9124819eb01af07fa089df94259f928a61da569b4cf23cb831aa89fb7d4e1731307dd3c220774e7dde7be035c7202bc0343253c6b1592f0fb8ab5d.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2025-07-04 12:48:58",
+            "created_iso": "2025-07-04T12:48:58+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "rating_count_map": {
+                    "1": 1026,
+                    "2": 464,
+                    "3": 795,
+                    "4": 1065,
+                    "5": 3463
+                },
+                "average_rating": 3.8,
+                "absolute_average_rating": 4,
+                "average_rating_str": "3.8",
+                "rating_scale": 5,
+                "review_count": 2320,
+                "rating_count": 6813
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 561787861,
+                    "url": "https://images.meesho.com/images/products/561787861/l5dyv_512.jpg"
+                }
+            ],
+            "activated": "2025-07-06 11:21:19",
+            "activated_iso": "2025-07-06T11:21:19+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹193 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 35
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/9ah2ad?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 5.1"
+            ],
+            "hero_product_name": "AuraEdge Orb Mini Boost Wireless Speaker – Compact Power in Your Palm (Assorted Colours)",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "10.00% Commission",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/561787861/l5dyv_512.jpg"
+            ],
+            "product_id": "9ah2ad",
+            "slug": "auraedge-orb-mini-boost-wireless-speaker-compact-power-in-your-palm-assorted-colours",
+            "original_slug": "auraedge-orb-mini-boost-wireless-speaker-compact-power-in-your-palm-assorted-colours",
+            "isAdProduct": false,
+            "original_product_id": 561787861,
+            "catalogId": 198218442
+        },
+        {
+            "doMarker": false,
+            "id": 542311196,
+            "hero_pid": 1036433549,
+            "name": " Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 463,
+            "min_product_price": 463,
+            "description": " Bluetooth Speakers",
+            "full_details": "Aux: No\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.3\nCharging Type: Type C\nColor: Assorted\nCompatibility: All Mobile Devices\nControl Button: Yes\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: 434\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair or Replacement\nType: TWS\nWarranty Period: 1 Month\nWarranty Type: On Site\nWater Resistant: No\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: No\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.3\nCharging Type: Type C\nColor: Black\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: 434\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair or Replacement\nType: Wireless\nWarranty Period: 1 Month\nWarranty Type: On Site\nWater Resistant: No\n\nDispatch: 2 Days\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/542311196/cover/1/2/46b15e3516760e3e12ed34dde50b476430835d0250b7f99c510fd2e8b3e4a87753595ccc83aea7b928c8f1712637bc7a1cf125960282b9f415ee365481b1c248_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/542311196/collages/1/1/46b15e3516760e3e12ed34dde50b476430835d0250b7f99c510fd2e8b3e4a87753595ccc83aea7b928c8f1712637bc7a1cf125960282b9f415ee365481b1c248.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-08-01 13:32:16",
+            "created_iso": "2026-08-01T13:32:16+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "supplier_reviews_summary": {
+                "average_rating": 4,
+                "absolute_average_rating": 0,
+                "average_rating_str": "4.0",
+                "rating_scale": 5,
+                "review_count": 0,
+                "rating_count": 101812
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 1036433549,
+                    "url": "https://images.meesho.com/images/products/1036433549/fjqrz_512.jpg"
+                }
+            ],
+            "activated": "2026-08-01 13:33:05",
+            "activated_iso": "2026-08-01T13:33:05+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹410 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 53
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/h52d8t?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 5.3"
+            ],
+            "hero_product_name": "GeneCore 10W Portable Wireless Bluetooth Speaker | RGB Lights | TWS Stereo Pairing | Type-C Charging | USB, TF Card & FM Radio | Deep Bass | Metal Grille | Portable Speaker for Mobile, Laptop & Tablet",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "10.00% Commission",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/1036433549/fjqrz_512.jpg"
+            ],
+            "product_id": "h52d8t",
+            "slug": "genecore-10w-portable-wireless-bluetooth-speaker-rgb-lights-tws-stereo-pairing-type-c-charging-usb-tf-card-fm-radio-deep-bass-metal-grille-portable-speaker-for-mobile-laptop-tablet",
+            "original_slug": "genecore-10w-portable-wireless-bluetooth-speaker-rgb-lights-tws-stereo-pairing-type-c-charging-usb-tf-card-fm-radio-deep-bass-metal-grille-portable-speaker-for-mobile-laptop-tablet",
+            "isAdProduct": false,
+            "original_product_id": 1036433549,
+            "catalogId": 542311196
+        },
+        {
+            "doMarker": false,
+            "id": 141698817,
+            "hero_pid": 461021810,
+            "name": "Trendy Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 226,
+            "min_product_price": 226,
+            "description": " Smart Speakers",
+            "full_details": "Dolby technology: Dolby Atmos\nLanguage: English\nWarranty Period: No Warranty\nWarranty Type: Not Applicable\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:*Trendy Bluetooth Speakers*\nAux: No\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Multi\nCompatibility: All Mobile Devices\nConfiguration: 5.1\nControl Button: Yes\nFrequency: 20 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: No\nMicro SD: Yes\nModel Name: Mini speaker\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nService Type: Replacement\nType: Wireless\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/141698817/cover/1/2/b55ccb0d2ccf0e77e62da45f8e25ec7e0f1876e983c83af6dac7255b615eddc53deb32154a163211f5a75c8dab34bb08753dc66872fc8dfcba5beb27d895604b_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/141698817/collages/1/1/b55ccb0d2ccf0e77e62da45f8e25ec7e0f1876e983c83af6dac7255b615eddc53deb32154a163211f5a75c8dab34bb08753dc66872fc8dfcba5beb27d895604b.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2024-11-27 23:26:23",
+            "created_iso": "2024-11-27T23:26:23+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "rating_count_map": {
+                    "1": 3787,
+                    "2": 1732,
+                    "3": 2699,
+                    "4": 3778,
+                    "5": 13974
+                },
+                "average_rating": 3.8,
+                "absolute_average_rating": 4,
+                "average_rating_str": "3.8",
+                "rating_scale": 5,
+                "review_count": 9757,
+                "rating_count": 25970
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 461021810,
+                    "url": "https://images.meesho.com/images/products/461021810/wykhk_512.jpg"
+                }
+            ],
+            "activated": "2024-11-29 12:23:11",
+            "activated_iso": "2024-11-29T12:23:11+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹191 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 35
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/7mhape?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 5.1"
+            ],
+            "hero_product_name": "Mini M-4 Bluetooth Speaker, Best Bluetooth Speaker, Mini Bluetooth Speaker, Base Bluetooth Speaker",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/461021810/wykhk_512.jpg"
+            ],
+            "product_id": "7mhape",
+            "slug": "mini-m-4-bluetooth-speaker-best-bluetooth-speaker-mini-bluetooth-speaker-base-bluetooth-speaker",
+            "original_slug": "mini-m-4-bluetooth-speaker-best-bluetooth-speaker-mini-bluetooth-speaker-base-bluetooth-speaker",
+            "isAdProduct": false,
+            "original_product_id": 461021810,
+            "catalogId": 141698817
+        },
+        {
+            "doMarker": false,
+            "id": 100633418,
+            "hero_pid": 346901680,
+            "name": " Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 382,
+            "min_product_price": 382,
+            "description": " Bluetooth Speakers",
+            "full_details": "Material: ABS Plastic\nType: Wireless\nCompatibility: All Mobile Devices\nNet Quantity (N): 1\nColor: Black\nBluetooth Version: 4.2\nWarranty Period: 1 Month\nWarranty Type: Carry In\nBluetooth Range: 10 Mtr\nCharging Type: Micro USB\nAux: Yes\nJack Size: Yes\nMicro SD: Yes\nControl Button: Yes\nMic: No\nService Type: Replacement\nSizes: \nFree Size\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: Yes\nBluetooth Range: 10 Mtr\nBluetooth Version: 4.2\nBrand: ANANDANI\nCharging Type: Micro USB\nColor: Brown\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nFrequency: 20 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: No\nMicro SD: Yes\nModel Name: Wooden Speaker\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: PA Speaker\nService Type: Replacement\nType: Wireless\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/100633418/cover/1/2/1f53df1126124936af1c3b2d03c56675ef4474e1cca084ccb10c9e6ef3dd1ded7d210b4b60024bd22a97b1621755edf588f9af413e572a29e6f38d1d939a5216_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/100633418/collages/1/1/1f53df1126124936af1c3b2d03c56675ef4474e1cca084ccb10c9e6ef3dd1ded7d210b4b60024bd22a97b1621755edf588f9af413e572a29e6f38d1d939a5216.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2023-10-06 18:13:14",
+            "created_iso": "2023-10-06T18:13:14+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "rating_count_map": {
+                    "1": 7008,
+                    "2": 2988,
+                    "3": 4092,
+                    "4": 6374,
+                    "5": 28937
+                },
+                "average_rating": 3.9,
+                "absolute_average_rating": 4,
+                "average_rating_str": "3.9",
+                "rating_scale": 5,
+                "review_count": 17234,
+                "rating_count": 49399
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 346901680,
+                    "url": "https://images.meesho.com/images/products/346901680/b5tnv_512.jpg"
+                }
+            ],
+            "activated": "2023-10-09 06:21:19",
+            "activated_iso": "2023-10-09T06:21:19+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹334 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 48
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/5qjb1s?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 4.2"
+            ],
+            "hero_product_name": "Ad Wooden Bluetooth Speaker With Dolby Sound Effect Speaker",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/346901680/b5tnv_512.jpg"
+            ],
+            "product_id": "5qjb1s",
+            "slug": "ad-wooden-bluetooth-speaker-with-dolby-sound-effect-speaker",
+            "original_slug": "ad-wooden-bluetooth-speaker-with-dolby-sound-effect-speaker",
+            "isAdProduct": false,
+            "original_product_id": 346901680,
+            "catalogId": 100633418
+        },
+        {
+            "doMarker": false,
+            "id": 119877001,
+            "hero_pid": 407818602,
+            "name": "Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 275,
+            "min_product_price": 275,
+            "description": "Bluetooth Speakers",
+            "full_details": "Charging Type: Micro USB\nColor: Assorted\nCompatibility: All Mobile Devices\nMaterial: ABS Plastic\nModel Name: MZ\nNet Quantity (N): 1\nProduct Type: Mobile/Tablet Speaker\nType: Over The Ear\nWarranty Period: 1 Month\nWarranty Type: Carry In\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: No\nBluetooth Range: 15 Mtr\nCharging Type: Micro USB\nColor: Assorted\nCompatibility: All Mobile Devices\nConfiguration: Mono\nControl Button: Yes\nMaterial: ABS Plastic\nMic: No\nModel Name: MZ\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nType: Wireless\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 2 Days\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/119877001/cover/1/2/98f04e44998f38d1a3b1a0e78f4b54ad401b11493170a2ee60cf526132122d73079f5634c222f4bfbb680cf6f397f00f8133f934c71f7dceb7f0ce01a087343a_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/119877001/collages/1/1/98f04e44998f38d1a3b1a0e78f4b54ad401b11493170a2ee60cf526132122d73079f5634c222f4bfbb680cf6f397f00f8133f934c71f7dceb7f0ce01a087343a.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2024-04-25 17:37:09",
+            "created_iso": "2024-04-25T17:37:09+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "rating_count_map": {
+                    "1": 1070,
+                    "2": 433,
+                    "3": 774,
+                    "4": 1571,
+                    "5": 6313
+                },
+                "average_rating": 4,
+                "absolute_average_rating": 5,
+                "average_rating_str": "4.0",
+                "rating_scale": 5,
+                "review_count": 4007,
+                "rating_count": 10161
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 407818602,
+                    "url": "https://images.meesho.com/images/products/407818602/oo1oa_512.jpg"
+                }
+            ],
+            "activated": "2024-05-19 20:25:47",
+            "activated_iso": "2024-05-19T20:25:47+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹240 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 35
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/6qsyui?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 15 Mtr"
+            ],
+            "hero_product_name": "Bluetooth speaker",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "HR",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/407818602/oo1oa_512.jpg"
+            ],
+            "product_id": "6qsyui",
+            "slug": "bluetooth-speaker",
+            "original_slug": "bluetooth-speaker",
+            "isAdProduct": false,
+            "original_product_id": 407818602,
+            "catalogId": 119877001
+        },
+        {
+            "doMarker": false,
+            "id": 541802703,
+            "hero_pid": 1035632034,
+            "name": " TECH BIRD Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 433,
+            "min_product_price": 433,
+            "max_product_discount": 10,
+            "total_discount_in_rs": 48,
+            "discount_text": "₹48 off",
+            "original_price": 481,
+            "description": " TECH BIRD Bluetooth Speakers",
+            "full_details": "Aux: Yes\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nBrand: TECH BIRD\nCharging Type: Type C\nColor: Black\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nFrequency: 100 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: kc38vp\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: TWS\nType Of Water Resistance: IP64\nWarranty Period: 6 Months\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* TECH BIRD Bluetooth Speakers*\nAux: Yes\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nBrand: TECH BIRD\nCharging Type: Type C\nColor: Black\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nFrequency: 100 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: kc38vp\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: TWS\nType Of Water Resistance: IP64\nWarranty Period: 6 Months\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2 Days\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/541802703/cover/1/2/04665a4d6af2f2242e59a70d8ab08d6376349b11f476568492dd689a8349cf5519100df628ec5ebfc0b000276712d5e899805c583d0dacfb2384af55b72774c7_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/541802703/collages/1/1/04665a4d6af2f2242e59a70d8ab08d6376349b11f476568492dd689a8349cf5519100df628ec5ebfc0b000276712d5e899805c583d0dacfb2384af55b72774c7.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-07-31 19:03:22",
+            "created_iso": "2026-07-31T19:03:22+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "supplier_reviews_summary": {
+                "average_rating": 4.2,
+                "absolute_average_rating": 0,
+                "average_rating_str": "4.2",
+                "rating_scale": 5,
+                "review_count": 0,
+                "rating_count": 55895
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 1035632034,
+                    "url": "https://images.meesho.com/images/products/1035632034/svenb_512.jpg"
+                }
+            ],
+            "activated": "2026-07-31 19:03:41",
+            "activated_iso": "2026-07-31T19:03:41+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹375 with 2 Special Offers",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 53
+                    },
+                    {
+                        "type": "return_options",
+                        "amount": 5
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/h4l6si?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 5.1"
+            ],
+            "hero_product_name": "Speaker box, small tower bluetooth speaker box small 4-8 hour play time, type-c charging,aux, usb port, tf card, fm radio, wireless1200mah battery ",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "13.50% Commission",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": true
+            },
+            "images": [
+                "https://images.meesho.com/images/products/1035632034/svenb_512.jpg"
+            ],
+            "product_id": "h4l6si",
+            "slug": "speaker-box-small-tower-bluetooth-speaker-box-small-4-8-hour-play-time-type-c-chargingaux-usb-port-tf-card-fm-radio-wireless1200mah-battery",
+            "original_slug": "speaker-box-small-tower-bluetooth-speaker-box-small-4-8-hour-play-time-type-c-chargingaux-usb-port-tf-card-fm-radio-wireless1200mah-battery",
+            "isAdProduct": false,
+            "original_product_id": 1035632034,
+            "catalogId": 541802703
+        },
+        {
+            "doMarker": false,
+            "id": 507520912,
+            "hero_pid": 976179068,
+            "name": "Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 378,
+            "min_product_price": 378,
+            "description": "Bluetooth Speakers",
+            "full_details": "Aux: Yes\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Red\nCompatibility: All Mobile Devices\nConfiguration: 5.1\nControl Button: Yes\nFrequency: 30 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: T-113\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: Wireless\nType Of Water Resistance: IPX6\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: Yes\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Red\nCompatibility: All Mobile Devices\nConfiguration: Mono\nControl Button: Yes\nFrequency: 30 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: T-113\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: Wireless\nType Of Water Resistance: IPX6\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/507520912/cover/1/2/1c417676a35bdf77defdad5d107a45b6fdde68b60295732225c1b414279603e576b32b294025db23058aba4ab99b4a81852c61909391420f4c658c63208e2e67_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/507520912/collages/1/1/1c417676a35bdf77defdad5d107a45b6fdde68b60295732225c1b414279603e576b32b294025db23058aba4ab99b4a81852c61909391420f4c658c63208e2e67.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-06-18 03:44:21",
+            "created_iso": "2026-06-18T03:44:21+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "rating_count_map": {
+                    "1": 49,
+                    "2": 13,
+                    "3": 32,
+                    "4": 54,
+                    "5": 175
+                },
+                "average_rating": 3.9,
+                "absolute_average_rating": 4,
+                "average_rating_str": "3.9",
+                "rating_scale": 5,
+                "review_count": 111,
+                "rating_count": 323
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 976179068,
+                    "url": "https://images.meesho.com/images/products/976179068/uvdaj_512.jpg"
+                }
+            ],
+            "activated": "2026-06-18 03:44:38",
+            "activated_iso": "2026-06-18T03:44:38+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹313 with 2 Special Offers",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 46
+                    },
+                    {
+                        "type": "return_options",
+                        "amount": 19
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/g56wl8?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 5.1"
+            ],
+            "hero_product_name": "T-g113 Pro Type-c Charging Portable wireless Mini Small Bluetooth Travel speaker with clear stereo audio sound & balanced bass 9",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/976179068/uvdaj_512.jpg"
+            ],
+            "product_id": "g56wl8",
+            "slug": "t-g113-pro-type-c-charging-portable-wireless-mini-small-bluetooth-travel-speaker-with-clear-stereo-audio-sound-balanced-bass-9",
+            "original_slug": "t-g113-pro-type-c-charging-portable-wireless-mini-small-bluetooth-travel-speaker-with-clear-stereo-audio-sound-balanced-bass-9",
+            "isAdProduct": false,
+            "original_product_id": 976179068,
+            "catalogId": 507520912
+        },
+        {
+            "doMarker": false,
+            "id": 451917725,
+            "hero_pid": 888600470,
+            "name": " Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 431,
+            "min_product_price": 431,
+            "description": " Bluetooth Speakers",
+            "full_details": "Aux: No\nBluetooth Range: 10 Mtr\nCharging Type: Type C\nColor: Multi\nCompatibility: All Mobile Devices\nControl Button: Yes\nMaterial: Plastic\nMic: No\nModel Name: M209\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: No\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nCharging Type: Type C\nColor: Multi\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nMaterial: Plastic\nMic: No\nModel Name: M209\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 2 Days\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/451917725/cover/1/2/8557d32ae962cfcc69bd8064db15c9df4d1e1b8286fd4e52eb263332ba4cd833bf600dbb2ead44915bc0187dbefec008f8caef7dd9275b39ecfba205a6e87bcd_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/451917725/collages/1/1/8557d32ae962cfcc69bd8064db15c9df4d1e1b8286fd4e52eb263332ba4cd833bf600dbb2ead44915bc0187dbefec008f8caef7dd9275b39ecfba205a6e87bcd.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-04-02 12:43:00",
+            "created_iso": "2026-04-02T12:43:00+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "average_rating": 4.3,
+                "absolute_average_rating": 0,
+                "average_rating_str": "4.3",
+                "rating_scale": 5,
+                "review_count": 0,
+                "rating_count": 406
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 888600470,
+                    "url": "https://images.meesho.com/images/products/888600470/nwqyp_512.jpg"
+                }
+            ],
+            "activated": "2026-04-04 11:57:39",
+            "activated_iso": "2026-04-04T11:57:39+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹383 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 48
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/ep1sie?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr"
+            ],
+            "hero_product_name": "Mz M209 (PortableBluetooth Speaker) DynamicThunder Sound with High Bass, Power with 1200mAh Battery",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "HR",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/888600470/nwqyp_512.jpg"
+            ],
+            "product_id": "ep1sie",
+            "slug": "mz-m209-portablebluetooth-speaker-dynamicthunder-sound-with-high-bass-power-with-1200mah-battery",
+            "original_slug": "mz-m209-portablebluetooth-speaker-dynamicthunder-sound-with-high-bass-power-with-1200mah-battery",
+            "isAdProduct": false,
+            "original_product_id": 888600470,
+            "catalogId": 451917725
+        },
+        {
+            "doMarker": false,
+            "id": 541979537,
+            "hero_pid": 1035915609,
+            "name": "Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 258,
+            "min_product_price": 258,
+            "description": "Bluetooth Speakers",
+            "full_details": "Aux: No\nBluetooth Range: 10 Mtr\nCharging Type: Type C\nColor: Multi\nCompatibility: All Mobile Devices\nControl Button: Yes\nMic: No\nModel Name: M4\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Laptop/Desktop Speaker\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: No\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nCharging Type: Type C\nColor: Multi\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nMic: No\nModel Name: M4\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Laptop/Desktop Speaker\nType: Wireless\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 2 Days\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/541979537/cover/1/2/509f0bf8a6918ff16f2891c31bd70693e69d1a1da97b9c0d2bcca22ab36a17ee4c71bf52e7d78b925b4e715099c28eb072d7b97fb5a9757727a5beec163ccaaa_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/541979537/collages/1/1/509f0bf8a6918ff16f2891c31bd70693e69d1a1da97b9c0d2bcca22ab36a17ee4c71bf52e7d78b925b4e715099c28eb072d7b97fb5a9757727a5beec163ccaaa.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-08-01 09:23:51",
+            "created_iso": "2026-08-01T09:23:51+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "supplier_reviews_summary": {
+                "average_rating": 3.5,
+                "absolute_average_rating": 0,
+                "average_rating_str": "3.5",
+                "rating_scale": 5,
+                "review_count": 0,
+                "rating_count": 62
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 1035915609,
+                    "url": "https://images.meesho.com/images/products/1035915609/rk96e_512.jpg"
+                }
+            ],
+            "activated": "2026-08-01 09:24:38",
+            "activated_iso": "2026-08-01T09:24:38+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹218 with 2 Special Offers",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 35
+                    },
+                    {
+                        "type": "return_options",
+                        "amount": 5
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/h4r9ll?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr"
+            ],
+            "hero_product_name": "Mini Bluetooth Speaker | Portable Wireless Speaker | Bluetooth 5.1 Speaker | Small Speaker for Mobile | Rechargeable Speaker | Bass Music Speaker | Mini Speaker",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "MP",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/1035915609/rk96e_512.jpg"
+            ],
+            "product_id": "h4r9ll",
+            "slug": "mini-bluetooth-speaker-portable-wireless-speaker-bluetooth-51-speaker-small-speaker-for-mobile-rechargeable-speaker-bass-music-speaker-mini-speaker",
+            "original_slug": "mini-bluetooth-speaker-portable-wireless-speaker-bluetooth-51-speaker-small-speaker-for-mobile-rechargeable-speaker-bass-music-speaker-mini-speaker",
+            "isAdProduct": false,
+            "original_product_id": 1035915609,
+            "catalogId": 541979537
+        },
+        {
+            "doMarker": false,
+            "id": 541653851,
+            "hero_pid": 1035357981,
+            "name": " Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 593,
+            "min_product_price": 593,
+            "description": " Bluetooth Speakers",
+            "full_details": "Aux: No\nBluetooth Range: 10 Mtr\nBluetooth Version: 4.3\nCharging Type: Micro USB\nColor: Multi\nCompatibility: All Mobile Devices\nControl Button: Yes\nJack Size: No\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: No\nModel Name: 0\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Home Theater\nWarranty Period: 2 Months\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 1-1 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: No\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 4.3\nCharging Type: Micro USB\nColor: Multi\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nJack Size: No\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: No\nModel Name: 0\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: PA Speaker\nWarranty Period: 2 Months\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/541653851/cover/1/2/f52d2b2edaee9805f87568daed39bdd3cb254f5d6ec21c81fb213cd1687d69da205b0bd4dd69b61d47eba29c402e9f4547a76ac371321af1ade4f2fe93c43331_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/541653851/collages/1/1/f52d2b2edaee9805f87568daed39bdd3cb254f5d6ec21c81fb213cd1687d69da205b0bd4dd69b61d47eba29c402e9f4547a76ac371321af1ade4f2fe93c43331.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-07-31 16:47:25",
+            "created_iso": "2026-07-31T16:47:25+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "supplier_reviews_summary": {
+                "average_rating": 3.6,
+                "absolute_average_rating": 0,
+                "average_rating_str": "3.6",
+                "rating_scale": 5,
+                "review_count": 0,
+                "rating_count": 20
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 1035357981,
+                    "url": "https://images.meesho.com/images/products/1035357981/pxycb_512.jpg"
+                }
+            ],
+            "activated": "2026-07-31 16:48:03",
+            "activated_iso": "2026-07-31T16:48:03+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹530 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 63
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/h4fbbx?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 4.3"
+            ],
+            "hero_product_name": "Sampark Wooden Bluetooth Speaker",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "MP",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/1035357981/pxycb_512.jpg"
+            ],
+            "product_id": "h4fbbx",
+            "slug": "sampark-wooden-bluetooth-speaker",
+            "original_slug": "sampark-wooden-bluetooth-speaker",
+            "isAdProduct": false,
+            "original_product_id": 1035357981,
+            "catalogId": 541653851
+        },
+        {
+            "doMarker": false,
+            "id": 527810452,
+            "hero_pid": 1012636552,
+            "name": "Classy Karaoke Systems",
+            "category_id": 3874,
+            "sub_sub_category_name": "Karaoke Systems",
+            "min_catalog_price": 458,
+            "min_product_price": 458,
+            "description": "Classy Karaoke Systems",
+            "full_details": "Net Quantity (N): 1\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:*Classy Karaoke Systems*\nNet Quantity (N): 1\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/527810452/cover/1/2/31f31e57bc5134759c70a3ca59450cc1031b8d9c1d3ee24f1bda1d2f86341f07696ccbc3cdef09b54b726f23691088e2d2e5ed44a21ad09c5fce7b307f600c68_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/527810452/collages/1/1/31f31e57bc5134759c70a3ca59450cc1031b8d9c1d3ee24f1bda1d2f86341f07696ccbc3cdef09b54b726f23691088e2d2e5ed44a21ad09c5fce7b307f600c68.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-07-16 15:04:18",
+            "created_iso": "2026-07-16T15:04:18+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "average_rating": 4.2,
+                "absolute_average_rating": 0,
+                "average_rating_str": "4.2",
+                "rating_scale": 5,
+                "review_count": 0,
+                "rating_count": 65
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 1012636552,
+                    "url": "https://images.meesho.com/images/products/1012636552/p7wm1_512.jpg"
+                }
+            ],
+            "activated": "2026-07-16 15:05:10",
+            "activated_iso": "2026-07-16T15:05:10+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹375 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 83
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/gqwbd4?utm_source=s",
+            "hero_product_name": "X4CART Portable Bluetooth Speaker 10W with Wireless Karaoke Mic, Bluetooth 5.1, 8H Playtime, 5 Voice Change Effects, RGB LED Lights, TF Card Support, Type-C Charging - Cream Color",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "MP",
+            "affiliate_commission_text": "10.00% Commission",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/1012636552/p7wm1_512.jpg"
+            ],
+            "product_id": "gqwbd4",
+            "slug": "x4cart-portable-bluetooth-speaker-10w-with-wireless-karaoke-mic-bluetooth-51-8h-playtime-5-voice-change-effects-rgb-led-lights-tf-card-support-type-c-charging-cream-color",
+            "original_slug": "x4cart-portable-bluetooth-speaker-10w-with-wireless-karaoke-mic-bluetooth-51-8h-playtime-5-voice-change-effects-rgb-led-lights-tf-card-support-type-c-charging-cream-color",
+            "isAdProduct": false,
+            "product_attributes": [],
+            "original_product_id": 1012636552,
+            "catalogId": 527810452
+        },
+        {
+            "doMarker": false,
+            "id": 535592694,
+            "hero_pid": 1025193411,
+            "name": "Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 230,
+            "min_product_price": 230,
+            "description": " Smart Speakers",
+            "full_details": "Warranty Period: No Warranty\nWarranty Type: Carry In\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:*Bluetooth Speakers*\nWarranty Type: Carry In\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/535592694/cover/1/2/9d3267ca62f1b7afb181b9b8c65665ab0214df68ace39018bdbe328b5336dcacb0f9087c26aad5e409a8328c6ecf494bfd213d0c604c8112bfca3c39dd12a277_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/535592694/collages/1/1/9d3267ca62f1b7afb181b9b8c65665ab0214df68ace39018bdbe328b5336dcacb0f9087c26aad5e409a8328c6ecf494bfd213d0c604c8112bfca3c39dd12a277.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-07-24 19:26:13",
+            "created_iso": "2026-07-24T19:26:13+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "rating_count_map": {
+                    "1": 3,
+                    "2": 1,
+                    "3": 1,
+                    "4": 1,
+                    "5": 7
+                },
+                "average_rating": 3.6,
+                "absolute_average_rating": 4,
+                "average_rating_str": "3.6",
+                "rating_scale": 5,
+                "review_count": 2,
+                "rating_count": 13
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 1025193411,
+                    "url": "https://images.meesho.com/images/products/1025193411/eu8lj_512.jpg"
+                }
+            ],
+            "activated": "2026-07-24 19:27:09",
+            "activated_iso": "2026-07-24T19:27:09+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹194 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 36
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/gydgar?utm_source=s",
+            "hero_product_name": "Mini  (M-4) Bluetooth Speaker Best Sound Quality",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/1025193411/eu8lj_512.jpg"
+            ],
+            "product_id": "gydgar",
+            "slug": "mini-m-4-bluetooth-speaker-best-sound-quality",
+            "original_slug": "mini-m-4-bluetooth-speaker-best-sound-quality",
+            "isAdProduct": false,
+            "product_attributes": [],
+            "original_product_id": 1025193411,
+            "catalogId": 535592694
+        },
+        {
+            "doMarker": false,
+            "id": 236717066,
+            "hero_pid": 621887038,
+            "name": " Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 284,
+            "min_product_price": 284,
+            "description": " Bluetooth Speakers",
+            "full_details": "Aux: Yes\nBluetooth Range: 10 Mtr\nCharging Type: IOS\nColor: Black\nCompatibility: All Mobile Devices\nControl Button: Yes\nMic: Yes\nModel Name: Box\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Home Theater\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: Yes\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nCharging Type: IOS\nColor: Black\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nMic: Yes\nModel Name: Box\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2 Days\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/236717066/cover/1/2/1cd651075566d44891b3d43fdb4b9826a123efa3df51a6afb247868ab015fedb472538527a9adcd59943f7aa0e4e7b871f40bf730fd7b9b4c3b658eed4fa20f7_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/236717066/collages/1/1/1cd651075566d44891b3d43fdb4b9826a123efa3df51a6afb247868ab015fedb472538527a9adcd59943f7aa0e4e7b871f40bf730fd7b9b4c3b658eed4fa20f7.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2025-11-01 02:36:25",
+            "created_iso": "2025-11-01T02:36:25+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "supplier_reviews_summary": {
+                "average_rating": 4.4,
+                "absolute_average_rating": 0,
+                "average_rating_str": "4.4",
+                "rating_scale": 5,
+                "review_count": 0,
+                "rating_count": 49
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 621887038,
+                    "url": "https://images.meesho.com/images/products/621887038/qf5d7_512.jpg"
+                }
+            ],
+            "activated": "2025-11-03 11:39:05",
+            "activated_iso": "2025-11-03T11:39:05+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹239 with 2 Special Offers",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 35
+                    },
+                    {
+                        "type": "return_options",
+                        "amount": 10
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/aa973y?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr"
+            ],
+            "hero_product_name": "speaker",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "WB",
+            "affiliate_commission_text": "6.00% Commission",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/621887038/qf5d7_512.jpg"
+            ],
+            "product_id": "aa973y",
+            "slug": "speaker",
+            "original_slug": "speaker",
+            "isAdProduct": false,
+            "original_product_id": 621887038,
+            "catalogId": 236717066
+        },
+        {
+            "doMarker": false,
+            "id": 92934490,
+            "hero_pid": 319249227,
+            "name": " Smart Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 382,
+            "min_product_price": 382,
+            "description": " Smart Speakers",
+            "full_details": "Dolby technology: Dolby Atmos\nLanguage: English\nWarranty Period: 1 Month\nWarranty Type: Carry In\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Smart Speakers*\nAux: Yes\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nBrand: ANANDANI\nCharging Type: Micro USB\nColor: Brown\nCompatibility: All Mobile Devices\nConfiguration: 5.1\nControl Button: Yes\nFrequency: 20 Hz\nJack Size: Yes\nMaterial: Plastic\nMic: No\nMicro SD: Yes\nModel Name: Wooden Speaker\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Replacement\nType: Wireless\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/92934490/cover/1/2/54e1480ebc178b887d7c84d0518cc96dd04722d7e9746d3fc56f3df4e614e28e74762fb194b77498ec3242251bca8213c528054715c9567b213d8f9c3fc717d4_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/92934490/collages/1/1/54e1480ebc178b887d7c84d0518cc96dd04722d7e9746d3fc56f3df4e614e28e74762fb194b77498ec3242251bca8213c528054715c9567b213d8f9c3fc717d4.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2023-08-04 15:36:25",
+            "created_iso": "2023-08-04T15:36:25+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "rating_count_map": {
+                    "1": 266,
+                    "2": 136,
+                    "3": 184,
+                    "4": 264,
+                    "5": 1038
+                },
+                "average_rating": 4,
+                "absolute_average_rating": 5,
+                "average_rating_str": "4.0",
+                "rating_scale": 5,
+                "review_count": 523,
+                "rating_count": 1888
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 319249227,
+                    "url": "https://images.meesho.com/images/products/319249227/fsvzt_512.jpg"
+                }
+            ],
+            "activated": "2026-05-20 13:43:34",
+            "activated_iso": "2026-05-20T13:43:34+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹334 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 48
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/5a2ma3?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 5.1"
+            ],
+            "hero_product_name": "Wooden Wireless Bluetooth Portable Speaker 10W Bluetooth Speaker With High Quality Speaker",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "10.00% Commission",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/319249227/fsvzt_512.jpg"
+            ],
+            "product_id": "5a2ma3",
+            "slug": "wooden-wireless-bluetooth-portable-speaker-10w-bluetooth-speaker-with-high-quality-speaker",
+            "original_slug": "wooden-wireless-bluetooth-portable-speaker-10w-bluetooth-speaker-with-high-quality-speaker",
+            "isAdProduct": false,
+            "original_product_id": 319249227,
+            "catalogId": 92934490
+        },
+        {
+            "doMarker": false,
+            "id": 414983303,
+            "hero_pid": 845391141,
+            "name": " Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 288,
+            "min_product_price": 288,
+            "max_product_discount": 3,
+            "total_discount_in_rs": 10,
+            "discount_text": "₹10 off",
+            "original_price": 298,
+            "description": " Bluetooth Speakers",
+            "full_details": "Aux: No\nBIS/ISI Certification Number: 81020036\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Assorted\nCompatibility: All Mobile Devices\nConfiguration: 5.1\nControl Button: Yes\nFrequency: 70 Hz\nJack Size: No\nMaterial: ABS Plastic\nMic: No\nMicro SD: Yes\nModel Name: Tune pro-412a\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: Wireless\nType Of Water Resistance: IPX4\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: No\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Multi\nCompatibility: All Mobile Devices\nConfiguration: Mono\nControl Button: Yes\nFrequency: 70 Hz\nJack Size: No\nMaterial: ABS Plastic\nMic: No\nMicro SD: Yes\nModel Name: Tune pro-412a\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: Wireless\nType Of Water Resistance: IPX4\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/414983303/cover/1/2/eed94929ac9e2c5da39b3e72b36fb0b72f8161afe4734561fa0772bf7cddb3b7238141f5a9eebf16d46522ad32788dd0f77fcf9d31293bd9fa4871c7845b55bf_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/414983303/collages/1/1/eed94929ac9e2c5da39b3e72b36fb0b72f8161afe4734561fa0772bf7cddb3b7238141f5a9eebf16d46522ad32788dd0f77fcf9d31293bd9fa4871c7845b55bf.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-03-18 20:40:02",
+            "created_iso": "2026-03-18T20:40:02+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "catalog_reviews_summary": {
+                "average_rating": 4,
+                "absolute_average_rating": 0,
+                "average_rating_str": "4.0",
+                "rating_scale": 5,
+                "review_count": 0,
+                "rating_count": 847
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 845391141,
+                    "url": "https://images.meesho.com/images/products/845391141/zxty4_512.jpg"
+                }
+            ],
+            "activated": "2026-03-19 21:18:43",
+            "activated_iso": "2026-03-19T21:18:43+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹230 with 2 Special Offers",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 39
+                    },
+                    {
+                        "type": "return_options",
+                        "amount": 19
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/dzbnz9?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 5.1"
+            ],
+            "hero_product_name": "Type c charging , 8watt Tune pro-412 ,Led lighting with Mobile holder stand,wireless Portable Travel Mini pocket dynamite small Bluetooth speaker with balanced stereo audio sound ",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": true
+            },
+            "images": [
+                "https://images.meesho.com/images/products/845391141/zxty4_512.jpg"
+            ],
+            "product_id": "dzbnz9",
+            "slug": "type-c-charging-8watt-tune-pro-412-led-lighting-with-mobile-holder-standwireless-portable-travel-mini-pocket-dynamite-small-bluetooth-speaker-with-balanced-stereo-audio-sound",
+            "original_slug": "type-c-charging-8watt-tune-pro-412-led-lighting-with-mobile-holder-standwireless-portable-travel-mini-pocket-dynamite-small-bluetooth-speaker-with-balanced-stereo-audio-sound",
+            "isAdProduct": false,
+            "original_product_id": 845391141,
+            "catalogId": 414983303
+        },
+        {
+            "doMarker": false,
+            "id": 539228047,
+            "hero_pid": 1030989501,
+            "name": " Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 623,
+            "min_product_price": 623,
+            "description": " Bluetooth Speakers",
+            "full_details": "Aux: No\nBluetooth Range: 10 Mtr\nBluetooth Version: 4.3\nCharging Type: Micro USB\nColor: Multi\nCompatibility: All Mobile Devices\nControl Button: Yes\nJack Size: No\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: No\nModel Name: 0\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Home Theater\nWarranty Period: 2 Months\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 1-1 Days",
+            "share_text": "Catalog Name:* Bluetooth Speakers*\nAux: No\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 4.3\nCharging Type: Micro USB\nColor: Multi\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nJack Size: No\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: No\nModel Name: 0\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: PA Speaker\nWarranty Period: 2 Months\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 1 Day\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/539228047/cover/1/2/9dc89d86f0799ac3cbd439915fe035dd3467cfc33b51a6ae05357ad62274154c8475c6f7eea81db161d69bbbdca62d2241f6d83a4534f6d81542927315dd34b5_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/539228047/collages/1/1/9dc89d86f0799ac3cbd439915fe035dd3467cfc33b51a6ae05357ad62274154c8475c6f7eea81db161d69bbbdca62d2241f6d83a4534f6d81542927315dd34b5.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-07-28 22:24:56",
+            "created_iso": "2026-07-28T22:24:56+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "supplier_reviews_summary": {
+                "average_rating": 3.6,
+                "absolute_average_rating": 0,
+                "average_rating_str": "3.6",
+                "rating_scale": 5,
+                "review_count": 0,
+                "rating_count": 20
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [
+                {
+                    "name": "NEXT DAY DISPATCH"
+                }
+            ],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "value_prop_tag": {
+                "name": "NEXT DAY DISPATCH"
+            },
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 1030989501,
+                    "url": "https://images.meesho.com/images/products/1030989501/8g14p_512.jpg"
+                }
+            ],
+            "activated": "2026-07-28 22:25:42",
+            "activated_iso": "2026-07-28T22:25:42+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹545 with 1 Special Offer",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 78
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/h1tol9?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 4.3"
+            ],
+            "hero_product_name": "Portable Wooden Bluetooth Speaker with a Built-in Emergency LED Light.",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "MP",
+            "affiliate_commission_text": "",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": false
+            },
+            "images": [
+                "https://images.meesho.com/images/products/1030989501/8g14p_512.jpg"
+            ],
+            "product_id": "h1tol9",
+            "slug": "portable-wooden-bluetooth-speaker-with-a-built-in-emergency-led-light",
+            "original_slug": "portable-wooden-bluetooth-speaker-with-a-built-in-emergency-led-light",
+            "isAdProduct": false,
+            "original_product_id": 1030989501,
+            "catalogId": 539228047
+        },
+        {
+            "doMarker": false,
+            "id": 541922303,
+            "hero_pid": 1035834799,
+            "name": "TECH BIRD Bluetooth Speakers",
+            "category_id": 4979,
+            "sub_sub_category_name": "Bluetooth Speakers",
+            "min_catalog_price": 278,
+            "min_product_price": 278,
+            "max_product_discount": 10,
+            "total_discount_in_rs": 30,
+            "discount_text": "₹30 off",
+            "original_price": 308,
+            "description": "TECH BIRD Bluetooth Speakers",
+            "full_details": "Aux: Yes\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nBrand: TECH BIRD\nCharging Type: Type C\nColor: Assorted\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nFrequency: 100 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: KC_29VP\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: TWS\nType Of Water Resistance: IP64\nWarranty Period: 6 Months\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2-2 Days",
+            "share_text": "Catalog Name:* TECH BIRD Bluetooth Speakers*\nAux: Yes\nBIS/ISI Certification Number: 0\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nBrand: TECH BIRD\nCharging Type: Type C\nColor: Black\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nFrequency: 100 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: KC_29VP\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: Wireless\nType Of Water Resistance: IP64\nWarranty Period: 6 Months\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2 Days\n\n*Proof of Safe Delivery! Click to know on Safety Standards of Delivery Partners- https://ltl.sh/y_nZrAV3",
+            "hot": false,
+            "type": "catalog",
+            "pre_booking": false,
+            "priority": 0,
+            "num_suppliers": 0,
+            "num_designs": 1,
+            "image": "https://images.meesho.com/images/catalogs/541922303/cover/1/2/a64c11049c132a7913159ffb3e526fb351bfd1a27050b0fd118668a94f16a5fc320bd8048d70beed45e9eb4ed578451f165e04da49363d229960eef708ac88a6_512.jpg",
+            "collage_image": "https://images.meesho.com/images/catalogs/541922303/collages/1/1/a64c11049c132a7913159ffb3e526fb351bfd1a27050b0fd118668a94f16a5fc320bd8048d70beed45e9eb4ed578451f165e04da49363d229960eef708ac88a6.jpg",
+            "image_aspect_ratio": 1.77,
+            "collage_image_aspect_ratio": 1.48,
+            "created": "2026-07-31 23:46:04",
+            "created_iso": "2026-07-31T23:46:04+0530",
+            "valid": true,
+            "trend": "",
+            "popular": false,
+            "has_mrp": true,
+            "is_added_to_wishlist": false,
+            "assured_details": {
+                "is_assured": false,
+                "message": "Best quality products from trusted suppliers."
+            },
+            "mall_verified": false,
+            "story_images": [],
+            "supplier_reviews_summary": {
+                "average_rating": 4.2,
+                "absolute_average_rating": 0,
+                "average_rating_str": "4.2",
+                "rating_scale": 5,
+                "review_count": 0,
+                "rating_count": 55895
+            },
+            "shipping": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "shipping_2": {
+                "charges": 0,
+                "discount": 0,
+                "show_shipping_charges": false,
+                "show_free_delivery": false,
+                "is_express_delivery": false
+            },
+            "tags": [],
+            "app_event_data": {
+                "price_metadata": "",
+                "candidate_metadata": {
+                    "source": "real_time_ds_rank"
+                }
+            },
+            "gray_tags": [],
+            "has_same_price_products": true,
+            "product_images": [
+                {
+                    "id": 1035834799,
+                    "url": "https://images.meesho.com/images/products/1035834799/cw5oe_512.jpg"
+                }
+            ],
+            "activated": "2026-07-31 23:47:05",
+            "activated_iso": "2026-07-31T23:47:05+0530",
+            "num_shares": "0 Shares",
+            "margin": {
+                "enabled": false
+            },
+            "price_type_id": "premium_return_price",
+            "special_offers": {
+                "display_text": "₹237 with 2 Special Offers",
+                "offers": [
+                    {
+                        "type": "cod_unbundling",
+                        "amount": 36
+                    },
+                    {
+                        "type": "return_options",
+                        "amount": 5
+                    }
+                ]
+            },
+            "consumer_share_text": "Hey, check out this product on Meesho! \r\n\r\nGet upto 25% OFF on your first order. Also grab extra 25% on new products every 3 hours!\r\n\nhttps://www.meesho.com/s/p/h4pj8v?utm_source=s",
+            "product_attributes": [
+                "Bluetooth range: 10 Mtr",
+                "Bluetooth: 5.1"
+            ],
+            "hero_product_name": "SMALL MINI PORTABLE SPEAKER FIT IN YOUR POCKET 1200 MAH 4-6 HOUR PLAY TIME FM, TF CARD , USB SLOT, URBAN VIBES PACK OF ONE",
+            "high_asp_enabled": false,
+            "gst_type": "GSTIN",
+            "state_code": "DL",
+            "affiliate_commission_text": "21.50% Commission",
+            "is_reelz_offer": false,
+            "is_do_marker": false,
+            "lc_commission_text": "",
+            "sale_marker": {
+                "enabled": false
+            },
+            "combo_offer": {
+                "enabled": false,
+                "pre_buzz": {
+                    "enabled": false
+                }
+            },
+            "lowest_price_marker": {
+                "enabled": false
+            },
+            "flash_marker": {
+                "enabled": false
+            },
+            "fgo_marker": {
+                "enabled": true
+            },
+            "images": [
+                "https://images.meesho.com/images/products/1035834799/cw5oe_512.jpg"
+            ],
+            "product_id": "h4pj8v",
+            "slug": "small-mini-portable-speaker-fit-in-your-pocket-1200-mah-4-6-hour-play-time-fm-tf-card-usb-slot-urban-vibes-pack-of-one",
+            "original_slug": "small-mini-portable-speaker-fit-in-your-pocket-1200-mah-4-6-hour-play-time-fm-tf-card-usb-slot-urban-vibes-pack-of-one",
+            "isAdProduct": false,
+            "original_product_id": 1035834799,
+            "catalogId": 541922303
+        }
+    ],
+    "widget_groups": [],
+    "header_widget_groups": [],
+    "user_data": {},
+    "subscribed": false,
+    "cursor": "eyJkZF9zZXNzaW9uX2lkIjoiY3R4XzFfdWlkXy0xX3R4dF8tMV90XzE3ODU4OTAwMTE0MzMiLCJmZWVkX3RyYWNraW5nX2lkIjpudWxsLCJjYXRhbG9nX3JhbmtpbmdfZXhwIjoiTk9ORSIsInF3ZXN0X2N1cnNvciI6ImV5SnpkQ0k2TWpVc0ltUmhaMTl1WVcxbElqb2liM0puWVc1cFkxOW9aV0ZrWDNCeVpYQmhhV1JmY21GdWEyVnlYM05qWVd4bGRYQmZkaklpTENKdWIyUmxYMk4xY25OdmNuTWlPbnNpWjJWdVpYSmhiRjlzYjJkblpYSTZPU0k2SW1WNVNuQmliazR3V0ROT01FbHFiM2hPVkVGM1psRTlQU0lzSW13eFgyTmhZMmhsWDJkbGREb3hJam9pWlhsS2RscHRXbnBhV0ZGcFQycFZORTlUZDJsaFIwWjZXREkxYkdWSVVXbFBibEo1WkZkV09TSjlmUT09IiwiaGFzX25leHRfb3JnYW5pY19jYXRhbG9nIjp0cnVlLCJmYWxsYmFja19jdXJzb3IiOm51bGwsImhhc19uZXh0X2ZhbGxiYWNrX2NhdGFsb2ciOmZhbHNlLCJmYWxsYmFja19jb3VudCI6MCwiYWRfY3Vyc29yIjpudWxsLCJsYXN0X2FkX3Nsb3QiOi0xLCJoYXNfbmV4dF9hZF9zbG90Ijp0cnVlLCJoYXNfbmV4dF9hZF9jYXRhbG9nIjp0cnVlLCJzbG90X2NvbmZpZ192YXJfaWQiOm51bGwsImlzX3Nsb3RfY29uZmlnX2VuYWJsZWQiOmZhbHNlLCJ1c2VyX2NvaG9ydCI6bnVsbCwiY3RfcWN0X2N1cnNvciI6bnVsbCwiY3RfcWN0X3NlYXJjaF9pZCI6bnVsbCwiaGFzX25leHRfY3RfY2F0YWxvZyI6ZmFsc2UsInZpZXdfdGVtcGxhdGVfaWQiOjEsIm5vcm1hbGlzZWRfcXVlcnkiOiJibHVldG9vdGggc3BlYWtlciIsIm9yaWdpbmFsX25vcm1hbGlzZWRfcXVlcnkiOiJibHVldG9vdGggc3BlYWtlciIsImlzX2lvcF9lbmFibGVkX2Zvcl9hZHMiOmZhbHNlLCJpc19maWx0ZXJfbXV0YXRpb25fZW5hYmxlZCI6ZmFsc2UsInF1bF9yZXNwb25zZSI6IjJfX0tMVXYvV0NLQjUwVEFGYWtZeUJRaWRvR1JnWk1JaHVOdEprekFwYzAyWS9NekRRTVRybVBiQ2llakpsWndWZ0FYd0JhQU9pTXhnNFVidjhvR2lTZ2dKN3JGS2RIczBWbENtTUZsOUhTeXRWd1NjZ3pDWFJPdHZrY1A4bUtDL1NWelV3UEZHcVNtUDJjbXpYa243TmlZd3kyN3VlYkI1Z0xBelRhdWM2bnlkRWZtOCtSVmpKVFZOYTFNd0h2bHQxWWM0eWJBb0hEUWNCZ09DQU1oZ01CWWxBNEJDREtFa3pjTG9zZkpBQkJrQUw2VXRmZzNFWW5kUVZGT1ZoUkRsVVN2MzVMWTJsQjVSaDRFeUc1ZnJpa1VwaU9ubzJMcllZcUxhNlRLc2ZQbVVGdmpyWEtYYWVTYWk1OEpydUo0RGJiVDlQODVOdEdiNmhHSmJYQ2hQdzU2dVBjcEtnMk81ZjhOSW9qQ2hBQ1Q4bmpsTHpOVnJZNG83SnpwY2M2UmphcW42WmgwSGxwc2tWYXVaNnFoUHhSZlEyZGtXRDZVUnhSR0Nnb1BJSE9pNlhVdDRsQkFVMnk0Z0k5dWJtRmM1TStSMnA5dU1pbFNLQnplalJuMEE4R2hLUklLQnJWMTVZRmxhZUk4UFBHanI2dWNYTnhQeTloMjQxbjBCZVlxdGlZc3Rtcm9iNzkrYnFqNS9Mb3RNbnZwMmthQmIvR0hqaURub3NGVXFqaERVTEt6QXlGQ1FwTG1zb0JFQlNEbk1NYkVxakRQTVNSR0dTWUZCb2pRTVlNVFRRVHpHUzNzRHo0Qnc1Mkh5aSt0a1FtMFFZQ1E0NXBzZ0sxUFdEaXRwQzh0VFhUUDBUTEUvZlQzVlViQU1POElZcWp6L0JJellqYzI0YTNTdTk3NXVhR3FHc2dsZUhkNndJc1VwdHJpVWNxTnJ3MDRoYzVUeXhEakRHMVUrRG5BRnU2NXJ2RXVtZnNaa3ZnVzZoK29SeUVHbFJKTTBvbGlRZ2l5T0RSSjZQWUcrUmtwVEFYMnFKSHNEclI1WE15QXZqaEZiMktxa1ZVVlRPelZNc1JiMGF3cThVZGRXbEFJSGJVb29mbW1yR1ZyTzVoZlNVMlB4cGpJQld2QWc9PSIsInJlZWxzX2N1cnNvciI6IiIsImhhc19uZXh0X3JlZWwiOmZhbHNlLCJyZWVsc19lbmFibGVkIjpmYWxzZSwiZmNfb3JnIjoxLCJmY19hZHMiOjEsImZjX2N0IjowLCJmZWVkX2lvcF9vcmciOnRydWUsImZlZWRfaW9wX2FkcyI6dHJ1ZSwiZmVlZF9pb3BfY3QiOmZhbHNlLCJhZF9zZXNzaW9uX2lkIjpudWxsLCJzZl9yb3V0ZV90eXBlIjoiZmEiLCJzZl9pc19jaXRhZGVsX2Zsb3ciOmZhbHNlLCJzZl9mZWVkX3R5cGUiOiJ0ZXh0X3NlYXJjaCIsInNmX3NlYXJjaF9pZCI6IlFTOjE6YWRmNDZkNTQtYWFmOC00MDY4LThlMTItZmYzOTQxYTMwZjk1In0=",
+    "search_session_id": "ctx_1_uid_-1_txt_-1_t_1785890011433",
+    "search_id": "QS:1:adf46d54-aaf8-4068-8e12-ff3941a30f95",
+    "corrected_search_term": "bluetooth speakers",
+    "tracking": {},
+    "disable_filters": false,
+    "view_template_id": 1,
+    "feed_metadata": {
+        "context": {
+            "corrected_search_term": "bluetooth speakers"
+        },
+        "real_estate": "text_search"
+    },
+    "mall_tag_disabled": false,
+    "enhanced_plp_enabled": false
+}

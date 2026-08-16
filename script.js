@@ -5,129 +5,399 @@
 
 const img = (seed, size = 400) => `https://picsum.photos/seed/${seed}/${size}/${size}`;
 
-const CATEGORIES = [
-  { id: "mobiles",     label: "Mobiles",        emoji: "📱", color: "#EEF1FF" },
-  { id: "electronics", label: "Electronics",    emoji: "💻", color: "#E8F8F1" },
-  { id: "mens",        label: "Men's",          emoji: "👔", color: "#FFF6E0",
-    subcats: [
-      { id: "shirts",  label: "Shirts" },
-      { id: "pants",   label: "Pants" },
-      { id: "tshirts", label: "T-Shirts" },
-    ] },
-  { id: "womens",      label: "Women's",        emoji: "👗", color: "#FDEDEC",
-    subcats: [
-      { id: "silk-sarees",   label: "Silk Sarees" },
-      { id: "cotton-sarees", label: "Cotton Sarees" },
-      { id: "kurtis",        label: "Kurtis", children: [
-          { id: "anarkali-kurtis", label: "Anarkali Kurtis" },
-        ] },
-      { id: "poonam-sarees", label: "Poonam Sarees" },
-    ] },
-  { id: "home",        label: "Home & Kitchen", emoji: "🛋️", color: "#E9F6FF" },
-  { id: "beauty",      label: "Beauty",         emoji: "💄", color: "#F3ECFF" },
-  { id: "health",      label: "Health",         emoji: "💊", color: "#E9FBF0" },
-];
+let CATEGORIES = [];
+let PRODUCTS = [];
 
-let PRODUCTS = [
-  // Mobiles
-  { id: "m1", cat: "mobiles", brand: "Novatel", title: "Nova X12 5G (8GB RAM, 128GB, Midnight Blue)", price: 15999, mrp: 24999, rating: 4.3, reviews: 8342, img: img("nova-x12"), deal: true },
-  { id: "m2", cat: "mobiles", brand: "Pixelio", title: "Pixelio Air 5 (12GB RAM, 256GB, Storm Grey)", price: 28999, mrp: 36999, rating: 4.5, reviews: 5211, img: img("pixelio-air5") },
-  { id: "m3", cat: "mobiles", brand: "Orbiq", title: "Orbiq Lite 4G (4GB RAM, 64GB, Coral)", price: 8499, mrp: 10999, rating: 4.0, reviews: 3021, img: img("orbiq-lite"), deal: true },
-  { id: "m4", cat: "mobiles", brand: "Novatel", title: "Nova Fold (12GB RAM, 512GB, Onyx Black)", price: 89999, mrp: 109999, rating: 4.6, reviews: 941, img: img("nova-fold") },
-  { id: "m5", cat: "mobiles", brand: "Zenphone", title: "Zenphone S3 (6GB RAM, 128GB, Sunrise Gold)", price: 13999, mrp: 17999, rating: 4.1, reviews: 2210, img: img("zenphone-s3") },
-  { id: "m6", cat: "mobiles", brand: "Pixelio", title: "Pixelio Nano (6GB RAM, 128GB, Sea Green)", price: 11499, mrp: 15499, rating: 3.9, reviews: 1875, img: img("pixelio-nano") },
+const CATEGORY_ICON_LOOKUP = {
+  mobiles: '📱',
+  electronics: '💻',
+  mens: '👔',
+  womens: '👗',
+  home: '🛋️',
+  beauty: '💄',
+  health: '💊',
+};
 
-  // Electronics
-  { id: "e1", cat: "electronics", brand: "Beatbox", title: "Beatbox Pulse Wireless Headphones, 40H Battery", price: 1799, mrp: 3999, rating: 4.2, reviews: 12043, img: img("beatbox-pulse"), deal: true },
-  { id: "e2", cat: "electronics", brand: "Streamline", title: "Streamline 43\" 4K Smart LED TV", price: 22990, mrp: 34990, rating: 4.4, reviews: 3987, img: img("streamline-tv") },
-  { id: "e3", cat: "electronics", brand: "CoreTech", title: "CoreTech AirBook 14\" Laptop (i5, 16GB, 512GB SSD)", price: 52999, mrp: 64999, rating: 4.5, reviews: 1654, img: img("coretech-airbook") },
-  { id: "e4", cat: "electronics", brand: "Beatbox", title: "Beatbox Boom Portable Bluetooth Speaker", price: 1299, mrp: 2299, rating: 4.1, reviews: 6720, img: img("beatbox-boom"), deal: true },
-  { id: "e5", cat: "electronics", brand: "Pixelio", title: "Pixelio Watch Fit 2 (Smartwatch, GPS)", price: 3499, mrp: 5999, rating: 4.0, reviews: 4102, img: img("pixelio-watch") },
-  { id: "e6", cat: "electronics", brand: "CoreTech", title: "CoreTech PowerBank 20000mAh Fast Charge", price: 999, mrp: 1799, rating: 4.3, reviews: 9021, img: img("coretech-powerbank") },
+const CATEGORY_COLOR_LOOKUP = {
+  mobiles: '#EEF1FF',
+  electronics: '#E8F8F1',
+  mens: '#FFF6E0',
+  womens: '#FDEDEC',
+  home: '#E9F6FF',
+  beauty: '#F3ECFF',
+  health: '#E9FBF0',
+};
 
-  // Men's — Shirts
-  { id: "mn1", cat: "mens", subcat: "shirts", brand: "Urban Weave", title: "Men's Slim Fit Cotton Casual Shirt", price: 599, mrp: 1499, rating: 4.0, reviews: 2310, img: img("urbanweave-shirt"), deal: true },
-  { id: "mn2", cat: "mens", subcat: "shirts", brand: "Urban Weave", title: "Men's Checked Formal Shirt, Full Sleeve", price: 749, mrp: 1699, rating: 4.2, reviews: 1543, img: img("urbanweave-checkshirt") },
+function slugify(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
-  // Men's — Pants
-  { id: "mn3", cat: "mens", subcat: "pants", brand: "Urban Weave", title: "Men's Slim Fit Denim Jeans", price: 899, mrp: 1999, rating: 4.1, reviews: 3305, img: img("urbanweave-jeans") },
-  { id: "mn4", cat: "mens", subcat: "pants", brand: "Stridewell", title: "Men's Regular Fit Formal Trousers", price: 799, mrp: 1799, rating: 4.0, reviews: 987, img: img("stridewell-trousers"), deal: true },
+function categoryIcon(id) {
+  return CATEGORY_ICON_LOOKUP[id] || '🛍️';
+}
 
-  // Men's — T-Shirts
-  { id: "mn5", cat: "mens", subcat: "tshirts", brand: "Stridewell", title: "Men's Round Neck Cotton T-Shirt, Pack of 2", price: 499, mrp: 999, rating: 4.3, reviews: 5210, img: img("stridewell-tshirt") },
-  { id: "mn6", cat: "mens", subcat: "tshirts", brand: "Urban Weave", title: "Men's Polo T-Shirt, Pique Cotton", price: 649, mrp: 1299, rating: 4.1, reviews: 2109, img: img("urbanweave-polo"), deal: true },
+function categoryColor(id) {
+  return CATEGORY_COLOR_LOOKUP[id] || '#F3F4F8';
+}
 
-  // Women's — Silk Sarees
-  { id: "wm1", cat: "womens", subcat: "silk-sarees", brand: "Saanvi", title: "Kanjivaram Silk Saree with Zari Border", price: 3499, mrp: 6999, rating: 4.6, reviews: 812, img: img("saanvi-kanjivaram") },
-  { id: "wm2", cat: "womens", subcat: "silk-sarees", brand: "Saanvi", title: "Banarasi Silk Saree, Woven Design", price: 2999, mrp: 5999, rating: 4.5, reviews: 654, img: img("saanvi-banarasi"), deal: true },
+function normalizeImageList(images) {
+  if (!images) return [];
+  if (typeof images === 'string') {
+    return images
+      .split(/[,;\n]+/)
+      .map(i => i.trim())
+      .filter(Boolean);
+  }
+  if (Array.isArray(images)) {
+    return images.flatMap((item) => {
+      if (typeof item === 'string') return item.trim() ? [item.trim()] : [];
+      if (item && typeof item === 'object') return item.url ? [String(item.url).trim()] : [];
+      return [];
+    });
+  }
+  if (typeof images === 'object' && images.url) {
+    return [String(images.url).trim()];
+  }
+  return [];
+}
 
-  // Women's — Cotton Sarees
-  { id: "wm3", cat: "womens", subcat: "cotton-sarees", brand: "Saanvi", title: "Handloom Cotton Saree, Everyday Wear", price: 899, mrp: 1799, rating: 4.3, reviews: 1980, img: img("saanvi-handloom") },
-  { id: "wm4", cat: "womens", subcat: "cotton-sarees", brand: "Saanvi", title: "Chettinad Cotton Saree, Checked Pattern", price: 1099, mrp: 2199, rating: 4.4, reviews: 1342, img: img("saanvi-chettinad"), deal: true },
+function parseFirestoreTimestamp(value) {
+  if (!value) return null;
+  if (typeof value === 'number') return new Date(value);
+  if (typeof value === 'string') {
+    const date = new Date(value);
+    return Number.isFinite(date.getTime()) ? date : null;
+  }
+  if (value && typeof value.toDate === 'function') {
+    return value.toDate();
+  }
+  return null;
+}
 
-  // Women's — Kurtis
-  { id: "wm5", cat: "womens", subcat: "kurtis", brand: "Saanvi", title: "Women's Printed A-Line Kurta", price: 749, mrp: 1899, rating: 4.3, reviews: 4109, img: img("saanvi-kurta") },
-  { id: "wm6", cat: "womens", subcat: "kurtis", brand: "Saanvi", title: "Women's Anarkali Kurti, Embroidered", price: 1099, mrp: 2399, rating: 4.2, reviews: 2033, img: img("saanvi-anarkali") },
+function parseCategoryPath(categoriesText) {
+  return String(categoriesText || '')
+    .split('>')
+    .map(part => part.trim())
+    .filter(Boolean);
+}
 
-  // Women's — Poonam Sarees
-  { id: "wm7", cat: "womens", subcat: "poonam-sarees", brand: "Poonam Sarees", title: "Poonam Sarees Georgette Saree, Floral Print", price: 1299, mrp: 2599, rating: 4.4, reviews: 1120, img: img("poonam-georgette"), deal: true },
-  { id: "wm8", cat: "womens", subcat: "poonam-sarees", brand: "Poonam Sarees", title: "Poonam Sarees Designer Party Wear Saree", price: 1899, mrp: 3799, rating: 4.5, reviews: 764, img: img("poonam-designer") },
+function buildCategoriesFromProducts(products) {
+  const rootMap = new Map();
+  products.forEach((product) => {
+    if (!product.categoriesPath.length) return;
+    const [rootLabel, subLabel, childLabel] = product.categoriesPath;
+    const rootId = slugify(rootLabel);
+    if (!rootId) return;
 
-  // Home & Kitchen
-  { id: "h1", cat: "home", brand: "Homery", title: "Non-Stick Cookware Set, 5 Pieces", price: 1499, mrp: 2999, rating: 4.3, reviews: 2871, img: img("homery-cookware"), deal: true },
-  { id: "h2", cat: "home", brand: "CozyNest", title: "Memory Foam Pillow, Pack of 2", price: 799, mrp: 1599, rating: 4.1, reviews: 4021, img: img("cozynest-pillow") },
-  { id: "h3", cat: "home", brand: "Homery", title: "Stainless Steel Insulated Water Bottle, 1L", price: 399, mrp: 799, rating: 4.5, reviews: 7654, img: img("homery-bottle") },
-  { id: "h4", cat: "home", brand: "BrightHome", title: "LED Study Lamp with Adjustable Arm", price: 549, mrp: 1199, rating: 4.0, reviews: 1230, img: img("brighthome-lamp"), deal: true },
-  { id: "h5", cat: "home", brand: "CozyNest", title: "Cotton Bedsheet Set, Queen Size (King Fits Too)", price: 899, mrp: 2199, rating: 4.2, reviews: 3410, img: img("cozynest-bedsheet") },
-  { id: "h6", cat: "home", brand: "Homery", title: "Compact Storage Organizer, 3 Tier", price: 699, mrp: 1399, rating: 3.9, reviews: 845, img: img("homery-organizer") },
+    let root = rootMap.get(rootId);
+    if (!root) {
+      root = {
+        id: rootId,
+        label: rootLabel,
+        emoji: categoryIcon(rootId),
+        color: categoryColor(rootId),
+        subcats: [],
+      };
+      rootMap.set(rootId, root);
+    }
 
-  // Beauty
-  { id: "b1", cat: "beauty", brand: "Petalskin", title: "Vitamin C Brightening Face Serum, 30ml", price: 449, mrp: 899, rating: 4.4, reviews: 5601, img: img("petalskin-serum"), deal: true },
-  { id: "b2", cat: "beauty", brand: "Meraki", title: "Matte Finish Lipstick Combo, Set of 3", price: 599, mrp: 1299, rating: 4.2, reviews: 2980, img: img("meraki-lipstick") },
-  { id: "b3", cat: "beauty", brand: "Petalskin", title: "Aloe Hydrating Face Wash, 150ml", price: 249, mrp: 449, rating: 4.3, reviews: 6120, img: img("petalskin-facewash") },
-  { id: "b4", cat: "beauty", brand: "Meraki", title: "Argan Oil Hair Serum, 100ml", price: 349, mrp: 699, rating: 4.1, reviews: 1876, img: img("meraki-hairoil"), deal: true },
-  { id: "b5", cat: "beauty", brand: "Petalskin", title: "SPF 50 Sunscreen Gel, 75g", price: 399, mrp: 799, rating: 4.5, reviews: 3320, img: img("petalskin-sunscreen") },
+    if (!subLabel) return;
+    const subId = slugify(subLabel);
+    let sub = root.subcats.find((item) => item.id === subId);
+    if (!sub) {
+      sub = { id: subId, label: subLabel };
+      root.subcats.push(sub);
+    }
 
-  // Health
-  { id: "he1", cat: "health", brand: "VitaCare", title: "Multivitamin Tablets, 60 Count", price: 349, mrp: 599, rating: 4.4, reviews: 3140, img: img("vitacare-multivitamin"), deal: true },
-  { id: "he2", cat: "health", brand: "WellnessPro", title: "Whey Protein Powder, 1kg, Chocolate", price: 1899, mrp: 2799, rating: 4.5, reviews: 5210, img: img("wellnesspro-whey") },
-  { id: "he3", cat: "health", brand: "MediSafe", title: "Digital Infrared Thermometer", price: 799, mrp: 1299, rating: 4.3, reviews: 2870, img: img("medisafe-thermometer") },
-  { id: "he4", cat: "health", brand: "MediSafe", title: "Hand Sanitizer, 500ml, Pack of 3", price: 299, mrp: 499, rating: 4.2, reviews: 4021, img: img("medisafe-sanitizer"), deal: true },
-  { id: "he5", cat: "health", brand: "VitaCare", title: "Immunity Booster Effervescent Tablets", price: 399, mrp: 699, rating: 4.1, reviews: 1980, img: img("vitacare-immunity") },
-  { id: "he6", cat: "health", brand: "MediSafe", title: "Compact First Aid Kit, 40 Pieces", price: 549, mrp: 999, rating: 4.4, reviews: 1230, img: img("medisafe-firstaid") },
-];
+    if (childLabel) {
+      sub.children = sub.children || [];
+      const childId = slugify(childLabel);
+      if (!sub.children.some((item) => item.id === childId)) {
+        sub.children.push({ id: childId, label: childLabel });
+      }
+    }
+  });
+
+  CATEGORIES = Array.from(rootMap.values());
+}
+
+function groupVariantProducts(products) {
+  const groupMap = new Map();
+
+  products.forEach((product) => {
+    if (product.parent === 'parent') {
+      product.parent = '';
+    }
+    const parentKey = product.parent && product.parent !== '' ? String(product.parent) : '';
+    const groupKey = parentKey || String(product.sku || product.id || '');
+    if (!groupMap.has(groupKey)) groupMap.set(groupKey, []);
+    groupMap.get(groupKey).push(product);
+  });
+
+  groupMap.forEach((variants, groupKey) => {
+    const hasVariants = variants.some((item) => Boolean(item.parent));
+    const representative = variants.find((item) => !item.parent) || variants[0];
+    const optionName = variants.find((item) => item.attribute_1_name)?.attribute_1_name || '';
+    // A parent SKU stores the complete size list; child rows may only contain
+    // one size. Combine only rows already linked to this parent/SKU group.
+    const optionValues = [...new Set(variants.flatMap(variationValuesForProduct))];
+    const isVariation = hasVariants || variants.some((item) => item.type === 'variable') || optionValues.length > 1;
+    const publishedAt = representative.publishedAt || variants.reduce((latest, item) => item.publishedAt && (!latest || item.publishedAt > latest) ? item.publishedAt : latest, representative.publishedAt);
+    const deal = variants.some((item) => item.deal);
+
+    variants.forEach((item) => {
+      item.groupId = groupKey;
+      item.groupVariants = variants;
+      item.groupCount = variants.length;
+      item.isVariation = isVariation;
+      item.isVariable = isVariation;
+      item.displayGroup = item === representative;
+      item.groupTitle = representative.title || item.title;
+      item.groupImage = representative.img;
+      item.optionName = optionName;
+      item.optionValues = optionValues;
+      item.variantLabel = item.attribute_1_value || '';
+      item.publishedAt = publishedAt;
+      item.deal = deal;
+    });
+  });
+}
+
+function splitVariationValues(value) {
+  return String(value || '').split(',').map((item) => item.trim()).filter(Boolean);
+}
+
+function variationValuesForProduct(product) {
+  const description = String(product.description || '');
+  const sizesBlock = description.match(/(?:^|\n)Sizes:\s*([\s\S]*?)(?:\n\s*Dispatch:|$)/i)?.[1] || '';
+  const sizesFromDescription = sizesBlock
+    .split(/,|\n/)
+    .map((item) => item.trim().replace(/\s*\([^)]*\)\s*$/, ''))
+    .filter(Boolean);
+
+  // Prefer the complete sizes list held by the parent product description.
+  return sizesFromDescription.length ? sizesFromDescription : splitVariationValues(product.attribute_1_value);
+}
+
+function productHasVariationValue(product, value) {
+  return variationValuesForProduct(product).includes(value);
+}
+
+function filterCatalogProducts(items) {
+  return items.filter((product) => product.displayGroup !== false);
+}
 
 /* ============ State ============ */
 // Robust persisted state with basic validation
 let cart = {};
-// PRODUCTS are loaded from external JSON files to make data maintenance easier.
+// PRODUCTS are loaded from Firestore.
 const WHATSAPP_NUMBER = '918610769343';
-async function loadJson(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch ${url}`);
-  return res.json();
-}
-async function loadProducts() {
-  const sources = ['data/products.json', 'data/anarkali-products.json'];
-  const loaded = [];
-  for (const source of sources) {
-    try {
-      const data = await loadJson(source);
-      if (Array.isArray(data)) loaded.push(...data);
-    } catch (err) {
-      console.warn(`Could not load ${source} —`, err);
-    }
+const FIREBASE_CONFIG = {
+   apiKey: "AIzaSyD-dUd1OnhKJ5UFWEtHJBaNmY44f1yU86I",
+    authDomain: "nila-store-729c2.firebaseapp.com",
+    projectId: "nila-store-729c2",
+    storageBucket: "nila-store-729c2.firebasestorage.app",
+    messagingSenderId: "371741649720",
+    appId: "1:371741649720:web:ddd8187649a5e7c77d2fcd",
+    measurementId: "G-886NBKM4J5"
+};
+const FIRESTORE_PRODUCTS_COLLECTION = 'products';
+let firestoreDb = null;
+
+function initFirestore() {
+  if (!FIREBASE_CONFIG.projectId || !FIREBASE_CONFIG.apiKey) {
+    console.warn('Firebase config is missing. Firestore product loading cannot proceed.');
+    return null;
   }
-  if (loaded.length) {
-    PRODUCTS = loaded;
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(FIREBASE_CONFIG);
+    }
+    firestoreDb = firebase.firestore();
+    return firestoreDb;
+  } catch (err) {
+    console.warn('Failed to initialize Firestore:', err);
+    return null;
   }
 }
 
+function inferCategory(categories) {
+  if (!categories) return 'all';
+  const text = categories.toString().toLowerCase();
+  const lookup = ['mobiles', 'electronics', 'mens', 'womens', 'home', 'beauty', 'health'];
+  return lookup.find(cat => text.includes(cat)) || 'all';
+}
+
+function normalizeFirestoreImage(images) {
+  if (!images) return '';
+  if (typeof images === 'string') {
+    const url = images.trim();
+    if (!url) return '';
+    if (/^https?:\/\//i.test(url)) return url;
+    return `images/${url.replace(/^\/+/, '')}`;
+  }
+  if (Array.isArray(images) && images.length) {
+    return normalizeFirestoreImage(images[0]);
+  }
+  if (typeof images === 'object' && images.url) {
+    return normalizeFirestoreImage(images.url);
+  }
+  return '';
+}
+
+async function loadProductsFromFirestore() {
+  const db = initFirestore();
+  if (!db) return [];
+
+  try {
+    const snapshot = await db.collection(FIRESTORE_PRODUCTS_COLLECTION).get();
+    const loaded = [];
+    snapshot.forEach((doc) => {
+      const data = doc.data() || {};
+      const categoriesPath = parseCategoryPath(data.categories);
+      const images = normalizeImageList(data.images || data.imageUrl);
+      const firstImage = images[0] || normalizeFirestoreImage(data.imageUrl) || img(doc.id);
+      const createdAt = parseFirestoreTimestamp(data.createdAt || data.created_at || data.publishedAt || data.published_at);
+
+      loaded.push({
+        id: String(data.id || data.sku || doc.id),
+        sku: String(data.sku || data.id || doc.id),
+        cat: slugify(categoriesPath[0]) || inferCategory(data.categories),
+        subcat: categoriesPath[1] ? slugify(categoriesPath[1]) : undefined,
+        subsubcat: categoriesPath[2] ? slugify(categoriesPath[2]) : undefined,
+        categoriesPath,
+        categoriesLabel: String(data.categories || '').trim(),
+        brand: String(data.brand || '').trim(),
+        title: String(data.name || data.title || '').trim(),
+        description: String(data.description || '').trim(),
+        price: Number(data.sale_price ?? data.regular_price ?? 0),
+        mrp: Number(data.regular_price ?? data.sale_price ?? data.price ?? 0),
+        rating: Number(data.rating ?? 0),
+        reviews: Number(data.reviews ?? 0),
+        images,
+        img: firstImage,
+        deal: Boolean(data.deal || false),
+        published: data.published,
+        publishedAt: createdAt,
+        in_stock: Boolean(data.in_stock ?? (data.stock > 0)),
+        stock: Number(data.stock ?? 0),
+        parent: data.parent ? String(data.parent).trim() : '',
+        attribute_1_global: data.attribute_1_global,
+        attribute_1_name: String(data.attribute_1_name || '').trim(),
+        attribute_1_value: String(data.attribute_1_value || '').trim(),
+        type: String(data.type || '').trim(),
+      });
+    });
+
+    buildCategoriesFromProducts(loaded);
+    groupVariantProducts(loaded);
+    return loaded;
+  } catch (err) {
+    console.warn('Could not load products from Firestore —', err);
+    return [];
+  }
+}
+
+async function loadProductsFromLocalJson() {
+  const sources = ['data.json', 'variation_data.json'];
+  const loaded = [];
+
+  for (const source of sources) {
+    try {
+      const response = await fetch(source);
+      if (!response.ok) continue;
+      const json = await response.json();
+      const catalogs = Array.isArray(json.catalogs) ? json.catalogs : [];
+
+      catalogs.forEach((item) => {
+        const categories = String(item.categories || item.sub_sub_category_name || item.category_name || 'All').trim();
+        const categoriesPath = parseCategoryPath(categories);
+        const images = normalizeImageList(item.images || item.product_images || item.image || item.collage_image);
+        const firstImage = images[0] || normalizeFirestoreImage(item.image) || img(item.hero_pid || item.id || item.product_id || String(Math.random()));
+        const publishedAt = parseFirestoreTimestamp(item.created_iso || item.activated_iso || item.created || item.activated);
+
+        loaded.push({
+          id: String(item.hero_pid || item.product_id || item.id || item.slug || `${item.name}-${loaded.length}`),
+          sku: String(item.hero_pid || item.product_id || item.id || item.slug || ''),
+          cat: slugify(categoriesPath[0]) || inferCategory(categories),
+          subcat: categoriesPath[1] ? slugify(categoriesPath[1]) : undefined,
+          subsubcat: categoriesPath[2] ? slugify(categoriesPath[2]) : undefined,
+          categoriesPath,
+          categoriesLabel: categories,
+          brand: String(item.brand || item.manufacturer || '').trim(),
+          title: String(item.name || item.hero_product_name || item.title || '').trim(),
+          description: String(item.description || item.full_details || '').trim(),
+          price: Number(item.min_product_price ?? item.sale_price ?? item.regular_price ?? item.original_price ?? item.price ?? 0),
+          mrp: Number(item.original_price ?? item.regular_price ?? item.min_product_price ?? item.price ?? 0),
+          rating: Number(item.catalog_reviews_summary?.average_rating ?? item.rating ?? 0),
+          reviews: Number(item.catalog_reviews_summary?.review_count ?? item.reviews ?? 0),
+          images,
+          img: firstImage,
+          deal: Boolean(item.hot || item.deal || item.discount_text),
+          published: item.published ?? true,
+          publishedAt,
+          in_stock: item.in_stock !== undefined ? Boolean(item.in_stock) : true,
+          stock: Number(item.stock ?? 100),
+          parent: item.parent ? String(item.parent).trim() : '',
+          attribute_1_global: item.attribute_1_global,
+          attribute_1_name: String(item.attribute_1_name || '').trim(),
+          attribute_1_value: String(item.attribute_1_value || '').trim(),
+          type: String(item.type || 'simple').trim(),
+        });
+      });
+    } catch (err) {
+      console.warn('Failed to load local product JSON:', source, err);
+    }
+  }
+
+  return loaded;
+}
+
+async function loadProducts() {
+  const firestoreProducts = await loadProductsFromFirestore();
+  if (firestoreProducts.length) {
+    PRODUCTS = firestoreProducts;
+    buildCategoriesFromProducts(PRODUCTS);
+    groupVariantProducts(PRODUCTS);
+    return;
+  }
+
+  const localProducts = await loadProductsFromLocalJson();
+  if (localProducts.length) {
+    PRODUCTS = localProducts;
+    buildCategoriesFromProducts(PRODUCTS);
+    groupVariantProducts(PRODUCTS);
+    console.warn('Using local fallback product data from JSON files.');
+    return;
+  }
+
+  console.error('No products loaded from Firestore or local JSON. Please check Firebase config and product files.');
+}
+
 const CART_KEY = 'nila-store-cart';
+const CART_SIZE_SEPARATOR = '::size=';
 const WISHLIST_KEY = 'nila-store-wishlist';
 let wishlist = new Set();
 let lastFocusedElement = null;
 let removeFocusTrap = null;
+
+function cartProductId(lineId) {
+  return String(lineId).split(CART_SIZE_SEPARATOR)[0];
+}
+
+function cartSelectedSize(lineId) {
+  const separatorIndex = String(lineId).indexOf(CART_SIZE_SEPARATOR);
+  return separatorIndex === -1 ? '' : decodeURIComponent(String(lineId).slice(separatorIndex + CART_SIZE_SEPARATOR.length));
+}
+
+function cartLineId(productId, size) {
+  return size ? `${productId}${CART_SIZE_SEPARATOR}${encodeURIComponent(size)}` : productId;
+}
 
 function esc(value) {
   return String(value || '')
@@ -199,7 +469,9 @@ function toggleWishlist(id, button) {
   saveWishlist();
   updateWishlistCount();
   document.querySelectorAll(`[data-wish="${id}"], [data-modal-wish="${id}"]`).forEach(btn => {
-    btn.classList.toggle('active', wishlist.has(id));
+    const isActive = wishlist.has(id);
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-pressed', String(isActive));
   });
   if (document.getElementById('wishlistDrawer')?.classList.contains('open')) {
     renderWishlist();
@@ -238,14 +510,89 @@ function openModal(targetId) {
   if (!overlay || !modalEl) return;
 
   const product = PRODUCTS.find((p) => p.id === targetId);
-  const title = product ? product.title : 'Product preview';
-  const brand = product ? product.brand : 'Nila Store';
-  const price = product ? rupee(product.price) : '—';
-  const mrp = product && product.mrp ? rupee(product.mrp) : '';
-  const off = product ? pctOff(product) : 0;
-  const rating = product ? product.rating.toFixed(1) : '0.0';
-  const reviews = product ? product.reviews.toLocaleString('en-IN') : '0';
-  const image = product ? product.img : `https://picsum.photos/seed/${esc(targetId)}/500/500`;
+  if (!product) return;
+
+  const variants = product.groupVariants || [product];
+  let selectedProduct = product;
+  if (product.isVariation && Array.isArray(variants) && variants.length > 1) {
+    selectedProduct = variants.find((item) => item.parent) || product;
+  }
+  let selectedSize = variationValuesForProduct(selectedProduct)[0] || '';
+
+  const imageSources = [...new Set(variants.flatMap((item) => (item.images && item.images.length ? item.images : [item.img])))];
+  const variantOptions = selectedProduct.optionValues || [];
+
+  const renderImageThumbs = () => imageSources.map((src) => `
+      <button type="button" class="variant-thumb${src === selectedProduct.img ? ' selected' : ''}" data-variant-img="${esc(src)}">
+        <img src="${esc(src)}" alt="${esc(selectedProduct.title)}" width="64" height="64" loading="lazy" decoding="async">
+      </button>`).join('');
+
+  const renderOptionButtons = () => {
+    if (!selectedProduct.isVariation || !selectedProduct.optionName || !variantOptions.length) return '';
+    return `
+      <div class="variation-options">
+        <div class="variation-label">Choose ${esc(selectedProduct.optionName)}</div>
+        <div class="variation-choices">
+          ${variantOptions.map((value) => `
+            <label class="variation-choice${selectedSize === value ? ' selected' : ''}">
+              <input type="radio" name="variation-size" value="${esc(value)}" data-option-value="${esc(value)}"${selectedSize === value ? ' checked' : ''}>
+              <span>${esc(value)}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>`;
+  };
+
+  const updateModalSelection = (newProduct, size = '') => {
+    if (!newProduct) return;
+    selectedProduct = newProduct;
+    selectedSize = size || variationValuesForProduct(newProduct)[0] || selectedSize;
+    const mainImage = modalEl.querySelector('.modal-media img');
+    const modalTitle = modalEl.querySelector('.modal-title');
+    const modalBrand = modalEl.querySelector('.modal-brand');
+    const modalPrice = modalEl.querySelector('.modal-price-row .price-now');
+    const modalMrp = modalEl.querySelector('.modal-price-row .price-was');
+    const modalOff = modalEl.querySelector('.modal-price-row .price-off');
+    const addButton = modalEl.querySelector('[data-modal-add]');
+    const wishButton = modalEl.querySelector('[data-modal-wish]');
+
+    if (mainImage) {
+      mainImage.src = newProduct.img;
+      mainImage.alt = esc(newProduct.title);
+    }
+    if (modalTitle) modalTitle.textContent = newProduct.title;
+    if (modalBrand) modalBrand.textContent = newProduct.brand;
+    if (modalPrice) modalPrice.textContent = rupee(newProduct.price);
+    if (modalMrp) modalMrp.textContent = newProduct.mrp ? rupee(newProduct.mrp) : '';
+    if (modalOff) modalOff.textContent = pctOff(newProduct) > 0 ? `${pctOff(newProduct)}% off` : '';
+    if (addButton) {
+      addButton.dataset.modalAdd = newProduct.id;
+      addButton.dataset.selectedSize = selectedSize;
+    }
+    if (wishButton) {
+      wishButton.dataset.modalWish = newProduct.id;
+      wishButton.textContent = wishlist.has(newProduct.id) ? 'Remove wishlist' : 'Add to wishlist';
+      wishButton.classList.toggle('active', wishlist.has(newProduct.id));
+    }
+
+    modalEl.querySelectorAll('.variant-thumb').forEach((btn) => {
+      btn.classList.toggle('selected', btn.dataset.variantImg === newProduct.img);
+    });
+    modalEl.querySelectorAll('.variation-choice').forEach((choice) => {
+      const input = choice.querySelector('input');
+      const isSelected = input?.dataset.optionValue === selectedSize;
+      choice.classList.toggle('selected', isSelected);
+      if (input) input.checked = isSelected;
+    });
+  };
+
+  const modalImages = renderImageThumbs();
+  const modalOptions = renderOptionButtons();
+  const title = selectedProduct.title;
+  const brand = selectedProduct.brand;
+  const price = rupee(selectedProduct.price);
+  const mrp = selectedProduct.mrp ? rupee(selectedProduct.mrp) : '';
+  const off = pctOff(selectedProduct);
 
   overlay.classList.add('open');
   modalEl.setAttribute('aria-hidden', 'false');
@@ -253,7 +600,8 @@ function openModal(targetId) {
     <div class="modal-inner">
       <div class="modal-media">
         <button type="button" class="modal-close" aria-label="Close product preview">✕</button>
-        <img src="${image}" alt="${esc(title)}" width="500" height="500" loading="eager" decoding="async">
+        <img src="${esc(selectedProduct.img)}" alt="${esc(title)}" width="500" height="500" loading="eager" decoding="async">
+        <div class="modal-thumbs">${modalImages}</div>
       </div>
       <div class="modal-info">
         <div class="modal-header">
@@ -261,19 +609,35 @@ function openModal(targetId) {
             <span class="modal-brand">${esc(brand)}</span>
             <h2 class="modal-title">${esc(title)}</h2>
           </div>
-          <div class="modal-rating">${rating} ★ <span>(${reviews})</span></div>
         </div>
         <div class="modal-price-row">
           <span class="price-now">${price}</span>
           ${off > 0 ? `<span class="price-was">${mrp}</span><span class="price-off">${off}% off</span>` : ''}
         </div>
+        ${modalOptions}
         <p class="modal-copy">Fast delivery across Chennai. Add your address at checkout and receive WhatsApp order confirmation instantly.</p>
         <div class="modal-actions">
-          <button class="btn btn-primary" data-modal-add="${targetId}">Add to cart</button>
-          <button class="btn btn-outline" data-modal-wish="${targetId}">${wishlist.has(targetId) ? 'Remove wishlist' : 'Add to wishlist'}</button>
+          <button class="btn btn-primary" data-modal-add="${selectedProduct.id}" data-selected-size="${esc(selectedSize)}">Add to cart</button>
+          <button class="btn btn-outline" data-modal-wish="${selectedProduct.id}">${wishlist.has(selectedProduct.id) ? 'Remove wishlist' : 'Add to wishlist'}</button>
         </div>
       </div>
     </div>`;
+
+  modalEl.querySelectorAll('.variant-thumb').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const imageUrl = btn.dataset.variantImg;
+      const candidate = variants.find((item) => (item.images && item.images.includes(imageUrl)) || item.img === imageUrl) || variants[0];
+      if (candidate) updateModalSelection(candidate);
+    });
+  });
+
+  modalEl.querySelectorAll('.variation-choice input').forEach((input) => {
+    input.addEventListener('change', () => {
+      const value = input.dataset.optionValue;
+      const candidate = variants.find((item) => productHasVariationValue(item, value)) || selectedProduct;
+      if (candidate) updateModalSelection(candidate, value);
+    });
+  });
 
   if (removeFocusTrap) { removeFocusTrap(); removeFocusTrap = null; }
   lastFocusedElement = document.activeElement;
@@ -293,11 +657,18 @@ function closeModal() {
 function previewProducts(items, limit = 5) {
   return [...items]
     .sort((a, b) => {
+      if (a.publishedAt && b.publishedAt) {
+        return b.publishedAt - a.publishedAt;
+      }
       if ((a.deal ? 1 : 0) !== (b.deal ? 1 : 0)) return b.deal - a.deal;
       if (b.rating !== a.rating) return b.rating - a.rating;
       return b.reviews - a.reviews;
     })
     .slice(0, limit);
+}
+
+function latestDealProducts(limit = 5) {
+  return previewProducts(filterCatalogProducts(PRODUCTS).filter(p => p.deal), limit);
 }
 
 function parseQueryParams() {
@@ -326,7 +697,7 @@ function renderCategoryPage() {
 
   const parentSubcat = category.subcats?.find(s => s.id === subcat);
   const childSubcat = parentSubcat?.children?.find(ch => ch.id === subsubcat);
-  const items = PRODUCTS.filter(p =>
+  const items = filterCatalogProducts(PRODUCTS).filter(p =>
     p.cat === cat &&
     (!subcat || p.subcat === subcat) &&
     (!subsubcat || p.subsubcat === subsubcat)
@@ -452,11 +823,12 @@ function renderCategoryChrome() {
 function productCard(p) {
   const off = pctOff(p);
   const isWished = wishlist.has(p.id);
+
   return `
     <article class="card" data-id="${p.id}">
       <div class="card-media" data-open="${p.id}">
         ${off > 0 ? `<span class="discount-tag">${off}% OFF</span>` : ""}
-        <button type="button" class="wishlist-btn ${isWished ? "active" : ""}" data-wish="${p.id}" aria-label="Toggle wishlist">
+        <button type="button" class="wishlist-btn ${isWished ? "active" : ""}" data-wish="${p.id}" aria-label="Toggle wishlist" aria-pressed="${isWished}">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="${isWished ? 'currentColor' : 'none'}"><path d="M12 21s-7.5-4.6-10-9.3C.4 8 2 4.5 5.6 4.1 8 3.8 10 5 12 7.5 14 5 16 3.8 18.4 4.1 22 4.5 23.6 8 22 11.7 19.5 16.4 12 21 12 21z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         </button>
         <img src="${p.img}" alt="${esc(p.title)}" loading="lazy" width="400" height="400" decoding="async">
@@ -464,7 +836,6 @@ function productCard(p) {
       <div class="card-body">
         <span class="card-brand">${esc(p.brand)}</span>
         <span class="card-title" data-open="${p.id}">${esc(p.title)}</span>
-        <span class="card-rating"><span class="rating-badge">${p.rating} ★</span> (${p.reviews.toLocaleString("en-IN")})</span>
         <div class="card-price-row">
           <span class="price-now">${rupee(p.price)}</span>
           ${off > 0 ? `<span class="price-was">${rupee(p.mrp)}</span><span class="price-off">${off}% off</span>` : ""}
@@ -489,9 +860,8 @@ function attachCardEvents(root) {
 function renderDeals() {
   const row = document.getElementById('dealsRow');
   if (!row) return;
-  const deals = PRODUCTS.filter(p => p.deal);
+  const deals = latestDealProducts(5);
   row.innerHTML = deals.map(productCard).join('');
-  // Events handled via delegation
 }
 
 /* ============ Category sections ============ */
@@ -500,8 +870,8 @@ function renderCategorySections() {
   if (!container) return;
 
   container.innerHTML = CATEGORIES.map(c => {
-    if (c.subcats) {
-      const total = PRODUCTS.filter(p => p.cat === c.id).length;
+    if (Array.isArray(c.subcats) && c.subcats.length > 0) {
+      const total = filterCatalogProducts(PRODUCTS).filter(p => p.cat === c.id).length;
       return `
         <section class="cat-section" id="cat-${c.id}">
           <div class="wrap">
@@ -513,12 +883,12 @@ function renderCategorySections() {
             </div>
             ${c.subcats.map(s => {
               if (Array.isArray(s.children) && s.children.length > 0) {
-                const directItems = PRODUCTS.filter(p => p.cat === c.id && p.subcat === s.id && !p.subsubcat);
+                const directItems = filterCatalogProducts(PRODUCTS).filter(p => p.cat === c.id && p.subcat === s.id && !p.subsubcat);
                 const directContent = directItems.length ? `
                     <div class="product-grid">${directItems.map(productCard).join('')}</div>` : '';
 
                 const childBlocks = s.children.map(child => {
-                  const items = PRODUCTS.filter(p => p.cat === c.id && p.subcat === s.id && p.subsubcat === child.id);
+                  const items = filterCatalogProducts(PRODUCTS).filter(p => p.cat === c.id && p.subcat === s.id && p.subsubcat === child.id);
                   if (!items.length) return '';
                   const preview = previewProducts(items);
                   return `
@@ -539,7 +909,7 @@ function renderCategorySections() {
                     ${childBlocks}
                   </div>`;
               }
-              const items = PRODUCTS.filter(p => p.cat === c.id && p.subcat === s.id);
+              const items = filterCatalogProducts(PRODUCTS).filter(p => p.cat === c.id && p.subcat === s.id);
               if (!items.length) return '';
               return `
                 <div class="subcat-block" id="cat-${c.id}-${s.id}">
@@ -550,7 +920,7 @@ function renderCategorySections() {
           </div>
         </section>`;
     }
-    const items = PRODUCTS.filter(p => p.cat === c.id);
+    const items = filterCatalogProducts(PRODUCTS).filter(p => p.cat === c.id);
     return `
       <section class="cat-section" id="cat-${c.id}">
         <div class="wrap">
@@ -611,6 +981,7 @@ function startCountdown() {
   const end = new Date();
   end.setHours(23, 59, 59, 999);
   const el = document.getElementById("countdownClock");
+  if (!el) return;
   function tick() {
     const diff = Math.max(0, end - new Date());
     const h = String(Math.floor(diff / 3.6e6)).padStart(2, "0");
@@ -623,8 +994,20 @@ function startCountdown() {
 }
 
 /* ============ Cart ============ */
-function addToCart(id, qty = 1) {
-  cart[id] = (cart[id] || 0) + qty;
+function addToCart(id, qty = 1, requestedSize = '') {
+  const product = PRODUCTS.find((item) => item.id === id);
+  if (!product) return;
+
+  // Product cards represent a variation group. Store a concrete, in-stock
+  // variant so its selected option is preserved in the cart.
+  const selectedProduct = product.attribute_1_value
+    ? product
+    : product.isVariation
+      ? product.groupVariants.find((item) => item.attribute_1_value && item.in_stock !== false) || product
+      : product;
+  const selectedSize = requestedSize || variationValuesForProduct(selectedProduct)[0] || '';
+  const cartId = cartLineId(selectedProduct.id, selectedSize);
+  cart[cartId] = (cart[cartId] || 0) + qty;
   saveCart();
   renderCart();
   showToast("Added to cart 🛒");
@@ -643,10 +1026,17 @@ function removeFromCart(id) {
   renderCart();
 }
 function renderCart() {
-  const ids = Object.keys(cart);
+  // Remove stale saved-cart entries when the catalogue has changed.
+  const ids = Object.keys(cart).filter((id) => {
+    const isAvailable = PRODUCTS.some((product) => product.id === cartProductId(id));
+    if (!isAvailable) delete cart[id];
+    return isAvailable;
+  });
+  saveCart();
   const body = document.getElementById("cartBody");
   const foot = document.getElementById("cartFoot");
   const countEl = document.getElementById("cartCount");
+  if (!body || !foot || !countEl) return;
   const totalQty = ids.reduce((s, id) => s + cart[id], 0);
   countEl.textContent = totalQty;
   countEl.style.display = totalQty > 0 ? "flex" : "none";
@@ -659,14 +1049,17 @@ function renderCart() {
   foot.style.display = "block";
   let subtotal = 0;
   body.innerHTML = ids.map(id => {
-    const p = PRODUCTS.find(x => x.id === id);
+    const p = PRODUCTS.find(x => x.id === cartProductId(id));
     const qty = cart[id];
+    if (!p) return '';
     subtotal += p.price * qty;
+    const selectedSize = cartSelectedSize(id);
     return `
       <div class="cart-item">
         <img src="${p.img}" alt="${esc(p.title)}" width="64" height="64" decoding="async">
         <div class="cart-item-info">
           <div class="cart-item-title">${esc(p.title)}</div>
+          ${selectedSize ? `<div class="cart-item-option">${esc(p.optionName || 'Size')}: ${esc(selectedSize)}</div>` : ''}
           <div class="cart-item-price">${rupee(p.price)}</div>
           <div class="qty-row">
             <button class="qty-btn" data-dec="${id}">−</button>
@@ -707,8 +1100,8 @@ function renderWishlist() {
         <div class="cart-item-title">${esc(p.title)}</div>
         <div class="cart-item-price">${rupee(p.price)}</div>
         <div class="qty-row">
-          <button class="qty-btn" data-add="${p.id}">Add to cart</button>
-          <button class="remove-link" data-remove-wish="${p.id}">Remove</button>
+          <button type="button" class="btn btn-primary wishlist-add-btn" data-add="${p.id}">Add to cart</button>
+          <button type="button" class="remove-link" data-remove-wish="${p.id}">Remove</button>
         </div>
       </div>
     </div>`).join('');
@@ -799,12 +1192,14 @@ function closeCheckoutPanel() {
  function buildWhatsAppMessage(name, phone, address) {
    const cartEntries = Object.entries(cart);
    const items = cartEntries.map(([id, qty]) => {
-     const p = PRODUCTS.find(x => x.id === id);
+     const p = PRODUCTS.find(x => x.id === cartProductId(id));
      if (!p) return null;
-     return `${qty} x ${p.title} @ ${rupee(p.price)} = ${rupee(p.price * qty)}`;
+     const selectedSize = cartSelectedSize(id);
+     const sizeDetail = selectedSize ? ` (${p.optionName || 'Size'}: ${selectedSize})` : '';
+     return `${qty} x ${p.title}${sizeDetail} @ ${rupee(p.price)} = ${rupee(p.price * qty)}`;
    }).filter(Boolean);
    const subtotal = cartEntries.reduce((sum, [id, qty]) => {
-     const p = PRODUCTS.find(x => x.id === id);
+     const p = PRODUCTS.find(x => x.id === cartProductId(id));
      return p ? sum + p.price * qty : sum;
    }, 0);
    const totalItems = cartEntries.reduce((sum, [, qty]) => sum + qty, 0);
@@ -855,15 +1250,6 @@ function closeCheckoutPanel() {
      }
    }, 5000);
  }
- function closeModal() {
-  const overlay = document.getElementById("modalOverlay");
-  const modalEl = document.getElementById("productModal");
-  overlay.classList.remove("open");
-  modalEl.setAttribute('aria-hidden', 'true');
-  if (removeFocusTrap) { removeFocusTrap(); removeFocusTrap = null; }
-  if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') lastFocusedElement.focus();
-}
-
 /* ============ Mobile nav ============ */
 function openMobileNav() {
   document.getElementById("mobileNav").classList.add("open");
@@ -891,8 +1277,14 @@ function runSearch(term) {
   }
   [dealSection, tilesSection, heroSection, trustSection].forEach(s => s && (s.style.display = "none"));
 
-  const matches = PRODUCTS.filter(p =>
-    p.title.toLowerCase().includes(term) || p.brand.toLowerCase().includes(term) || p.cat.includes(term));
+  const matches = filterCatalogProducts(PRODUCTS).filter(p =>
+    p.title.toLowerCase().includes(term) ||
+    p.brand.toLowerCase().includes(term) ||
+    p.categoriesLabel.toLowerCase().includes(term) ||
+    p.cat.includes(term) ||
+    (p.subcat || '').includes(term) ||
+    (p.subsubcat || '').includes(term)
+  );
 
   if (matches.length === 0) {
     catContainer.innerHTML = `<div class="empty-state"><div class="big-emoji">🔍</div><h3>No results for "${esc(term)}"</h3><p>Try a different search term.</p></div>`;
@@ -939,7 +1331,7 @@ async function init() {
   // Global event delegation for dynamically generated controls
   document.body.addEventListener('click', (e) => {
     const add = e.target.closest('[data-add], [data-modal-add]');
-    if (add) { e.preventDefault(); addToCart(add.dataset.add || add.dataset.modalAdd); return; }
+    if (add) { e.preventDefault(); addToCart(add.dataset.add || add.dataset.modalAdd, 1, add.dataset.selectedSize || ''); return; }
     const wish = e.target.closest('[data-wish], [data-modal-wish]');
     if (wish) { e.preventDefault(); toggleWishlist(wish.dataset.wish || wish.dataset.modalWish, wish); return; }
     const open = e.target.closest('[data-open]');
@@ -967,7 +1359,7 @@ async function init() {
   document.getElementById("menuToggle")?.addEventListener("click", openMobileNav);
   document.getElementById("mobileNavClose")?.addEventListener("click", closeMobileNav);
   document.getElementById("mobileNavOverlay")?.addEventListener("click", closeMobileNav);
-  document.getElementById("checkoutBtn").addEventListener("click", () => {
+  document.getElementById("checkoutBtn")?.addEventListener("click", () => {
     renderCart();
     if (Object.keys(cart).length === 0) {
       showToast('Add items to cart before checkout.');
@@ -980,12 +1372,12 @@ async function init() {
   document.getElementById('checkoutForm')?.addEventListener('submit', sendCheckoutWhatsApp);
 
   const doSearch = (val) => runSearch(val);
-  document.getElementById("searchBtn").addEventListener("click", () => doSearch(document.getElementById("searchInput").value));
-  document.getElementById("searchInput").addEventListener("keydown", e => { if (e.key === "Enter") doSearch(e.target.value); });
-  document.getElementById("searchBtnMobile").addEventListener("click", () => doSearch(document.getElementById("searchInputMobile").value));
-  document.getElementById("searchInputMobile").addEventListener("keydown", e => { if (e.key === "Enter") doSearch(e.target.value); });
+  document.getElementById("searchBtn")?.addEventListener("click", () => doSearch(document.getElementById("searchInput")?.value || ''));
+  document.getElementById("searchInput")?.addEventListener("keydown", e => { if (e.key === "Enter") doSearch(e.target.value); });
+  document.getElementById("searchBtnMobile")?.addEventListener("click", () => doSearch(document.getElementById("searchInputMobile")?.value || ''));
+  document.getElementById("searchInputMobile")?.addEventListener("keydown", e => { if (e.key === "Enter") doSearch(e.target.value); });
 
-  document.getElementById("newsletterForm").addEventListener("submit", (e) => {
+  document.getElementById("newsletterForm")?.addEventListener("submit", (e) => {
     e.preventDefault();
     e.target.reset();
     showToast("Subscribed! Watch your inbox 📬");
