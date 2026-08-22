@@ -1,0 +1,2247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nila Store - Variation Catalog Importer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2874f0;
+      --primary-hover: #125cd4;
+      --primary-light: #e8f0fe;
+      --accent: #fb641b;
+      --accent-hover: #e0530d;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --bg: #f4f6fb;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --border-focus: #93c5fd;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .brand-logo {
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      color: white;
+      font-weight: 800;
+      font-size: 1.2rem;
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(40, 116, 240, 0.35);
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .server-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      background: #f8fafc;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warning);
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.online {
+      background: var(--success);
+    }
+
+    .status-dot.offline {
+      background: var(--danger);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1440px;
+      margin: 1.75rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .header-intro {
+      margin-bottom: 1.5rem;
+    }
+
+    .header-intro h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .header-intro p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Layout Grid */
+    .grid-main {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1080px) {
+      .grid-main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card Component */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fafbfc;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #334155;
+    }
+
+    .form-label span.hint {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #ffffff;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(40, 116, 240, 0.15);
+    }
+
+    .form-control.code-font {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+
+    /* Category Preset Chips */
+    .presets-container {
+      margin-top: 0.5rem;
+    }
+
+    .presets-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.4rem;
+    }
+
+    .chip-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .preset-chip {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+      padding: 0.28rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .preset-chip:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: #bfdbfe;
+    }
+
+    .preset-chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Category Breadcrumb Preview */
+    .cat-preview {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #f8fafc;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px dashed var(--border);
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #475569;
+      overflow-x: auto;
+    }
+
+    .cat-crumb {
+      background: white;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .cat-sep {
+      color: #94a3b8;
+      font-size: 0.7rem;
+    }
+
+    /* Input Tabs */
+    .tabs-nav {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+      border-top-left-radius: var(--radius-md);
+      border-top-right-radius: var(--radius-md);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem 0.5rem;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: #f1f5f9;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: white;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 1.25rem;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Dropzone */
+    .dropzone {
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius-sm);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      background: #fafbfc;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .dropzone-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .dropzone-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .dropzone-subtext {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Form Rows */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 4px rgba(40, 116, 240, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 8px rgba(40, 116, 240, 0.35);
+    }
+
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      color: white;
+      box-shadow: 0 2px 6px rgba(251, 100, 27, 0.3);
+    }
+
+    .btn-accent:hover {
+      background: linear-gradient(135deg, var(--accent-hover), #c2410c);
+      box-shadow: 0 4px 10px rgba(251, 100, 27, 0.4);
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1.5px solid var(--border);
+      color: #334155;
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.75rem;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none !important;
+    }
+
+    /* Progress Bar */
+    .progress-section {
+      display: none;
+      margin-bottom: 1.25rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .progress-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Stats Banner */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--primary);
+    }
+
+    .stat-card.accent::before { background: var(--accent); }
+    .stat-card.success::before { background: var(--success); }
+    .stat-card.purple::before { background: #8b5cf6; }
+
+    .stat-val {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.1;
+    }
+
+    .stat-lbl {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-top: 0.25rem;
+    }
+
+    /* Preview Product Cards */
+    .preview-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 0.35rem;
+    }
+
+    .product-preview-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .product-preview-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .prod-card-top {
+      position: relative;
+      height: 160px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .prod-card-top img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .prod-card-top .img-placeholder {
+      font-size: 2rem;
+      color: #94a3b8;
+    }
+
+    .prod-badge-sku {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .prod-badge-cat {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0.5rem;
+      right: 0.5rem;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(4px);
+      color: #1e293b;
+      font-size: 0.65rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .prod-card-body {
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .prod-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1.3;
+      margin-bottom: 0.4rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .prod-prices {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .price-sale {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .price-regular {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    .price-base {
+      font-size: 0.7rem;
+      color: #059669;
+      background: #d1fae5;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .prod-sizes-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .prod-sizes-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+
+    .size-pill {
+      background: #e2e8f0;
+      color: #1e293b;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+    }
+
+    /* Terminal Console */
+    .terminal-window {
+      background: #0f172a;
+      border-radius: var(--radius-sm);
+      border: 1px solid #1e293b;
+      color: #f8fafc;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.6;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .terminal-header {
+      background: #1e293b;
+      padding: 0.5rem 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      border-bottom: 1px solid #334155;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ef4444;
+    }
+    .terminal-dot:nth-child(2) { background: #f59e0b; }
+    .terminal-dot:nth-child(3) { background: #10b981; }
+
+    .terminal-body {
+      padding: 0.85rem;
+      max-height: 340px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-success { color: #34d399; }
+    .log-error { color: #f87171; }
+    .log-info { color: #60a5fa; }
+    .log-var { color: #c084fc; }
+
+    /* Empty state */
+    .empty-placeholder {
+      text-align: center;
+      padding: 3.5rem 1.5rem;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 2.8rem;
+      margin-bottom: 0.75rem;
+      opacity: 0.7;
+    }
+
+    .empty-title {
+      font-weight: 700;
+      color: #334155;
+      font-size: 1rem;
+    }
+
+    .empty-desc {
+      font-size: 0.85rem;
+      max-width: 320px;
+      margin: 0.35rem auto 0;
+    }
+
+    /* Modal / Alert Overlay */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .toast {
+      background: #1e293b;
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.success { background: #065f46; border-left: 4px solid #10b981; }
+    .toast.error { background: #7f1d1d; border-left: 4px solid #ef4444; }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: #334155;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <a href="#" class="brand">
+      <div class="brand-logo">N</div>
+      <div>
+        <div class="brand-title">Nila Store</div>
+      </div>
+      <span class="brand-tag">Firestore Importer</span>
+    </a>
+    <div style="display: flex; gap: 0.6rem; align-items: center;">
+      <button type="button" class="btn btn-outline btn-sm" onclick="openBannerManager()" style="font-weight: 600;">
+        🖼️ Slider Banners
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="openCategoryManager()" style="font-weight: 600;">
+        📂 Database Categories
+      </button>
+      <div class="server-status" id="serverStatusBadge">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Checking server...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="header-intro">
+      <h1>Dynamic Product Catalog Importer</h1>
+    <!-- Firebase Key Warning Alert -->
+    <div id="firebaseErrorBanner" style="display: none; background: #fff1f2; border: 1.5px solid #fecdd3; border-left: 5px solid #ef4444; border-radius: var(--radius-sm); padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: #9f1239;">
+      <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+        <span style="font-size: 1.4rem; line-height: 1;">⚠️</span>
+        <div style="flex: 1;">
+          <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.25rem;">Firebase Service Account Notice</div>
+          <div id="firebaseErrorText" style="font-size: 0.85rem; line-height: 1.5; color: #881337;"></div>
+          <div style="font-size: 0.8rem; margin-top: 0.5rem; color: #4c0519;">
+            <strong>To fix:</strong> Go to Firebase Console &gt; Project Settings &gt; Service Accounts &gt; "Generate new private key", download the file, and replace <code>serviceAccountKey.json</code> in this project folder.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-main">
+      <!-- Left Column: Settings and Input Form -->
+      <section>
+        <!-- Category Configuration Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>🏷️</span> Category Selector &amp; Hierarchy
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="resetCategory()">Default</button>
+          </div>
+          <div class="card-body">
+            <!-- 1. Quick Dropdown Selector -->
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label class="form-label" for="categoryDropdown">
+                <span>Choose Existing Category</span>
+                <span class="hint">Select from saved list</span>
+              </label>
+              <select id="categoryDropdown" class="form-control" onchange="onCategoryDropdownChange(this.value)">
+                <option value="">-- 🔍 Choose an Existing / Saved Category --</option>
+              </select>
+            </div>
+
+            <!-- 2. Manual / Autocomplete Input -->
+            <div class="form-group">
+              <label class="form-label" for="categoryInput">
+                <span>Category Path (Type or Edit)</span>
+                <span class="hint">Format: Level 1 &gt; Level 2 &gt; Level 3</span>
+              </label>
+              <div style="display: flex; gap: 0.4rem;">
+                <input 
+                  type="text" 
+                  id="categoryInput" 
+                  class="form-control" 
+                  list="categoryDatalist"
+                  placeholder="e.g. Home & Kitchen > Home Decor > Covers"
+                  value="Women > Western Wear Ladies > Top"
+                  oninput="onCategoryInputChange()"
+                >
+                <button type="button" class="btn btn-outline btn-sm" onclick="saveCurrentCategory()" title="Save this category to your permanent list" style="white-space: nowrap;">
+                  💾 Save
+                </button>
+              </div>
+              <datalist id="categoryDatalist"></datalist>
+              
+              <!-- Live Breadcrumb Visualization -->
+              <div class="cat-preview" id="catBreadcrumbs">
+                <span class="cat-crumb">Women</span>
+                <span class="cat-sep">❯</span>
+                <span class="cat-crumb">Western Wear Ladies</span>
+                <span class="cat-sep">❯</span>
+                <span class="cat-crumb">Top</span>
+              </div>
+            </div>
+
+            <!-- 3. Dynamic Quick Presets & Recently Saved Chips -->
+            <div class="presets-container">
+              <div class="presets-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Quick Category Chips</span>
+                <span style="font-weight: normal; font-size: 0.7rem; color: var(--text-muted);">Click to select</span>
+              </div>
+              <div class="chip-cloud" id="dynamicChipCloud">
+                <!-- Injected dynamically by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing & Inventory Rule Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>⚙️</span> Pricing & Inventory Settings
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="regularMarkup">
+                  <span>Regular Price (+)</span>
+                  <span class="hint">MRP Markup</span>
+                </label>
+                <input type="number" id="regularMarkup" class="form-control" value="300" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="saleMarkup">
+                  <span>Sale Price (+)</span>
+                  <span class="hint">Selling Markup</span>
+                </label>
+                <input type="number" id="saleMarkup" class="form-control" value="50" min="0">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="defaultStock">
+                  <span>Default Stock</span>
+                </label>
+                <input type="number" id="defaultStock" class="form-control" value="1000" min="1">
+              </div>
+              <div class="form-group" style="display: flex; align-items: flex-end; padding-bottom: 0.6rem;">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="downloadImagesCheckbox" checked>
+                  <span>Download images to images/</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Catalog Data Input Card -->
+        <div class="card">
+          <div class="card-header" style="padding: 0;">
+            <div class="tabs-nav" style="width: 100%;">
+              <button class="tab-btn active" onclick="switchDataTab('paste', this)">📝 Paste JSON</button>
+              <button class="tab-btn" onclick="switchDataTab('upload', this)">📁 Upload File</button>
+              <button class="tab-btn" onclick="switchDataTab('server', this)">💾 Server Files</button>
+            </div>
+          </div>
+
+          <!-- Tab 1: Paste JSON -->
+          <div id="tab-paste" class="tab-content active">
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <label class="form-label" style="margin-bottom: 0;" for="jsonTextarea">JSON Payload (catalogs array or object)</label>
+                <div style="display: flex; gap: 0.3rem;">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="beautifyJson()">Format</button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="clearJson()">Clear</button>
+                </div>
+              </div>
+              <textarea id="jsonTextarea" class="form-control code-font" rows="12" placeholder='Paste JSON data here. Example:&#10;{&#10;  "catalogs": [&#10;    {&#10;      "hero_pid": 123456,&#10;      "name": "Sample Product",&#10;      "min_product_price": 250,&#10;      "full_details": "Sizes:\nS\nM\nL\nXL"&#10;    }&#10;  ]&#10;}'></textarea>
+            </div>
+          </div>
+
+          <!-- Tab 2: Upload File -->
+          <div id="tab-upload" class="tab-content">
+            <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+              <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="handleFileSelect(event)">
+              <div class="dropzone-icon">📥</div>
+              <div class="dropzone-text">Click or Drag & Drop a .json file here</div>
+              <div class="dropzone-subtext">Supports variation_data.json, data.json, or custom catalog dumps</div>
+            </div>
+            <div id="fileSelectedInfo" style="display: none; margin-top: 0.75rem; font-size: 0.85rem; color: #334155; background: #f8fafc; padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border);"></div>
+          </div>
+
+          <!-- Tab 3: Server Files -->
+          <div id="tab-server" class="tab-content">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              Load JSON catalog data directly from repository files on disk:
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <button type="button" class="btn btn-outline" style="justify-content: flex-start;" onclick="loadServerFile('variation_data.json')">
+                <span>📄</span>
+                <div style="text-align: left;">
+                  <div style="font-weight: 700; font-size: 0.85rem;">variation_data.json</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Standard variation catalog with sizes & images</div>
+                </div>
+              </button>
+              <button type="button" class="btn btn-outline" style="justify-content: flex-start;" onclick="loadServerFile('data.json')">
+                <span>📄</span>
+                <div style="text-align: left;">
+                  <div style="font-weight: 700; font-size: 0.85rem;">data.json</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Simple catalog collection</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="padding: 0 1.25rem 1.25rem;">
+            <div class="btn-group">
+              <button type="button" class="btn btn-outline" style="flex: 1;" id="btnPreview" onclick="handlePreview()">
+                <span>👁️</span> Preview Catalogs
+              </button>
+              <button type="button" class="btn btn-accent" style="flex: 1.3;" id="btnImport" onclick="handleImport()">
+                <span>🚀</span> Import to Firestore
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Live Stats, Product Preview, and Terminal Console -->
+      <section>
+        <!-- Real-Time Progress Bar Section -->
+        <div class="progress-section" id="progressSection">
+          <div class="progress-header">
+            <span id="progressTitle">Importing to Firestore...</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-sub">
+            <span id="progressStatusText">Starting...</span>
+            <span id="progressCountText">0 / 0</span>
+          </div>
+        </div>
+
+        <!-- Metrics Banner -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-val" id="statCatalogs">0</div>
+            <div class="stat-lbl">Catalogs</div>
+          </div>
+          <div class="stat-card accent">
+            <div class="stat-val" id="statParents">0</div>
+            <div class="stat-lbl">Parent Products</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-val" id="statVariations">0</div>
+            <div class="stat-lbl">Size Variations</div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-val" id="statTotalDocs">0</div>
+            <div class="stat-lbl">Total Firestore Docs</div>
+          </div>
+        </div>
+
+        <!-- Product Preview Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>🛍️</span> Products Preview
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span id="previewCountBadge" style="font-size: 0.75rem; background: var(--primary-light); color: var(--primary); padding: 0.2rem 0.5rem; border-radius: 999px; font-weight: 600;">0 items</span>
+            </div>
+          </div>
+          <div class="card-body" id="previewContainer">
+            <div class="empty-placeholder">
+              <div class="empty-icon">📦</div>
+              <div class="empty-title">No Catalog Data Loaded Yet</div>
+              <div class="empty-desc">Enter your category path and paste/upload JSON data on the left, then click <strong>Preview Catalogs</strong> to inspect size variations.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Execution Terminal / Logs -->
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <div class="terminal-dots">
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+              </div>
+              <span style="font-weight: 600;">Live Import Terminal</span>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" style="background: transparent; color: #cbd5e1; border-color: #475569; padding: 0.15rem 0.4rem; font-size: 0.7rem;" onclick="clearLogs()">Clear</button>
+          </div>
+          <div class="terminal-body" id="terminalBody">
+            <span class="log-info">[Ready]</span> Importer initialized. Fill in categories &amp; data to begin.
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Category Manager Modal -->
+  <div id="categoryManagerModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 1.5rem;">
+    <div style="background: white; border-radius: var(--radius-md); max-width: 650px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden;">
+      <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fafbfc;">
+        <div style="font-weight: 700; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+          <span>📂</span> Firestore Database Categories
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeCategoryManager()" style="padding: 0.2rem 0.5rem; font-size: 1rem; line-height: 1;">&times;</button>
+      </div>
+      <div style="padding: 1.25rem; overflow-y: auto; flex: 1;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Active categories and product counts currently stored in Firestore:</p>
+          <button type="button" class="btn btn-outline btn-sm" onclick="loadFirestoreCategories()">🔄 Refresh</button>
+        </div>
+        <div id="firestoreCatList" style="display: flex; flex-direction: column; gap: 0.6rem;">
+          <div style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading categories from Firestore...</div>
+        </div>
+      </div>
+      <div style="padding: 0.85rem 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; background: #fafbfc;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeCategoryManager()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Banner Slider Manager Modal -->
+  <div id="bannerManagerModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; padding: 1.5rem;">
+    <div style="background: white; border-radius: var(--radius-md); max-width: 750px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden;">
+      <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fafbfc;">
+        <div style="font-weight: 700; font-size: 1.05rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🖼️</span> Hero Slider &amp; Banner Manager
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeBannerManager()" style="padding: 0.2rem 0.5rem; font-size: 1.1rem; line-height: 1;">&times;</button>
+      </div>
+
+      <div style="padding: 1.25rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Section 1: Current Banners List -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <div style="font-weight: 700; font-size: 0.92rem; color: #1e293b;">Active Slider Banners</div>
+            <span id="bannerCountBadge" style="font-size: 0.75rem; background: #f1f5f9; color: #475569; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 600;">0 Slides</span>
+          </div>
+          <div id="bannerSlidesList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="text-align: center; padding: 1.5rem; color: var(--text-muted);">Loading banners...</div>
+          </div>
+        </div>
+
+        <!-- Section 2: Add New Banner Slide -->
+        <div style="background: #f8fafc; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 1.25rem;">
+          <div style="font-weight: 700; font-size: 0.95rem; color: #0f172a; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>➕</span> Add New Banner Slide
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <!-- 1. Image Upload / URL -->
+            <div class="form-group" style="margin: 0;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem;">
+                <label class="form-label" style="margin: 0;">
+                  <span>Banner Image</span>
+                  <span class="hint">Upload file or paste image URL</span>
+                </label>
+                <span style="font-size: 0.72rem; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 0.1rem 0.45rem; border-radius: 4px; font-weight: 600;">
+                  📐 Recommended: 1200 × 400 px (3:1 ratio)
+                </span>
+              </div>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <input type="text" id="newBannerImgUrl" class="form-control" placeholder="https://example.com/banner.jpg or click Upload" style="flex: 1;">
+                <input type="file" id="bannerFileInput" accept="image/*" style="display: none;" onchange="onBannerFileSelected(event)">
+                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('bannerFileInput').click()" style="white-space: nowrap;">
+                  📁 Upload File
+                </button>
+              </div>
+            </div>
+
+            <!-- Image Live Thumbnail Preview -->
+            <div id="newBannerPreviewBox" style="display: none; height: 110px; width: 100%; border-radius: 6px; overflow: hidden; position: relative; border: 1px solid var(--border);">
+              <img id="newBannerPreviewImg" src="" alt="Banner Preview" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+
+            <!-- 2. Target Redirect URL -->
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" style="margin-bottom: 0.35rem;">
+                <span>Target Redirect URL (When Clicked)</span>
+                <span class="hint">Link user goes to when clicking banner</span>
+              </label>
+              <input type="text" id="newBannerRedirectUrl" class="form-control" placeholder="e.g. #cat-women, #deals, or https://..." value="#cat-women">
+              
+              <!-- Quick Link Chips -->
+              <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.45rem;">
+                <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.15rem 0.45rem;" onclick="setBannerRedirectUrl('#cat-women')">👗 Women</button>
+                <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.15rem 0.45rem;" onclick="setBannerRedirectUrl('#cat-men')">👔 Men</button>
+                <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.15rem 0.45rem;" onclick="setBannerRedirectUrl('#cat-home')">🏠 Home Decor</button>
+                <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.15rem 0.45rem;" onclick="setBannerRedirectUrl('#deals')">🔥 Deals</button>
+                <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.15rem 0.45rem;" onclick="setBannerRedirectUrl('https://wa.me/918610769343')">💬 WhatsApp</button>
+              </div>
+            </div>
+
+            <!-- 3. Title / Alt text -->
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" style="margin-bottom: 0.35rem;">
+                <span>Banner Title / Caption (Optional)</span>
+                <span class="hint">For accessibility &amp; hover tooltip</span>
+              </label>
+              <input type="text" id="newBannerTitle" class="form-control" placeholder="e.g. Grand Festive Sale - Up to 70% Off">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 0.25rem;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="addNewBannerSlide()">
+                <span>➕</span> Add to Slides
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="padding: 0.85rem 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fafbfc;">
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Changes will reflect immediately on your store homepage.</span>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="closeBannerManager()">Cancel</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="saveBannersToServer()">💾 Save &amp; Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // State
+    let currentData = null;
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      checkServerStatus();
+      initCategories();
+      setupDropzone();
+    });
+
+    let serverFirebaseState = { connected: false, error: null };
+
+    // Check server status
+    async function checkServerStatus() {
+      const dot = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      const banner = document.getElementById('firebaseErrorBanner');
+
+      try {
+        const res = await fetch('/api/status');
+        if (res.ok) {
+          const data = await res.json();
+          serverFirebaseState = { connected: data.firebase_connected, error: data.error };
+          if (data.firebase_connected) {
+            dot.className = 'status-dot online';
+            text.textContent = 'Server & Firestore Connected';
+            if (banner) banner.style.display = 'none';
+          } else {
+            dot.className = 'status-dot offline';
+            text.textContent = 'Firebase Key Issue (Click for details)';
+            if (banner) {
+              banner.style.display = 'block';
+              document.getElementById('firebaseErrorText').textContent = data.error || 'Invalid service account key';
+            }
+            logTerminal(`⚠️ Firebase warning: ${data.error}`, 'log-error');
+          }
+        } else {
+          dot.className = 'status-dot offline';
+          text.textContent = 'Server Error (' + res.status + ')';
+        }
+      } catch (err) {
+        dot.className = 'status-dot offline';
+        text.textContent = 'Server Offline (Run python import_server.py)';
+      }
+    }
+
+    let savedCategories = [
+      "Women > Western Wear Ladies > Top",
+      "Women > Ethnic Wear > Kurtis",
+      "Women > Sarees > Silk Sarees",
+      "Women > Sarees > Cotton Sarees",
+      "Women > Sarees > Poonam Sarees",
+      "Men > Western Wear > Casual Shirts",
+      "Men > Western Wear > T-Shirts",
+      "Men > Bottomwear > Pants & Trousers",
+      "Men > Bottomwear > Jeans",
+      "Home & Kitchen > Home Decor > Covers",
+      "Home & Kitchen > Home Decor > Curtains",
+      "Mobiles > Smartphones > Android",
+      "Mobiles > Accessories > Chargers",
+      "Electronics > Audio > Headphones",
+      "Electronics > Laptops > Accessories",
+      "Beauty > Skincare > Moisturizers",
+      "Health > Wellness > Supplements"
+    ];
+
+    // Initialize category management
+    async function initCategories() {
+      // 1. Load from localStorage
+      try {
+        const localSaved = JSON.parse(localStorage.getItem('nila_saved_categories') || '[]');
+        if (Array.isArray(localSaved) && localSaved.length > 0) {
+          localSaved.forEach(c => {
+            const clean = String(c).trim();
+            if (clean && !savedCategories.includes(clean)) {
+              savedCategories.unshift(clean);
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('Could not read localStorage categories:', e);
+      }
+
+      // 2. Fetch from server API
+      try {
+        const res = await fetch('/api/categories');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.categories)) {
+            data.categories.forEach(c => {
+              const clean = String(c).trim();
+              if (clean && !savedCategories.includes(clean)) {
+                savedCategories.push(clean);
+              }
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch server categories:', err);
+      }
+
+      // 3. Render UI components
+      renderCategoryUI();
+
+      // 4. Restore last selected category from localStorage if available
+      const lastCat = localStorage.getItem('nila_last_category');
+      if (lastCat && lastCat.trim()) {
+        document.getElementById('categoryInput').value = lastCat.trim();
+      }
+
+      updateCategoryBreadcrumbs();
+      syncCategoryDropdownValue();
+    }
+
+    // Render dropdown options, datalist, and quick chips
+    function renderCategoryUI() {
+      const dropdown = document.getElementById('categoryDropdown');
+      const datalist = document.getElementById('categoryDatalist');
+      const chipContainer = document.getElementById('dynamicChipCloud');
+
+      // 1. Populate Datalist
+      datalist.innerHTML = savedCategories.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+
+      // 2. Group Categories for Dropdown
+      const groups = {
+        '⭐ Recently Saved & Custom': [],
+        '👗 Women': [],
+        '👔 Men': [],
+        '🏠 Home & Kitchen': [],
+        '📱 Mobiles & Electronics': [],
+        '💄 Beauty & Health': [],
+        '📁 Other Categories': []
+      };
+
+      savedCategories.forEach(c => {
+        const lower = c.toLowerCase();
+        if (lower.startsWith('women')) groups['👗 Women'].push(c);
+        else if (lower.startsWith('men')) groups['👔 Men'].push(c);
+        else if (lower.startsWith('home')) groups['🏠 Home & Kitchen'].push(c);
+        else if (lower.startsWith('mobiles') || lower.startsWith('electronics')) groups['📱 Mobiles & Electronics'].push(c);
+        else if (lower.startsWith('beauty') || lower.startsWith('health')) groups['💄 Beauty & Health'].push(c);
+        else groups['⭐ Recently Saved & Custom'].push(c);
+      });
+
+      let dropdownHtml = '<option value="">-- 🔍 Choose an Existing / Saved Category --</option>';
+      for (const [groupName, items] of Object.entries(groups)) {
+        if (items.length > 0) {
+          dropdownHtml += `<optgroup label="${escapeHtml(groupName)}">`;
+          items.forEach(item => {
+            dropdownHtml += `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`;
+          });
+          dropdownHtml += '</optgroup>';
+        }
+      }
+      dropdown.innerHTML = dropdownHtml;
+
+      // 3. Populate Quick Chips
+      chipContainer.innerHTML = savedCategories.slice(0, 12).map(cat => {
+        const shortName = cat.split('>').pop().trim() || cat;
+        return `<button type="button" class="preset-chip" onclick="setPresetCategory('${escapeHtml(cat)}', this)" title="${escapeHtml(cat)}">${escapeHtml(shortName)}</button>`;
+      }).join('');
+    }
+
+    // Category Change Events
+    function onCategoryDropdownChange(val) {
+      if (!val) return;
+      document.getElementById('categoryInput').value = val;
+      onCategoryInputChange();
+      showToast(`Selected category: ${val}`, 'info');
+    }
+
+    function onCategoryInputChange() {
+      const val = document.getElementById('categoryInput').value.trim();
+      updateCategoryBreadcrumbs();
+      syncCategoryDropdownValue();
+      if (val) {
+        localStorage.setItem('nila_last_category', val);
+      }
+    }
+
+    function syncCategoryDropdownValue() {
+      const val = document.getElementById('categoryInput').value.trim();
+      const dropdown = document.getElementById('categoryDropdown');
+      dropdown.value = val || '';
+
+      // Highlight active chip if match found
+      document.querySelectorAll('#dynamicChipCloud .preset-chip').forEach(chip => {
+        if (chip.getAttribute('title') === val || chip.textContent.trim() === val) {
+          chip.classList.add('active');
+        } else {
+          chip.classList.remove('active');
+        }
+      });
+    }
+
+    // Save Category permanently
+    async function saveCurrentCategory() {
+      const val = document.getElementById('categoryInput').value.trim();
+      if (!val) {
+        showToast('Please enter a category path to save', 'error');
+        return;
+      }
+
+      if (!savedCategories.includes(val)) {
+        savedCategories.unshift(val);
+      }
+
+      // Save to localStorage
+      try {
+        localStorage.setItem('nila_saved_categories', JSON.stringify(savedCategories));
+        localStorage.setItem('nila_last_category', val);
+      } catch (e) {}
+
+      // Save to server
+      try {
+        await fetch('/api/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ category: val })
+        });
+      } catch (e) {}
+
+      renderCategoryUI();
+      syncCategoryDropdownValue();
+      showToast(`Saved "${val}" to category list!`, 'success');
+      logTerminal(`✓ Category saved: "${val}"`, 'log-success');
+    }
+
+    // Category Breadcrumbs and Presets
+    function updateCategoryBreadcrumbs() {
+      const val = document.getElementById('categoryInput').value.trim();
+      const container = document.getElementById('catBreadcrumbs');
+      if (!val) {
+        container.innerHTML = '<span style="color:#94a3b8; font-style: italic;">No category specified</span>';
+        return;
+      }
+
+      const parts = val.split('>').map(p => p.trim()).filter(Boolean);
+      if (parts.length === 0) {
+        container.innerHTML = '<span style="color:#94a3b8; font-style: italic;">Empty category</span>';
+        return;
+      }
+
+      container.innerHTML = parts.map((part, i) => {
+        return (i > 0 ? '<span class="cat-sep">❯</span>' : '') + `<span class="cat-crumb">${escapeHtml(part)}</span>`;
+      }).join('');
+    }
+
+    function setPresetCategory(catStr, chipElem) {
+      document.getElementById('categoryInput').value = catStr;
+      onCategoryInputChange();
+      document.querySelectorAll('#dynamicChipCloud .preset-chip').forEach(c => c.classList.remove('active'));
+      if (chipElem) chipElem.classList.add('active');
+    }
+
+    function resetCategory() {
+      setPresetCategory('Women > Western Wear Ladies > Top');
+    }
+
+    // Tabs switching
+    function switchDataTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      if (btn) btn.classList.add('active');
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) target.classList.add('active');
+    }
+
+    // Dropzone logic
+    function setupDropzone() {
+      const dropzone = document.getElementById('dropzone');
+      ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dragover');
+        });
+      });
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+          handleFileInput(files[0]);
+        }
+      });
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        handleFileInput(files[0]);
+      }
+    }
+
+    function handleFileInput(file) {
+      if (!file.name.endsWith('.json')) {
+        showToast('Please select a valid .json file', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          currentData = parsed;
+          document.getElementById('jsonTextarea').value = JSON.stringify(parsed, null, 2);
+          
+          const info = document.getElementById('fileSelectedInfo');
+          info.style.display = 'block';
+          info.innerHTML = `<strong>Loaded File:</strong> ${escapeHtml(file.name)} (${(file.size / 1024).toFixed(1)} KB)`;
+          
+          showToast(`Loaded ${file.name} successfully`, 'success');
+          logTerminal(`Loaded JSON file "${file.name}" into memory.`, 'log-info');
+          handlePreview();
+        } catch (err) {
+          showToast('Invalid JSON file format: ' + err.message, 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Load from server
+    async function loadServerFile(filename) {
+      logTerminal(`Loading server file: ${filename}...`, 'log-info');
+      try {
+        const res = await fetch(`/api/load-sample?file=${encodeURIComponent(filename)}`);
+        const result = await res.json();
+        if (result.success) {
+          currentData = result.data;
+          document.getElementById('jsonTextarea').value = JSON.stringify(result.data, null, 2);
+          showToast(`Loaded ${filename} from server`, 'success');
+          logTerminal(`✓ Loaded ${filename} with ${result.data?.catalogs?.length || 0} catalogs.`, 'log-success');
+          handlePreview();
+        } else {
+          showToast(`Error: ${result.error}`, 'error');
+          logTerminal(`✗ Error loading ${filename}: ${result.error}`, 'log-error');
+        }
+      } catch (err) {
+        showToast(`Failed to load ${filename}: ${err.message}`, 'error');
+      }
+    }
+
+    // JSON Textarea helpers
+    function beautifyJson() {
+      const ta = document.getElementById('jsonTextarea');
+      try {
+        const parsed = JSON.parse(ta.value);
+        ta.value = JSON.stringify(parsed, null, 2);
+        showToast('JSON formatted successfully', 'success');
+      } catch (e) {
+        showToast('Invalid JSON: ' + e.message, 'error');
+      }
+    }
+
+    function clearJson() {
+      document.getElementById('jsonTextarea').value = '';
+      currentData = null;
+      document.getElementById('fileSelectedInfo').style.display = 'none';
+      showToast('Cleared input', 'info');
+    }
+
+    // Collect Form Payload
+    function getFormPayload() {
+      const category = document.getElementById('categoryInput').value.trim() || 'Women > Western Wear Ladies > Top';
+      const regular_price_markup = parseFloat(document.getElementById('regularMarkup').value) || 300;
+      const sale_price_markup = parseFloat(document.getElementById('saleMarkup').value) || 50;
+      const stock = parseInt(document.getElementById('defaultStock').value) || 1000;
+      const download_images = document.getElementById('downloadImagesCheckbox').checked;
+
+      let data = null;
+      const rawText = document.getElementById('jsonTextarea').value.trim();
+      if (rawText) {
+        try {
+          data = JSON.parse(rawText);
+        } catch (e) {
+          showToast('Invalid JSON syntax: ' + e.message, 'error');
+          return null;
+        }
+      } else if (currentData) {
+        data = currentData;
+      }
+
+      if (!data) {
+        showToast('Please paste or upload JSON catalog data first', 'error');
+        return null;
+      }
+
+      return {
+        category,
+        regular_price_markup,
+        sale_price_markup,
+        stock,
+        download_images,
+        data
+      };
+    }
+
+    // Preview Handler
+    async function handlePreview() {
+      const payload = getFormPayload();
+      if (!payload) return;
+
+      const btn = document.getElementById('btnPreview');
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Parsing...';
+
+      logTerminal(`Parsing preview for category: "${payload.category}"...`, 'log-info');
+
+      try {
+        const res = await fetch('/api/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          renderPreview(result);
+          logTerminal(`✓ Preview ready: ${result.total_parent_products} Parent Products, ${result.total_variations} Size Variations (${result.total_firestore_documents} total docs).`, 'log-success');
+          showToast(`Parsed ${result.total_parent_products} items with ${result.total_variations} variations!`, 'success');
+        } else {
+          showToast(result.error || 'Preview failed', 'error');
+          logTerminal(`✗ Preview error: ${result.error}`, 'log-error');
+        }
+      } catch (err) {
+        showToast('Network error during preview: ' + err.message, 'error');
+        logTerminal(`✗ Network error: ${err.message}`, 'log-error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>👁️</span> Preview Catalogs';
+      }
+    }
+
+    // Render Preview
+    function renderPreview(result) {
+      document.getElementById('statCatalogs').textContent = result.total_catalogs;
+      document.getElementById('statParents').textContent = result.total_parent_products;
+      document.getElementById('statVariations').textContent = result.total_variations;
+      document.getElementById('statTotalDocs').textContent = result.total_firestore_documents;
+      document.getElementById('previewCountBadge').textContent = `${result.total_parent_products} items`;
+
+      const container = document.getElementById('previewContainer');
+      if (!result.items || result.items.length === 0) {
+        container.innerHTML = `
+          <div class="empty-placeholder">
+            <div class="empty-icon">⚠️</div>
+            <div class="empty-title">No Products Found</div>
+            <div class="empty-desc">The JSON payload did not contain recognizable catalog products.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const cardsHtml = result.items.map(item => {
+        const imgUrl = item.main_image || item.collage_image || '';
+        const imgTag = imgUrl 
+          ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.name)}" onerror="this.src='https://picsum.photos/300/300?random=${item.sku}'">`
+          : `<div class="img-placeholder">👗</div>`;
+
+        const sizePills = (item.sizes || []).length > 0
+          ? item.sizes.map(s => `<span class="size-pill">${escapeHtml(s.replace(/\s*\(.*$/, ''))}</span>`).join('')
+          : `<span style="font-size:0.7rem; color:#94a3b8; font-style:italic;">No sizes detected</span>`;
+
+        return `
+          <div class="product-preview-card">
+            <div class="prod-card-top">
+              ${imgTag}
+              <div class="prod-badge-sku">SKU: ${escapeHtml(item.sku)}</div>
+              <div class="prod-badge-cat" title="${escapeHtml(item.category)}">📂 ${escapeHtml(item.category)}</div>
+            </div>
+            <div class="prod-card-body">
+              <div class="prod-title" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
+              <div class="prod-prices">
+                <span class="price-sale">₹${item.sale_price}</span>
+                <span class="price-regular">₹${item.regular_price}</span>
+                <span class="price-base">Base: ₹${item.min_product_price}</span>
+              </div>
+              <div>
+                <div class="prod-sizes-title" style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>Sizes (${(item.sizes || []).length})</span>
+                </div>
+                <div class="prod-sizes-pills">${sizePills}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `<div class="preview-list">${cardsHtml}</div>`;
+    }
+
+    // Real-Time Streaming Import to Firestore Handler
+    async function handleImport() {
+      if (!serverFirebaseState.connected) {
+        showToast('Cannot import: Firebase credentials issue', 'error');
+        alert('Cannot Import to Firestore:\n\n' + (serverFirebaseState.error || 'Firebase is not connected.') + '\n\nPlease update serviceAccountKey.json with a valid key from Firebase Console.');
+        return;
+      }
+
+      const payload = getFormPayload();
+      if (!payload) return;
+
+      const confirmMsg = `Ready to import to Firebase Firestore?\n\n` +
+        `• Category: "${payload.category}"\n` +
+        `• Regular Price: Base + ₹${payload.regular_price_markup}\n` +
+        `• Sale Price: Base + ₹${payload.sale_price_markup}\n` +
+        `• Download Images: ${payload.download_images ? 'Yes' : 'No'}\n\n` +
+        `Proceed with Firestore write?`;
+
+      if (!confirm(confirmMsg)) return;
+
+      const btn = document.getElementById('btnImport');
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Importing in real-time...';
+
+      // Show Progress Bar
+      const progressSection = document.getElementById('progressSection');
+      const progressFill = document.getElementById('progressFill');
+      const progressPercent = document.getElementById('progressPercent');
+      const progressStatusText = document.getElementById('progressStatusText');
+      const progressCountText = document.getElementById('progressCountText');
+
+      progressSection.style.display = 'block';
+      progressFill.style.width = '0%';
+      progressPercent.textContent = '0%';
+      progressStatusText.textContent = 'Connecting to Firestore...';
+      progressCountText.textContent = '0 / 0';
+
+      logTerminal(`🚀 STARTING FIRESTORE STREAM IMPORT for "${payload.category}"...`, 'log-info');
+
+      let parentsCreated = 0;
+      let variationsCreated = 0;
+
+      try {
+        let response = await fetch('/api/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok && response.status === 404) {
+          response = await fetch('/api/import-stream', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}. Please make sure 'python import_server.py' is running and restarted with latest code.`);
+        }
+
+        const contentType = response.headers.get('Content-Type') || '';
+
+        // If server returned regular JSON
+        if (contentType.includes('application/json')) {
+          const result = await response.json();
+          if (result.logs && Array.isArray(result.logs)) {
+            result.logs.forEach(line => {
+              let style = 'log-info';
+              if (line.includes('✓')) style = 'log-success';
+              else if (line.includes('✗') || line.includes('ERROR')) style = 'log-error';
+              else if (line.includes('↳')) style = 'log-var';
+              logTerminal(line, style);
+            });
+          }
+          if (result.success) {
+            progressFill.style.width = '100%';
+            progressPercent.textContent = '100%';
+            progressStatusText.textContent = 'Import Complete!';
+            showToast(`Successfully imported ${result.imported_parents} products & ${result.imported_variations} variations!`, 'success');
+          } else {
+            showToast(result.error || 'Import failed', 'error');
+          }
+        } else {
+          // NDJSON Stream
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder('utf-8');
+          let buffer = '';
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop();
+
+            for (const line of lines) {
+              if (!line.trim()) continue;
+              try {
+                const evt = JSON.parse(line);
+                
+                if (evt.type === 'start') {
+                  progressCountText.textContent = `0 / ${evt.total_items}`;
+                  logTerminal(evt.message, 'log-info');
+                } else if (evt.type === 'progress') {
+                  progressFill.style.width = `${evt.percent}%`;
+                  progressPercent.textContent = `${evt.percent}%`;
+                  progressStatusText.textContent = `Processing: ${evt.product_name}`;
+                  progressCountText.textContent = `${evt.current} / ${evt.total}`;
+                  logTerminal(evt.message, 'log-info');
+                } else if (evt.type === 'parent_created') {
+                  parentsCreated = evt.imported_parents;
+                  document.getElementById('statParents').textContent = parentsCreated;
+                  document.getElementById('statTotalDocs').textContent = parentsCreated + variationsCreated;
+                  logTerminal(evt.message, 'log-success');
+                } else if (evt.type === 'variation_created') {
+                  variationsCreated = evt.imported_variations;
+                  document.getElementById('statVariations').textContent = variationsCreated;
+                  document.getElementById('statTotalDocs').textContent = parentsCreated + variationsCreated;
+                  logTerminal(evt.message, 'log-var');
+                } else if (evt.type === 'error') {
+                  logTerminal(evt.message, 'log-error');
+                } else if (evt.type === 'complete') {
+                  progressFill.style.width = '100%';
+                  progressPercent.textContent = '100%';
+                  progressStatusText.textContent = 'Complete!';
+                  logTerminal(evt.message, 'log-success');
+                  showToast(`Successfully imported ${evt.summary.imported_parents} products & ${evt.summary.imported_variations} variations!`, 'success');
+                }
+              } catch (jsonErr) {
+                console.warn('Could not parse streaming line:', line, jsonErr);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        showToast('Import error: ' + err.message, 'error');
+        logTerminal(`✗ Import stream error: ${err.message}`, 'log-error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🚀</span> Import to Firestore';
+      }
+    }
+
+    // Terminal log helpers
+    function logTerminal(msg, className = '') {
+      const body = document.getElementById('terminalBody');
+      const timeStr = new Date().toLocaleTimeString();
+      const div = document.createElement('div');
+      div.className = className;
+      div.textContent = `[${timeStr}] ${msg}`;
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function clearLogs() {
+      document.getElementById('terminalBody').innerHTML = '<span class="log-info">[Cleared]</span> Logs wiped.';
+    }
+
+    // Toast Notifications
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 4000);
+    }
+
+    // ==========================================
+    // Banner / Slider Manager Functions
+    // ==========================================
+    let currentBanners = [];
+
+    function openBannerManager() {
+      const modal = document.getElementById('bannerManagerModal');
+      modal.style.display = 'flex';
+      loadBannersAdmin();
+    }
+
+    function closeBannerManager() {
+      const modal = document.getElementById('bannerManagerModal');
+      modal.style.display = 'none';
+    }
+
+    function setBannerRedirectUrl(url) {
+      document.getElementById('newBannerRedirectUrl').value = url;
+    }
+
+    async function loadBannersAdmin() {
+      const listContainer = document.getElementById('bannerSlidesList');
+      const badge = document.getElementById('bannerCountBadge');
+      listContainer.innerHTML = '<div style="text-align: center; padding: 1.5rem; color: var(--text-muted);">Loading banners...</div>';
+
+      try {
+        const res = await fetch('/api/banners');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.banners)) {
+            currentBanners = data.banners;
+          }
+        }
+      } catch (e) {
+        console.warn('Could not fetch banners from server, using local fallback:', e);
+      }
+
+      if (!currentBanners || !currentBanners.length) {
+        currentBanners = [
+          {
+            id: 'banner-1',
+            image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1400&auto=format&fit=crop',
+            title: "Mega Fashion Sale - Up to 70% Off",
+            url: '#cat-women'
+          }
+        ];
+      }
+
+      renderBannerList();
+    }
+
+    function renderBannerList() {
+      const listContainer = document.getElementById('bannerSlidesList');
+      const badge = document.getElementById('bannerCountBadge');
+      badge.textContent = `${currentBanners.length} Slide${currentBanners.length === 1 ? '' : 's'}`;
+
+      if (!currentBanners.length) {
+        listContainer.innerHTML = '<div style="text-align: center; padding: 1.5rem; color: var(--text-muted);">No banners configured yet. Add one below!</div>';
+        return;
+      }
+
+      listContainer.innerHTML = currentBanners.map((b, idx) => {
+        return `
+          <div style="background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <span style="font-weight: 700; font-size: 0.85rem; color: var(--text-muted); min-width: 20px;">#${idx + 1}</span>
+            <div style="width: 120px; height: 60px; border-radius: 4px; overflow: hidden; background: #e2e8f0; flex-shrink: 0;">
+              <img src="${escapeHtml(b.image)}" alt="Banner" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://picsum.photos/200/100?random=${idx}'">
+            </div>
+            <div style="flex: 1; overflow: hidden;">
+              <div style="font-weight: 700; font-size: 0.88rem; color: #0f172a; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${escapeHtml(b.title || 'Untitled Banner')}</div>
+              <div style="font-size: 0.78rem; color: #2563eb; margin-top: 0.2rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">🔗 Redirects to: <code>${escapeHtml(b.url || '#')}</code></div>
+            </div>
+            <div style="display: flex; gap: 0.3rem;">
+              <button type="button" class="btn btn-outline btn-sm" style="padding: 0.2rem 0.45rem;" onclick="moveBannerSlide(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} title="Move Up">▲</button>
+              <button type="button" class="btn btn-outline btn-sm" style="padding: 0.2rem 0.45rem;" onclick="moveBannerSlide(${idx}, 1)" ${idx === currentBanners.length - 1 ? 'disabled' : ''} title="Move Down">▼</button>
+              <button type="button" class="btn btn-outline btn-sm" style="color: #ef4444; border-color: #fecdd3; padding: 0.2rem 0.45rem;" onclick="deleteBannerSlide(${idx})" title="Delete Slide">🗑️</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function moveBannerSlide(index, delta) {
+      const targetIdx = index + delta;
+      if (targetIdx < 0 || targetIdx >= currentBanners.length) return;
+      const temp = currentBanners[index];
+      currentBanners[index] = currentBanners[targetIdx];
+      currentBanners[targetIdx] = temp;
+      renderBannerList();
+    }
+
+    function deleteBannerSlide(index) {
+      if (confirm(`Are you sure you want to delete banner #${index + 1}?`)) {
+        currentBanners.splice(index, 1);
+        renderBannerList();
+        showToast('Banner removed from list. Click Save & Apply to persist.', 'info');
+      }
+    }
+
+    function onBannerFileSelected(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64Data = e.target.result;
+        
+        // Show local preview box immediately
+        const previewBox = document.getElementById('newBannerPreviewBox');
+        const previewImg = document.getElementById('newBannerPreviewImg');
+        previewBox.style.display = 'block';
+        previewImg.src = base64Data;
+
+        // Upload to server
+        showToast('Uploading image to server...', 'info');
+        try {
+          const res = await fetch('/api/upload-banner', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_data: base64Data })
+          });
+          const result = await res.json();
+          if (result.success && result.image_url) {
+            document.getElementById('newBannerImgUrl').value = result.image_url;
+            showToast('Image uploaded successfully!', 'success');
+          } else {
+            document.getElementById('newBannerImgUrl').value = base64Data;
+          }
+        } catch (err) {
+          document.getElementById('newBannerImgUrl').value = base64Data;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function addNewBannerSlide() {
+      const imgUrl = document.getElementById('newBannerImgUrl').value.trim();
+      const redirectUrl = document.getElementById('newBannerRedirectUrl').value.trim() || '#';
+      const title = document.getElementById('newBannerTitle').value.trim() || 'Special Offer';
+
+      if (!imgUrl) {
+        showToast('Please upload an image or provide an image URL', 'error');
+        return;
+      }
+
+      currentBanners.push({
+        id: `banner-${Date.now()}`,
+        image: imgUrl,
+        url: redirectUrl,
+        title: title,
+        active: true
+      });
+
+      // Clear input fields
+      document.getElementById('newBannerImgUrl').value = '';
+      document.getElementById('newBannerTitle').value = '';
+      document.getElementById('newBannerPreviewBox').style.display = 'none';
+
+      renderBannerList();
+      showToast('New slide added! Click "Save & Apply" to publish.', 'success');
+    }
+
+    async function saveBannersToServer() {
+      if (!currentBanners.length) {
+        showToast('You must have at least one banner slide', 'error');
+        return;
+      }
+
+      showToast('Saving banners...', 'info');
+      try {
+        const res = await fetch('/api/banners', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ banners: currentBanners })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast('✅ Banners saved & applied successfully!', 'success');
+          logTerminal(`✓ Banners updated: ${currentBanners.length} active slides`, 'log-success');
+          closeBannerManager();
+        } else {
+          showToast(`Error saving banners: ${result.error}`, 'error');
+        }
+      } catch (err) {
+        showToast(`Failed: ${err.message}`, 'error');
+      }
+    }
+
+    // Category Manager Modal Functions
+    function openCategoryManager() {
+      const modal = document.getElementById('categoryManagerModal');
+      modal.style.display = 'flex';
+      loadFirestoreCategories();
+    }
+
+    function closeCategoryManager() {
+      const modal = document.getElementById('categoryManagerModal');
+      modal.style.display = 'none';
+    }
+
+    async function loadFirestoreCategories() {
+      const listContainer = document.getElementById('firestoreCatList');
+      listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">Scanning Firestore database...</div>';
+
+      try {
+        const res = await fetch('/api/firestore-categories');
+        const text = await res.text();
+        
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (jsonErr) {
+          listContainer.innerHTML = `
+            <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: var(--radius-sm); padding: 1.25rem; color: #9f1239; text-align: center;">
+              <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem;">⚠️ Server Restart Required</div>
+              <div style="font-size: 0.85rem; color: #881337; line-height: 1.5;">
+                The server returned HTML instead of JSON because the Python process is still running the older version in memory.
+              </div>
+              <div style="font-size: 0.8rem; margin-top: 0.75rem; background: white; padding: 0.5rem; border-radius: 4px; border: 1px solid #fda4af;">
+                Please stop your terminal (<strong>Ctrl + C</strong>) and restart: <br><code>python import_server.py</code>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        if (data.success && Array.isArray(data.categories)) {
+          if (data.categories.length === 0) {
+            listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">No products found in Firestore yet.</div>';
+            return;
+          }
+
+          listContainer.innerHTML = data.categories.map(item => {
+            return `
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
+                <div style="flex: 1; overflow: hidden;">
+                  <div style="font-weight: 700; font-size: 0.88rem; color: #1e293b; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${escapeHtml(item.category)}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">${item.count} documents (parents + variations)</div>
+                </div>
+                <div style="display: flex; gap: 0.4rem;">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="selectFromManager('${escapeHtml(item.category)}')" title="Select this category for importing">Use</button>
+                  <button type="button" class="btn btn-outline btn-sm" style="color: #ef4444; border-color: #fecdd3;" onclick="deleteCategoryProducts('${escapeHtml(item.category)}', ${item.count})" title="Delete all products under this category">🗑️ Delete</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          listContainer.innerHTML = `<div style="color: #ef4444; padding: 1.5rem; text-align: center;">${escapeHtml(data.error || 'Failed to load categories')}</div>`;
+        }
+      } catch (err) {
+        listContainer.innerHTML = `<div style="color: #ef4444; padding: 1.5rem; text-align: center;">Error: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function selectFromManager(categoryPath) {
+      document.getElementById('categoryInput').value = categoryPath;
+      onCategoryInputChange();
+      closeCategoryManager();
+      showToast(`Selected "${categoryPath}"`, 'success');
+    }
+
+    async function deleteCategoryProducts(categoryPath, count) {
+      const confirmMsg = `⚠️ WARNING: Are you sure you want to delete all ${count} products under:\n\n"${categoryPath}"?\n\nThis will permanently delete parent products and their variations from Firestore.`;
+      if (!confirm(confirmMsg)) return;
+
+      showToast(`Deleting products for "${categoryPath}"...`, 'info');
+      logTerminal(`🗑️ Deleting all products under "${categoryPath}"...`, 'log-info');
+
+      try {
+        const res = await fetch('/api/delete-category', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ category: categoryPath })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast(`Deleted ${result.deleted_count} products!`, 'success');
+          logTerminal(`✓ ${result.message}`, 'log-success');
+          loadFirestoreCategories(); // Refresh modal list
+        } else {
+          showToast(`Error: ${result.error}`, 'error');
+          logTerminal(`✗ Delete error: ${result.error}`, 'log-error');
+        }
+      } catch (err) {
+        showToast(`Failed: ${err.message}`, 'error');
+        logTerminal(`✗ Delete request failed: ${err.message}`, 'log-error');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>

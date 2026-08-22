@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipping & Delivery — Nila Store</title>
+  <meta name="description"
+    content="Shipping timelines, free delivery thresholds, tracking details, and coverage at Nila Store.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+<!-- Page Loading Mask -->
+<div class="page-loader" id="pageLoader" aria-label="Loading page">
+  <div class="loader-spinner"></div>
+  <div class="loader-brand">Nila Store</div>
+</div>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <button type="button" class="icon-btn menu-toggle" id="menuToggle" aria-label="Open menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+      <a href="index.html" class="logo"><span class="logo-text">Nila Store</span></a>
+      <div class="search-bar">
+        <input type="search" id="searchInput" aria-label="Search products"
+          placeholder="Search for products, brands and more" autocomplete="off">
+        <button type="button" class="search-btn" id="searchBtn" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+            <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="header-action wishlist-toggle" id="wishlistToggle" aria-label="Open wishlist">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 21s-7.5-4.6-10-9.3C.4 8 2 4.5 5.6 4.1 8 3.8 10 5 12 7.5 14 5 16 3.8 18.4 4.1 22 4.5 23.6 8 22 11.7 19.5 16.4 12 21 12 21z"
+              stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+          </svg>
+          <span>Wishlist</span>
+          <span class="cart-count" id="wishlistCount" style="display:none;">0</span>
+        </button>
+        <button type="button" class="header-action cart-toggle" id="cartToggle" aria-label="Open cart">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M3 4h2l2.4 12.2a2 2 0 002 1.8h8.4a2 2 0 002-1.6L21 8H6" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="10" cy="21" r="1.4" fill="currentColor" />
+            <circle cx="18" cy="21" r="1.4" fill="currentColor" />
+          </svg>
+          <span>Cart</span>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <nav class="category-rail">
+    <div class="wrap category-rail-inner" id="categoryRail"></div>
+  </nav>
+
+  <main>
+    <section class="content-page-hero">
+      <div class="wrap">
+        <div class="breadcrumb-nav">
+          <a href="index.html">Home</a> <span>›</span> <span>Shipping</span>
+        </div>
+        <h1>Shipping & Delivery</h1>
+        <p class="subtitle">Fast, reliable door-to-door delivery with real-time tracking across India.</p>
+      </div>
+    </section>
+
+    <section class="content-page-body">
+      <div class="wrap">
+        <div class="content-card">
+          <h2>Delivery Timelines & Coverage</h2>
+          <p>We partner with leading national logistics services (Delhivery, BlueDart, Shadowfax, and India Post) to
+            ensure quick, safe handling of your parcels.</p>
+
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="feature-icon">⚡</div>
+              <h3>Chennai & Metro</h3>
+              <p><strong>1 - 2 Business Days</strong><br>Express local dispatch for fast delivery.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🚀</div>
+              <h3>Tamil Nadu & South</h3>
+              <p><strong>2 - 4 Business Days</strong><br>Direct courier routes across all districts.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">📦</div>
+              <h3>Rest of India</h3>
+              <p><strong>4 - 6 Business Days</strong><br>Doorstep delivery covering 26,000+ PIN codes.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-card">
+          <h2>Shipping Charges</h2>
+          <ul>
+            <li><strong>Free Shipping:</strong> Applicable on all orders above <strong>₹499</strong>.</li>
+            <li><strong>Standard Shipping:</strong> A flat nominal fee of <strong>₹49</strong> applies for orders below
+              ₹499.</li>
+            <li><strong>Cash on Delivery (COD):</strong> No hidden surcharge on COD orders.</li>
+          </ul>
+
+          <h2>Tracking Your Order</h2>
+          <p>Once your parcel is dispatched, our team sends you a courier tracking details over WhatsApp.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div class="footer-col">
+        <a href="index.html" class="logo"><span class="logo-text light">Nila Store</span></a>
+        <!-- <!--<p>A demo marketplace built for learning &amp; portfolio use. Not a real store.</p>--> -->
+      </div>
+      <div class="footer-col">
+        <h3>Company</h3>
+        <a href="about.html">About us</a>
+        <a href="contact.html">Contact us</a>
+      </div>
+      <div class="footer-col">
+        <h3>Help</h3>
+        <a href="payments.html">Payments</a>
+        <a href="shipping.html">Shipping</a>
+        <a href="returns.html">Returns</a>
+        <a href="faq.html">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h3>Policy</h3>
+        <a href="return-policy.html">Return policy</a>
+        <a href="terms.html">Terms of use</a>
+        <a href="privacy.html">Privacy</a>
+      </div>
+    </div>
+    <div class="wrap footer-bottom">
+      <span>© 2026 Nila Store. All rights reserved.</span>
+      <!-- <!--<span>Made for demo purposes.</span>--> -->
+    </div>
+  </footer>
+
+  <!-- Cart drawer -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1"
+    aria-label="Shopping cart">
+    <div class="drawer-head">
+      <h2>Your cart</h2>
+      <button type="button" class="icon-btn" id="cartClose" aria-label="Close cart">✕</button>
+    </div>
+    <div class="drawer-body" id="cartBody"></div>
+    <div class="checkout-panel" id="checkoutPanel" aria-hidden="true">
+      <div class="checkout-head">
+        <h3>Place your Whatsapp order</h3>
+      </div>
+      <form id="checkoutForm" class="checkout-form">
+        <div>
+          <label for="checkoutName">Full name</label>
+          <input id="checkoutName" name="name" type="text" required placeholder="Your name">
+        </div>
+        <div>
+          <label for="checkoutPhone">Phone number</label>
+          <input id="checkoutPhone" name="phone" type="tel" required placeholder="10-digit mobile number">
+        </div>
+        <div>
+          <label for="checkoutAddress">Delivery address</label>
+          <textarea id="checkoutAddress" name="address" rows="3" required
+            placeholder="Street, city, PIN code"></textarea>
+        </div>
+        <div class="checkout-actions">
+          <button type="submit" class="btn btn-primary">Place order on WhatsApp</button>
+          <button type="button" class="btn btn-outline" id="checkoutCancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+    <div class="drawer-foot" id="cartFoot">
+      <div class="cart-subtotal">
+        <span>Subtotal</span>
+        <strong id="cartSubtotal">₹0</strong>
+      </div>
+      <button class="btn btn-primary btn-block" id="checkoutBtn">Checkout</button>
+    </div>
+  </aside>
+
+  <aside class="cart-drawer wishlist-drawer" id="wishlistDrawer" role="dialog" aria-modal="true" aria-hidden="true"
+    tabindex="-1" aria-label="Wishlist">
+    <div class="drawer-head">
+      <h2>Your wishlist</h2>
+      <button type="button" class="icon-btn" id="wishlistClose" aria-label="Close wishlist">✕</button>
+    </div>
+    <div class="drawer-body" id="wishlistBody"></div>
+  </aside>
+
+  <!-- Quick view modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="productModal" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1"></div>
+  </div>
+
+  <!-- Mobile nav -->
+  <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+  <nav class="mobile-nav" id="mobileNav">
+    <div class="drawer-head">
+      <span class="logo-text">Browse</span>
+      <button type="button" class="icon-btn" id="mobileNavClose" aria-label="Close menu">✕</button>
+    </div>
+    <div id="mobileNavList" class="mobile-nav-list"></div>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js?v=3"></script>
+</body>
+
+</html>
