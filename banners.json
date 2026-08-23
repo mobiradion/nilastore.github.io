@@ -1,8 +1,15 @@
 [
   {
-    "id": "banner-1787102692624",
-    "image": "images/banner_1787102690_3ed27d.png",
-    "url": "#cat-women",
+    "id": "banner-1787502801272",
+    "image": "images/banner_1787502799_9849ea.png",
+    "url": "https://play.google.com/store/apps/details?id=com.nila.store",
+    "title": "Special Offer",
+    "active": true
+  },
+  {
+    "id": "banner-1787502833290",
+    "image": "images/banner_1787502823_95a1df.png",
+    "url": "https://nilastore.in/contact.html",
     "title": "Special Offer",
     "active": true
   }

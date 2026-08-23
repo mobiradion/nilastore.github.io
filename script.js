@@ -269,13 +269,13 @@ let cart = {};
 // PRODUCTS are loaded from Firestore.
 const WHATSAPP_NUMBER = '918610769343';
 const FIREBASE_CONFIG = {
-   apiKey: "AIzaSyD-dUd1OnhKJ5UFWEtHJBaNmY44f1yU86I",
-    authDomain: "nila-store-729c2.firebaseapp.com",
-    projectId: "nila-store-729c2",
-    storageBucket: "nila-store-729c2.firebasestorage.app",
-    messagingSenderId: "371741649720",
-    appId: "1:371741649720:web:ddd8187649a5e7c77d2fcd",
-    measurementId: "G-886NBKM4J5"
+  apiKey: "AIzaSyD-dUd1OnhKJ5UFWEtHJBaNmY44f1yU86I",
+  authDomain: "nila-store-729c2.firebaseapp.com",
+  projectId: "nila-store-729c2",
+  storageBucket: "nila-store-729c2.firebasestorage.app",
+  messagingSenderId: "371741649720",
+  appId: "1:371741649720:web:ddd8187649a5e7c77d2fcd",
+  measurementId: "G-886NBKM4J5"
 };
 const FIRESTORE_PRODUCTS_COLLECTION = 'products';
 let firestoreDb = null;
@@ -538,7 +538,7 @@ function loadBannersFromCache() {
       BANNER_SLIDES = parsed;
       return true;
     }
-  } catch (e) {}
+  } catch (e) { }
   return false;
 }
 
@@ -547,7 +547,7 @@ function saveBannersToCache(banners) {
     if (Array.isArray(banners) && banners.length) {
       localStorage.setItem(CACHE_KEY_BANNERS, JSON.stringify(banners));
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function renderSkeletonCards(count = 6) {
@@ -642,7 +642,9 @@ function loadWishlist() {
 
 function toggleWishlist(id, button) {
   if (!id) return;
-  if (wishlist.has(id)) {
+  id = String(id);
+  const isCurrentlyWished = wishlist.has(id);
+  if (isCurrentlyWished) {
     wishlist.delete(id);
     showToast('Removed from wishlist');
   } else {
@@ -651,11 +653,20 @@ function toggleWishlist(id, button) {
   }
   saveWishlist();
   updateWishlistCount();
+
+  const isNowWished = wishlist.has(id);
   document.querySelectorAll(`[data-wish="${id}"], [data-modal-wish="${id}"]`).forEach(btn => {
-    const isActive = wishlist.has(id);
-    btn.classList.toggle('active', isActive);
-    btn.setAttribute('aria-pressed', String(isActive));
+    btn.classList.toggle('active', isNowWished);
+    btn.setAttribute('aria-pressed', String(isNowWished));
+    const svg = btn.querySelector('svg');
+    if (svg) svg.setAttribute('fill', isNowWished ? 'currentColor' : 'none');
   });
+
+  const wishBtn2 = document.getElementById('pdpWishlistBtn2');
+  if (wishBtn2) {
+    wishBtn2.textContent = isNowWished ? '❤️ In Wishlist' : '🤍 Add to Wishlist';
+  }
+
   if (document.getElementById('wishlistDrawer')?.classList.contains('open')) {
     renderWishlist();
   }
@@ -664,7 +675,7 @@ function toggleWishlist(id, button) {
 function trapFocus(container) {
   const focusable = Array.from(container.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
     .filter(el => el.offsetParent !== null);
-  if (!focusable.length) return () => {};
+  if (!focusable.length) return () => { };
 
   const first = focusable[0];
   const last = focusable[focusable.length - 1];
@@ -750,6 +761,24 @@ function parseProductSpecs(description, product) {
   return specs;
 }
 
+function openWhatsAppUrl(rawText) {
+  const encodedText = typeof rawText === 'string' && (rawText.startsWith('%') || rawText.includes('%20')) ? rawText : encodeURIComponent(rawText);
+  // api.whatsapp.com is standard and reliable across WebViews, Chrome, Safari, and Desktop
+  const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodedText}`;
+
+  try {
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => a.remove(), 200);
+  } catch (err) {
+    window.location.href = url;
+  }
+}
+
 function orderProductOnWhatsApp(productId, requestedSize = '', requestedQty = 1) {
   const p = PRODUCTS.find((x) => x.id === productId || slugify(x.title) === slugify(productId) || x.sku === productId);
   if (!p) return;
@@ -758,8 +787,7 @@ function orderProductOnWhatsApp(productId, requestedSize = '', requestedQty = 1)
   const skuDetail = itemSku ? ` (N-Item No: ${itemSku})` : '';
   const totalVal = rupee(p.price * requestedQty);
   const text = `Hello Nila Store, I would like to order this product:\n\n*${p.title}*${sizeDetail}${skuDetail}\nQuantity: ${requestedQty}\nPrice: ${rupee(p.price)} each\nTotal: ${totalVal}\nProduct Link: ${getProductAbsoluteUrl(p)}\n\nPlease confirm availability and delivery details.`;
-  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
-  window.open(url, '_blank');
+  openWhatsAppUrl(text);
 }
 
 async function shareProduct(productId) {
@@ -787,7 +815,7 @@ async function shareProduct(productId) {
       showToast('Product link copied to clipboard! 📋');
       return;
     }
-  } catch (e) {}
+  } catch (e) { }
 
   window.prompt('Copy product link:', shareUrl);
 }
@@ -867,13 +895,56 @@ function renderProductPage() {
     return;
   }
 
+  // If products are still loading, show a skeleton placeholder instead of premature "Product not found"
+  if (!PRODUCTS || PRODUCTS.length === 0) {
+    pageContent.innerHTML = `
+      <div class="pdp-wrap" style="padding: 24px 0 60px;">
+        <div class="skeleton" style="height: 18px; width: 220px; margin-bottom: 20px; border-radius: 4px;"></div>
+        <div class="pdp-grid">
+          <div class="skeleton" style="aspect-ratio: 1/1; width: 100%; border-radius: 12px;"></div>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="skeleton" style="height: 28px; width: 85%; border-radius: 6px;"></div>
+            <div class="skeleton" style="height: 20px; width: 35%; border-radius: 6px;"></div>
+            <div class="skeleton" style="height: 44px; width: 55%; border-radius: 8px;"></div>
+            <div class="skeleton" style="height: 48px; width: 100%; border-radius: 8px; margin-top: 14px;"></div>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
   const targetSlug = slugify(targetId);
-  const product = PRODUCTS.find((p) =>
+  let product = PRODUCTS.find((p) =>
     slugify(p.title) === targetSlug ||
     getProductSlug(p) === targetSlug ||
-    p.id === targetId ||
-    p.sku === targetId
+    String(p.id) === String(targetId) ||
+    String(p.sku || '').toLowerCase() === String(targetId).toLowerCase()
   );
+
+  // Check variants if not matched directly
+  if (!product) {
+    for (const p of PRODUCTS) {
+      if (p.groupVariants && p.groupVariants.length) {
+        const match = p.groupVariants.find((v) =>
+          String(v.id) === String(targetId) ||
+          String(v.sku || '').toLowerCase() === String(targetId).toLowerCase() ||
+          slugify(v.title) === targetSlug
+        );
+        if (match) {
+          product = p;
+          break;
+        }
+      }
+    }
+  }
+
+  // Fuzzy partial match as fallback
+  if (!product && targetSlug.length > 3) {
+    product = PRODUCTS.find((p) =>
+      slugify(p.title).includes(targetSlug) ||
+      targetSlug.includes(slugify(p.title))
+    );
+  }
 
   if (!product) {
     pageContent.innerHTML = `
@@ -916,8 +987,8 @@ function renderProductPage() {
   const imageSources = [...new Set(variants.flatMap((item) => (item.images && item.images.length ? item.images : [item.img])))].filter(Boolean);
   let currentImg = selectedProduct.img || imageSources[0] || '';
 
-  const variantOptions = selectedProduct.optionValues && selectedProduct.optionValues.length 
-    ? selectedProduct.optionValues 
+  const variantOptions = selectedProduct.optionValues && selectedProduct.optionValues.length
+    ? selectedProduct.optionValues
     : variationValuesForProduct(selectedProduct);
 
   const isFreeSize = (options) => {
@@ -975,14 +1046,14 @@ function renderProductPage() {
         </div>
         <div class="pdp-variant-chips" id="pdpVariantChips">
           ${variantOptions.map((value) => {
-            const cleanVal = extractCleanSizeLabel(value);
-            const isSelected = selectedSize === cleanVal;
-            return `
+      const cleanVal = extractCleanSizeLabel(value);
+      const isSelected = selectedSize === cleanVal;
+      return `
               <label class="pdp-chip-label${isSelected ? ' selected' : ''}">
                 <input type="radio" name="pdp-variation" value="${esc(cleanVal)}"${isSelected ? ' checked' : ''}>
                 <span class="pdp-chip-box">${esc(cleanVal)}</span>
               </label>`;
-          }).join('')}
+    }).join('')}
         </div>
         ${hasDetailedSpecs ? `
           <div id="pdpSizeChartDetails" class="size-chart-box" style="display: none; margin-top: 0.75rem; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.82rem; line-height: 1.6; color: #334155;">
@@ -992,14 +1063,14 @@ function renderProductPage() {
             </div>
             <div style="display: flex; flex-direction: column; gap: 0.4rem;">
               ${sizeChartItems.map((item) => {
-                const label = extractCleanSizeLabel(item);
-                const specs = item.includes('(') ? item.replace(/^[^(]*\(/, '(') : '';
-                return `
+      const label = extractCleanSizeLabel(item);
+      const specs = item.includes('(') ? item.replace(/^[^(]*\(/, '(') : '';
+      return `
                   <div style="display: flex; gap: 0.6rem; align-items: baseline;">
                     <span style="font-weight: 700; color: #1e293b; min-width: 2.4rem; background: #e2e8f0; border-radius: 4px; text-align: center; padding: 0.15rem 0.4rem; font-size: 0.78rem;">${esc(label)}</span>
                     <span style="color: #475569; font-size: 0.82rem;">${esc(specs || item)}</span>
                   </div>`;
-              }).join('')}
+    }).join('')}
             </div>
           </div>` : ''}
       </div>`;
@@ -1051,7 +1122,7 @@ function renderProductPage() {
               ${off > 0 ? `<span class="pdp-price-was" id="pdpPriceWas">${rupee(selectedProduct.mrp)}</span>` : '<span class="pdp-price-was" id="pdpPriceWas" style="display:none;"></span>'}
               ${off > 0 ? `<span class="pdp-price-off" id="pdpPriceOff">${off}% OFF</span>` : '<span class="pdp-price-off" id="pdpPriceOff" style="display:none;"></span>'}
             </div>
-            <span class="pdp-tax-note">Inclusive of all taxes • Free delivery on orders over ₹499</span>
+            <!--<span class="pdp-tax-note">Inclusive of all taxes • Free delivery on orders over ₹499</span>-->
           </div>
 
           <!-- Variant / Size Choices -->
@@ -1091,10 +1162,10 @@ function renderProductPage() {
 
           <!-- Value Perks Banner -->
           <div class="pdp-perks-grid">
-            <div class="pdp-perk-item">
+            <!--<div class="pdp-perk-item">
               <span class="pdp-perk-icon">🚚</span>
               <span>Free Delivery Above ₹499</span>
-            </div>
+            </div>-->
             <div class="pdp-perk-item">
               <span class="pdp-perk-icon">🔄</span>
               <span>7-Day Easy Returns</span>
@@ -1240,18 +1311,12 @@ function renderProductPage() {
   // Wishlist toggle
   const wishBtn1 = document.getElementById('pdpWishlistBtn');
   const wishBtn2 = document.getElementById('pdpWishlistBtn2');
-  const handleWishlistToggle = () => {
+  const handleWishlistToggle = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     toggleWishlist(selectedProduct.id, wishBtn1);
-    const isNowWished = wishlist.has(selectedProduct.id);
-    if (wishBtn1) {
-      wishBtn1.classList.toggle('active', isNowWished);
-      wishBtn1.setAttribute('aria-pressed', String(isNowWished));
-      const svg = wishBtn1.querySelector('svg');
-      if (svg) svg.setAttribute('fill', isNowWished ? 'currentColor' : 'none');
-    }
-    if (wishBtn2) {
-      wishBtn2.textContent = isNowWished ? '❤️ In Wishlist' : '🤍 Add to Wishlist';
-    }
   };
   wishBtn1?.addEventListener('click', handleWishlistToggle);
   wishBtn2?.addEventListener('click', handleWishlistToggle);
@@ -1620,19 +1685,19 @@ function renderCategorySections() {
 /* ============ Hero banner image carousel ============ */
 const DEFAULT_BANNERS = [
   {
-    image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1400&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1200&h=347&auto=format&fit=crop",
     title: "Mega Fashion Sale - Up to 70% Off on Women's & Men's Styles",
     url: "#cat-women",
     active: true
   },
   {
-    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1400&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1200&h=347&auto=format&fit=crop",
     title: "Fresh Arrivals - Trending Outfits & Ethnic Collections",
     url: "#cat-men",
     active: true
   },
   {
-    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1400&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1200&h=347&auto=format&fit=crop",
     title: "Home & Kitchen Refresh - Premium Decor & Living Essentials",
     url: "#cat-home",
     active: true
@@ -1651,7 +1716,7 @@ async function loadBanners() {
         return;
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 
   try {
     const db = initFirestore();
@@ -1852,6 +1917,8 @@ function renderCart() {
   const body = document.getElementById("cartBody");
   const foot = document.getElementById("cartFoot");
   const countEl = document.getElementById("cartCount");
+  const checkoutBtn = document.getElementById("checkoutBtn");
+  const checkoutPanel = document.getElementById("checkoutPanel");
   if (!body || !foot || !countEl) return;
   const totalQty = ids.reduce((s, id) => s + cart[id], 0);
   countEl.textContent = totalQty;
@@ -1860,9 +1927,21 @@ function renderCart() {
   if (ids.length === 0) {
     body.innerHTML = `<div class="cart-empty"><div class="big-emoji">🛒</div><h3>Your cart is empty</h3><p>Add something you love.</p></div>`;
     foot.style.display = "none";
+    if (checkoutPanel) {
+      checkoutPanel.classList.remove('open');
+      checkoutPanel.style.display = 'none';
+      checkoutPanel.setAttribute('aria-hidden', 'true');
+    }
+    body.style.display = 'block';
     return;
   }
+
   foot.style.display = "block";
+  const isPanelOpen = checkoutPanel && checkoutPanel.classList.contains('open');
+  if (checkoutBtn) {
+    checkoutBtn.style.display = isPanelOpen ? 'none' : 'block';
+  }
+
   let subtotal = 0;
   body.innerHTML = ids.map(id => {
     const p = PRODUCTS.find(x => x.id === cartProductId(id));
@@ -1926,6 +2005,9 @@ function renderWishlist() {
 function openCart() {
   const drawer = document.getElementById("cartDrawer");
   const overlay = document.getElementById("drawerOverlay");
+  if (!drawer || !overlay) return;
+  closeCheckoutPanel();
+  renderCart();
   drawer.classList.add("open");
   overlay.classList.add("open");
   drawer.setAttribute('aria-hidden', 'false');
@@ -1937,13 +2019,13 @@ function openCart() {
 function closeCart() {
   const drawer = document.getElementById("cartDrawer");
   const overlay = document.getElementById("drawerOverlay");
-  drawer.classList.remove("open");
-  overlay.classList.remove("open");
-  drawer.setAttribute('aria-hidden', 'true');
-   closeCheckoutPanel();
-   if (removeFocusTrap) { removeFocusTrap(); removeFocusTrap = null; }
-   if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') lastFocusedElement.focus();
- }
+  if (drawer) drawer.classList.remove("open");
+  if (overlay) overlay.classList.remove("open");
+  if (drawer) drawer.setAttribute('aria-hidden', 'true');
+  closeCheckoutPanel();
+  if (removeFocusTrap) { removeFocusTrap(); removeFocusTrap = null; }
+  if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') lastFocusedElement.focus();
+}
 
 function openWishlist() {
   const drawer = document.getElementById('wishlistDrawer');
@@ -1967,13 +2049,15 @@ function closeWishlist() {
   if (drawer) drawer.setAttribute('aria-hidden', 'true');
   if (removeFocusTrap) { removeFocusTrap(); removeFocusTrap = null; }
   if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') lastFocusedElement.focus();
- }
- 
+}
+
 function openCheckoutPanel() {
   renderCart();
   const drawer = document.getElementById('cartDrawer');
   const overlay = document.getElementById('drawerOverlay');
+  const body = document.getElementById('cartBody');
   const checkoutBtn = document.getElementById('checkoutBtn');
+  const panel = document.getElementById('checkoutPanel');
   if (drawer) {
     drawer.classList.add('open');
     drawer.setAttribute('aria-hidden', 'false');
@@ -1982,7 +2066,6 @@ function openCheckoutPanel() {
     overlay.classList.add('open');
   }
 
-  const panel = document.getElementById('checkoutPanel');
   if (!panel) {
     console.warn('Checkout panel element not found');
     return;
@@ -1990,84 +2073,87 @@ function openCheckoutPanel() {
   panel.style.display = 'block';
   panel.classList.add('open');
   panel.setAttribute('aria-hidden', 'false');
+  if (body) body.style.display = 'none';
   if (checkoutBtn) checkoutBtn.style.display = 'none';
-  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const nameInput = document.getElementById('checkoutName');
+  if (nameInput) setTimeout(() => nameInput.focus(), 120);
 }
 function closeCheckoutPanel() {
   const panel = document.getElementById('checkoutPanel');
+  const body = document.getElementById('cartBody');
   const checkoutBtn = document.getElementById('checkoutBtn');
   if (!panel) return;
   panel.classList.remove('open');
   panel.setAttribute('aria-hidden', 'true');
   panel.style.display = 'none';
+  if (body) body.style.display = 'block';
   if (checkoutBtn) {
     checkoutBtn.style.display = Object.keys(cart).length > 0 ? 'block' : 'none';
   }
 }
- 
-  function buildWhatsAppMessage(name, phone, address) {
-    const cartEntries = Object.entries(cart);
-    const items = cartEntries.map(([id, qty]) => {
-      const p = PRODUCTS.find(x => x.id === cartProductId(id));
-      if (!p) return null;
-      const selectedSize = cartSelectedSize(id);
-      const sizeDetail = selectedSize ? ` (${p.optionName || 'Size'}: ${selectedSize})` : '';
-      const itemSku = p.sku || p.id || '';
-      const skuDetail = itemSku ? ` (N-Item No: ${itemSku})` : '';
-      return `${qty} x ${p.title}${sizeDetail}${skuDetail} @ ${rupee(p.price)} = ${rupee(p.price * qty)}`;
-    }).filter(Boolean);
-    const subtotal = cartEntries.reduce((sum, [id, qty]) => {
-      const p = PRODUCTS.find(x => x.id === cartProductId(id));
-      return p ? sum + p.price * qty : sum;
-    }, 0);
-    const totalItems = cartEntries.reduce((sum, [, qty]) => sum + qty, 0);
-    const message = `Hello Nila Store, I would like to place an order.\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\n\nOrder details:\n${items.join('\n')}\n\nTotal items: ${totalItems}\nSubtotal: ${rupee(subtotal)}\n\nPlease confirm availability and delivery details.`;
-    return encodeURIComponent(message);
-  }
-  
-  function showOrderConfirmation() {
-    const body = document.getElementById('cartBody');
-    const foot = document.getElementById('cartFoot');
-    if (!body || !foot) return;
-    body.innerHTML = `
+
+function buildWhatsAppMessage(name, phone, address) {
+  const cartEntries = Object.entries(cart);
+  const items = cartEntries.map(([id, qty]) => {
+    const p = PRODUCTS.find(x => x.id === cartProductId(id));
+    if (!p) return null;
+    const selectedSize = cartSelectedSize(id);
+    const sizeDetail = selectedSize ? ` (${p.optionName || 'Size'}: ${selectedSize})` : '';
+    const itemSku = p.sku || p.id || '';
+    const skuDetail = itemSku ? ` (N-Item No: ${itemSku})` : '';
+    return `${qty} x ${p.title}${sizeDetail}${skuDetail} @ ${rupee(p.price)} = ${rupee(p.price * qty)}`;
+  }).filter(Boolean);
+  const subtotal = cartEntries.reduce((sum, [id, qty]) => {
+    const p = PRODUCTS.find(x => x.id === cartProductId(id));
+    return p ? sum + p.price * qty : sum;
+  }, 0);
+  const totalItems = cartEntries.reduce((sum, [, qty]) => sum + qty, 0);
+  const message = `Hello Nila Store, I would like to place an order.\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\n\nOrder details:\n${items.join('\n')}\n\nTotal items: ${totalItems}\nSubtotal: ${rupee(subtotal)}\n\nPlease confirm availability and delivery details.`;
+  return encodeURIComponent(message);
+}
+
+function showOrderConfirmation() {
+  const body = document.getElementById('cartBody');
+  const foot = document.getElementById('cartFoot');
+  if (!body || !foot) return;
+  body.innerHTML = `
       <div class="cart-empty">
         <div class="big-emoji">✅</div>
         <h3>Your order has been placed</h3>
         <p>We redirected you to WhatsApp. This drawer will close in a few seconds.</p>
         <button class="btn btn-primary btn-block" data-action="continue-shopping">Continue shopping</button>
       </div>`;
-    foot.style.display = 'none';
+  foot.style.display = 'none';
+}
+
+function sendCheckoutWhatsApp(event) {
+  event.preventDefault();
+  const name = document.getElementById('checkoutName')?.value.trim();
+  const address = document.getElementById('checkoutAddress')?.value.trim();
+  const phone = document.getElementById('checkoutPhone')?.value.trim();
+  if (!name || !address || !phone) {
+    showToast('Please complete the address and phone fields.');
+    return;
   }
-  
-  function sendCheckoutWhatsApp(event) {
-    event.preventDefault();
-    const name = document.getElementById('checkoutName')?.value.trim();
-    const address = document.getElementById('checkoutAddress')?.value.trim();
-    const phone = document.getElementById('checkoutPhone')?.value.trim();
-    if (!name || !address || !phone) {
-      showToast('Please complete the address and phone fields.');
-      return;
-    }
-    const cartItems = Object.keys(cart);
-    if (!cartItems.length) {
-      showToast('Your cart is empty. Add items before checkout.');
-      return;
-    }
-    const text = buildWhatsAppMessage(name, phone, address);
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
-    window.open(url, '_blank');
-    cart = {};
-    saveCart();
-    renderCart();
-    closeCheckoutPanel();
-    showOrderConfirmation();
-    showToast('Your order placed');
-    setTimeout(() => {
-      if (document.getElementById('cartDrawer')?.classList.contains('open')) {
-        closeCart();
-      }
-    }, 5000);
+  const cartItems = Object.keys(cart);
+  if (!cartItems.length) {
+    showToast('Your cart is empty. Add items before checkout.');
+    return;
   }
+  const text = buildWhatsAppMessage(name, phone, address);
+  openWhatsAppUrl(text);
+  cart = {};
+  saveCart();
+  renderCart();
+  closeCheckoutPanel();
+  showOrderConfirmation();
+  showToast('Your order placed');
+  setTimeout(() => {
+    if (document.getElementById('cartDrawer')?.classList.contains('open')) {
+      closeCart();
+    }
+  }, 5000);
+}
 /* ============ Mobile nav ============ */
 function openMobileNav() {
   document.getElementById("mobileNav")?.classList.add("open");
@@ -2111,18 +2197,16 @@ async function init() {
       saveProductsToCache(PRODUCTS);
       saveBannersToCache(BANNER_SLIDES);
 
-      // If cache was cold OR product count changed, update DOM smoothly
-      if (!hasCachedProducts || PRODUCTS.length !== prevCount) {
+      // Always re-render PDP and Category pages to ensure fresh product data is displayed
+      if (document.getElementById('productPageContent')) {
+        renderProductPage();
+      } else if (document.getElementById('categoryPageContent')) {
+        renderCategoryPage();
+      } else if (!hasCachedProducts || PRODUCTS.length !== prevCount) {
         renderCategoryChrome();
         renderCarousel();
         renderDeals();
-        if (document.getElementById('productPageContent')) {
-          renderProductPage();
-        } else if (document.getElementById('categoryPageContent')) {
-          renderCategoryPage();
-        } else {
-          renderCategorySections();
-        }
+        renderCategorySections();
       }
     } catch (err) {
       console.warn('Sync data error:', err);
