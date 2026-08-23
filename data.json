@@ -2,6 +2,159 @@
     "enable": false,
     "catalogs": [
         {
+            "id": 910005,
+            "hero_pid": 910005,
+            "name": "Men Slim Fit Casual Spread Collar Cotton Shirt",
+            "category_name": "Men",
+            "sub_category_name": "Top Wear",
+            "sub_sub_category_name": "Shirts",
+            "categories": "Men > Top Wear > Shirts",
+            "min_catalog_price": 499,
+            "min_product_price": 499,
+            "regular_price": 1199,
+            "original_price": 1199,
+            "description": "Premium Cotton Oxford Casual Shirt for office and evening wear.\n\nSizes: M (Chest 38, Length 28), L (Chest 40, Length 29), XL (Chest 42, Length 30), XXL (Chest 44, Length 31)\n\nFabric: Cotton Oxford\nPattern: Solid\nSleeve: Full Sleeve\nNeck: Spread Collar\nFit: Slim Fit\nCountry of Origin: India\nDispatch: 1-2 Days",
+            "image": "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&auto=format&fit=crop&q=80",
+            "images": [
+                "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&auto=format&fit=crop&q=80"
+            ],
+            "brand": "Nila Men",
+            "rating": 4.4,
+            "catalog_reviews_summary": {
+                "average_rating": 4.4,
+                "review_count": 780
+            },
+            "hot": false,
+            "deal": true,
+            "attribute_1_name": "Size",
+            "attribute_1_value": "M, L, XL, XXL",
+            "type": "variable",
+            "stock": 110
+        },
+        {
+            "id": 910004,
+            "hero_pid": 910004,
+            "name": "Men Striped Casual Crew Neck Cotton T-Shirt",
+            "category_name": "Men",
+            "sub_category_name": "Top Wear",
+            "sub_sub_category_name": "T-Shirts",
+            "categories": "Men > Top Wear > T-Shirts",
+            "min_catalog_price": 349,
+            "min_product_price": 349,
+            "regular_price": 799,
+            "original_price": 799,
+            "description": "Casual Striped Yarn-Dyed Cotton T-Shirt for everyday college and outings.\n\nSizes: S (Chest 36, Length 26), M (Chest 38, Length 27), L (Chest 40, Length 28), XL (Chest 42, Length 29)\n\nFabric: 100% Cotton\nPattern: Striped\nSleeve: Half Sleeve\nNeck: Round Neck\nFit: Regular Fit\nCountry of Origin: India\nDispatch: 1-2 Days",
+            "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&auto=format&fit=crop&q=80",
+            "images": [
+                "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&auto=format&fit=crop&q=80"
+            ],
+            "brand": "Stripes & Co",
+            "rating": 4.5,
+            "catalog_reviews_summary": {
+                "average_rating": 4.5,
+                "review_count": 512
+            },
+            "hot": true,
+            "deal": true,
+            "attribute_1_name": "Size",
+            "attribute_1_value": "S, M, L, XL",
+            "type": "variable",
+            "stock": 80
+        },
+        {
+            "id": 910003,
+            "hero_pid": 910003,
+            "name": "Men Classic Pique Polo Collar Cotton T-Shirt",
+            "category_name": "Men",
+            "sub_category_name": "Top Wear",
+            "sub_sub_category_name": "T-Shirts",
+            "categories": "Men > Top Wear > T-Shirts",
+            "min_catalog_price": 449,
+            "min_product_price": 449,
+            "regular_price": 999,
+            "original_price": 999,
+            "description": "Smart Casual Men's Polo T-Shirt with button placket and ribbed collar.\n\nSizes: M (Chest 38, Length 27), L (Chest 40, Length 28), XL (Chest 42, Length 29), XXL (Chest 44, Length 30)\n\nFabric: Cotton Pique Blend\nPattern: Solid\nSleeve: Half Sleeve\nNeck: Polo Neck\nFit: Slim Fit\nCountry of Origin: India\nDispatch: 1-2 Days",
+            "image": "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=600&auto=format&fit=crop&q=80",
+            "images": [
+                "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=600&auto=format&fit=crop&q=80"
+            ],
+            "brand": "Nila Men",
+            "rating": 4.3,
+            "catalog_reviews_summary": {
+                "average_rating": 4.3,
+                "review_count": 640
+            },
+            "hot": false,
+            "deal": false,
+            "attribute_1_name": "Size",
+            "attribute_1_value": "M, L, XL, XXL",
+            "type": "variable",
+            "stock": 90
+        },
+        {
+            "id": 910002,
+            "hero_pid": 910002,
+            "name": "Men Oversized Typography Printed Drop Shoulder T-Shirt",
+            "category_name": "Men",
+            "sub_category_name": "Top Wear",
+            "sub_sub_category_name": "T-Shirts",
+            "categories": "Men > Top Wear > T-Shirts",
+            "min_catalog_price": 399,
+            "min_product_price": 399,
+            "regular_price": 899,
+            "original_price": 899,
+            "description": "Trendy Oversized Streetwear Graphic Printed Men's T-Shirt with heavy 220 GSM pure cotton fabric.\n\nSizes: S (Chest 40, Length 28), M (Chest 42, Length 29), L (Chest 44, Length 30), XL (Chest 46, Length 31)\n\nFabric: Pure Cotton 220 GSM\nPattern: Printed / Typography\nSleeve: Half Sleeve\nNeck: Crew Neck\nFit: Oversized Fit\nCountry of Origin: India\nDispatch: 1-2 Days",
+            "image": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&auto=format&fit=crop&q=80",
+            "images": [
+                "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&auto=format&fit=crop&q=80",
+                "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&auto=format&fit=crop&q=80"
+            ],
+            "brand": "Urban Wave",
+            "rating": 4.6,
+            "catalog_reviews_summary": {
+                "average_rating": 4.6,
+                "review_count": 890
+            },
+            "hot": true,
+            "deal": true,
+            "attribute_1_name": "Size",
+            "attribute_1_value": "S, M, L, XL",
+            "type": "variable",
+            "stock": 120
+        },
+        {
+            "id": 910001,
+            "hero_pid": 910001,
+            "name": "Men Solid Round Neck Pure Cotton Regular Fit T-Shirt",
+            "category_name": "Men",
+            "sub_category_name": "Top Wear",
+            "sub_sub_category_name": "T-Shirts",
+            "categories": "Men > Top Wear > T-Shirts",
+            "min_catalog_price": 299,
+            "min_product_price": 299,
+            "regular_price": 699,
+            "original_price": 699,
+            "description": "Premium 100% Combed Cotton Men's Regular Fit T-Shirt with breathable fabric.\n\nSizes: S (Chest 36, Length 26), M (Chest 38, Length 27), L (Chest 40, Length 28), XL (Chest 42, Length 29), XXL (Chest 44, Length 30)\n\nFabric: 100% Cotton\nPattern: Solid\nSleeve: Half Sleeve\nNeck: Round Neck\nFit: Regular Fit\nCountry of Origin: India\nDispatch: 1-2 Days",
+            "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80",
+            "images": [
+                "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80",
+                "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&auto=format&fit=crop&q=80",
+                "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&auto=format&fit=crop&q=80"
+            ],
+            "brand": "Nila Men",
+            "rating": 4.4,
+            "catalog_reviews_summary": {
+                "average_rating": 4.4,
+                "review_count": 1420
+            },
+            "hot": true,
+            "deal": true,
+            "attribute_1_name": "Size",
+            "attribute_1_value": "S, M, L, XL, XXL",
+            "type": "variable",
+            "stock": 150
+        },
+        {
             "doMarker": false,
             "id": 484464579,
             "hero_pid": 938540149,
@@ -95,7 +248,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹318 with 2 Special Offers",
+                "display_text": "\u20b9318 with 2 Special Offers",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -242,7 +395,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹212 with 1 Special Offer",
+                "display_text": "\u20b9212 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -255,7 +408,7 @@
                 "Bluetooth range: 10 Mtr",
                 "Bluetooth: 5.0"
             ],
-            "hero_product_name": "Mini Portable Wireless Bluetooth Speaker with LED Light – Metallic Finish (Multicolor) Bluetooth speaker, wireless speaker, mini speaker",
+            "hero_product_name": "Mini Portable Wireless Bluetooth Speaker with LED Light \u2013 Metallic Finish (Multicolor) Bluetooth speaker, wireless speaker, mini speaker",
             "high_asp_enabled": false,
             "gst_type": "GSTIN",
             "state_code": "MH",
@@ -385,7 +538,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹298 with 2 Special Offers",
+                "display_text": "\u20b9298 with 2 Special Offers",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -525,7 +678,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹193 with 1 Special Offer",
+                "display_text": "\u20b9193 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -538,7 +691,7 @@
                 "Bluetooth range: 10 Mtr",
                 "Bluetooth: 5.1"
             ],
-            "hero_product_name": "AuraEdge Orb Mini Boost Wireless Speaker – Compact Power in Your Palm (Assorted Colours)",
+            "hero_product_name": "AuraEdge Orb Mini Boost Wireless Speaker \u2013 Compact Power in Your Palm (Assorted Colours)",
             "high_asp_enabled": false,
             "gst_type": "GSTIN",
             "state_code": "DL",
@@ -654,7 +807,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹410 with 1 Special Offer",
+                "display_text": "\u20b9410 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -797,7 +950,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹191 with 1 Special Offer",
+                "display_text": "\u20b9191 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -940,7 +1093,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹334 with 1 Special Offer",
+                "display_text": "\u20b9334 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -1083,7 +1236,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹240 with 1 Special Offer",
+                "display_text": "\u20b9240 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -1142,7 +1295,7 @@
             "min_product_price": 433,
             "max_product_discount": 10,
             "total_discount_in_rs": 48,
-            "discount_text": "₹48 off",
+            "discount_text": "\u20b948 off",
             "original_price": 481,
             "description": " TECH BIRD Bluetooth Speakers",
             "full_details": "Aux: Yes\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nBrand: TECH BIRD\nCharging Type: Type C\nColor: Black\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nFrequency: 100 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: kc38vp\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: TWS\nType Of Water Resistance: IP64\nWarranty Period: 6 Months\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2-2 Days",
@@ -1215,7 +1368,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹375 with 2 Special Offers",
+                "display_text": "\u20b9375 with 2 Special Offers",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -1362,7 +1515,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹313 with 2 Special Offers",
+                "display_text": "\u20b9313 with 2 Special Offers",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -1495,7 +1648,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹383 with 1 Special Offer",
+                "display_text": "\u20b9383 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -1623,7 +1776,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹218 with 2 Special Offers",
+                "display_text": "\u20b9218 with 2 Special Offers",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -1762,7 +1915,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹530 with 1 Special Offer",
+                "display_text": "\u20b9530 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -1898,7 +2051,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹375 with 1 Special Offer",
+                "display_text": "\u20b9375 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -2038,7 +2191,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹194 with 1 Special Offer",
+                "display_text": "\u20b9194 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -2164,7 +2317,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹239 with 2 Special Offers",
+                "display_text": "\u20b9239 with 2 Special Offers",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -2310,7 +2463,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹334 with 1 Special Offer",
+                "display_text": "\u20b9334 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -2370,7 +2523,7 @@
             "min_product_price": 288,
             "max_product_discount": 3,
             "total_discount_in_rs": 10,
-            "discount_text": "₹10 off",
+            "discount_text": "\u20b910 off",
             "original_price": 298,
             "description": " Bluetooth Speakers",
             "full_details": "Aux: No\nBIS/ISI Certification Number: 81020036\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nCharging Type: Type C\nColor: Assorted\nCompatibility: All Mobile Devices\nConfiguration: 5.1\nControl Button: Yes\nFrequency: 70 Hz\nJack Size: No\nMaterial: ABS Plastic\nMic: No\nMicro SD: Yes\nModel Name: Tune pro-412a\nNet Quantity (N): 1\nNoise Cancelling: No\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: Wireless\nType Of Water Resistance: IPX4\nWarranty Period: 1 Month\nWarranty Type: Carry In\nWater Resistant: No\n\nDispatch: 2-2 Days",
@@ -2450,7 +2603,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹230 with 2 Special Offers",
+                "display_text": "\u20b9230 with 2 Special Offers",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -2590,7 +2743,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹545 with 1 Special Offer",
+                "display_text": "\u20b9545 with 1 Special Offer",
                 "offers": [
                     {
                         "type": "cod_unbundling",
@@ -2650,7 +2803,7 @@
             "min_product_price": 278,
             "max_product_discount": 10,
             "total_discount_in_rs": 30,
-            "discount_text": "₹30 off",
+            "discount_text": "\u20b930 off",
             "original_price": 308,
             "description": "TECH BIRD Bluetooth Speakers",
             "full_details": "Aux: Yes\nBluetooth Range: 10 Mtr\nBluetooth Version: 5.1\nBrand: TECH BIRD\nCharging Type: Type C\nColor: Assorted\nCompatibility: All Mobile Devices\nConfiguration: Stereo\nControl Button: Yes\nFrequency: 100 Hz\nJack Size: Yes\nMaterial: ABS Plastic\nMic: Yes\nMicro SD: Yes\nModel Name: KC_29VP\nNet Quantity (N): 1\nNoise Cancelling: Yes\nProduct Type: Mobile/Tablet Speaker\nService Type: Repair\nType: TWS\nType Of Water Resistance: IP64\nWarranty Period: 6 Months\nWarranty Type: Carry In\nWater Resistant: Yes\n\nDispatch: 2-2 Days",
@@ -2723,7 +2876,7 @@
             },
             "price_type_id": "premium_return_price",
             "special_offers": {
-                "display_text": "₹237 with 2 Special Offers",
+                "display_text": "\u20b9237 with 2 Special Offers",
                 "offers": [
                     {
                         "type": "cod_unbundling",

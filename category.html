@@ -8,12 +8,13 @@
   <meta name="description" content="Browse product categories at Nila Store.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preconnect" href="https://picsum.photos">
   <link
     href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <link rel="stylesheet" href="styles.css?v=2">
 </head>
 
 <body>
@@ -68,16 +69,16 @@
     <div class="wrap category-rail-inner" id="categoryRail"></div>
   </nav>
   <main>
-    <section class="section category-page-heading">
+    <section class="section category-page-heading" style="padding: 20px 0 0;">
       <div class="wrap">
-        <div>
-          <p class="section-sub"></p>
-          <h1 id="categoryPageTitle"></h1>
-          <p id="categoryPageDescription"></p>
-        </div>
+        <nav class="pdp-breadcrumbs" id="categoryBreadcrumbs" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span class="sep">›</span>
+          <span class="current" id="categoryPageTitle">All Collections</span>
+        </nav>
       </div>
     </section>
-    <section class="section">
+    <section class="section" style="padding-top: 14px;">
       <div class="wrap" id="categoryPageContent"></div>
     </section>
   </main>
@@ -179,7 +180,9 @@
   </nav>
 
   <div class="toast" id="toast"></div>
-  <script src="script.js?v=3"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="script.js?v=13"></script>
 </body>
 
 </html>

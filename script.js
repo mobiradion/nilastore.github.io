@@ -98,10 +98,22 @@ function parseCategoryPath(categoriesText) {
 }
 
 function buildCategoriesFromProducts(products) {
+  if (!Array.isArray(products) || !products.length) return;
   const rootMap = new Map();
   products.forEach((product) => {
+    if (!product) return;
+    if (!Array.isArray(product.categoriesPath) || !product.categoriesPath.length) {
+      if (product.categoriesLabel) {
+        product.categoriesPath = parseCategoryPath(product.categoriesLabel);
+      } else if (product.cat) {
+        product.categoriesPath = [product.cat];
+      } else {
+        return;
+      }
+    }
     if (!product.categoriesPath.length) return;
     const [rootLabel, subLabel, childLabel] = product.categoriesPath;
+    if (!rootLabel) return;
     const rootId = slugify(rootLabel);
     if (!rootId) return;
 
@@ -119,6 +131,7 @@ function buildCategoriesFromProducts(products) {
 
     if (!subLabel) return;
     const subId = slugify(subLabel);
+    if (!subId) return;
     let sub = root.subcats.find((item) => item.id === subId);
     if (!sub) {
       sub = { id: subId, label: subLabel, children: [] };
@@ -128,20 +141,20 @@ function buildCategoriesFromProducts(products) {
     if (childLabel) {
       sub.children = sub.children || [];
       const childId = slugify(childLabel);
-      if (!sub.children.some((item) => item.id === childId)) {
+      if (childId && !sub.children.some((item) => item.id === childId)) {
         sub.children.push({ id: childId, label: childLabel });
       }
     }
   });
 
   const categoryList = Array.from(rootMap.values());
-  categoryList.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+  categoryList.sort((a, b) => (a.label || '').localeCompare(b.label || '', undefined, { sensitivity: 'base' }));
   categoryList.forEach((root) => {
     if (Array.isArray(root.subcats)) {
-      root.subcats.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+      root.subcats.sort((a, b) => (a.label || '').localeCompare(b.label || '', undefined, { sensitivity: 'base' }));
       root.subcats.forEach((sub) => {
         if (Array.isArray(sub.children)) {
-          sub.children.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+          sub.children.sort((a, b) => (a.label || '').localeCompare(b.label || '', undefined, { sensitivity: 'base' }));
         }
       });
     }
@@ -151,9 +164,11 @@ function buildCategoriesFromProducts(products) {
 }
 
 function groupVariantProducts(products) {
+  if (!Array.isArray(products) || !products.length) return;
   const groupMap = new Map();
 
   products.forEach((product) => {
+    if (!product) return;
     if (product.parent === 'parent') {
       product.parent = '';
     }
@@ -167,8 +182,6 @@ function groupVariantProducts(products) {
     const hasVariants = variants.some((item) => Boolean(item.parent));
     const representative = variants.find((item) => !item.parent) || variants[0];
     const optionName = variants.find((item) => item.attribute_1_name)?.attribute_1_name || '';
-    // A parent SKU stores the complete size list; child rows may only contain
-    // one size. Combine only rows already linked to this parent/SKU group.
     const optionValues = [...new Set(variants.flatMap(variationValuesForProduct))];
     const isVariation = hasVariants || variants.some((item) => item.type === 'variable') || optionValues.length > 1;
     const publishedAt = representative.publishedAt || variants.reduce((latest, item) => item.publishedAt && (!latest || item.publishedAt > latest) ? item.publishedAt : latest, representative.publishedAt);
@@ -245,9 +258,6 @@ function variationValuesForProduct(product) {
   return splitVariationValues(product.attribute_1_value);
 }
 
-function productHasVariationValue(product, value) {
-  return variationValuesForProduct(product).includes(value);
-}
 
 function filterCatalogProducts(items) {
   return items.filter((product) => product.displayGroup !== false);
@@ -271,12 +281,11 @@ const FIRESTORE_PRODUCTS_COLLECTION = 'products';
 let firestoreDb = null;
 
 function initFirestore() {
-  if (!FIREBASE_CONFIG.projectId || !FIREBASE_CONFIG.apiKey) {
-    console.warn('Firebase config is missing. Firestore product loading cannot proceed.');
+  if (typeof firebase === 'undefined' || typeof firebase.initializeApp !== 'function' || !FIREBASE_CONFIG.projectId || !FIREBASE_CONFIG.apiKey) {
     return null;
   }
   try {
-    if (!firebase.apps.length) {
+    if (!firebase.apps || !firebase.apps.length) {
       firebase.initializeApp(FIREBASE_CONFIG);
     }
     firestoreDb = firebase.firestore();
@@ -316,7 +325,9 @@ async function loadProductsFromFirestore() {
   if (!db) return [];
 
   try {
-    const snapshot = await db.collection(FIRESTORE_PRODUCTS_COLLECTION).get();
+    const fetchPromise = db.collection(FIRESTORE_PRODUCTS_COLLECTION).get();
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 3500));
+    const snapshot = await Promise.race([fetchPromise, timeoutPromise]);
     const loaded = [];
     snapshot.forEach((doc) => {
       const data = doc.data() || {};
@@ -376,7 +387,27 @@ async function loadProductsFromLocalJson() {
       const catalogs = Array.isArray(json.catalogs) ? json.catalogs : [];
 
       catalogs.forEach((item) => {
-        const categories = String(item.categories || item.sub_sub_category_name || item.category_name || 'All').trim();
+        let categories = String(item.categories || '').trim();
+        if (!categories) {
+          const catName = item.category_name || '';
+          const subcatName = item.sub_category_name || '';
+          const subsubName = item.sub_sub_category_name || '';
+          const parts = [catName, subcatName, subsubName].filter(Boolean);
+          if (parts.length >= 2) {
+            categories = parts.join(' > ');
+          } else {
+            const titleLower = String(item.name || item.hero_product_name || item.title || '').toLowerCase();
+            if (titleLower.includes('speaker') || titleLower.includes('karaoke') || titleLower.includes('headphone') || titleLower.includes('audio')) {
+              categories = 'Electronics > Audio > Bluetooth Speakers';
+            } else if (titleLower.includes('top') || titleLower.includes('tunic') || titleLower.includes('kurti') || titleLower.includes('saree') || titleLower.includes('dress') || titleLower.includes('women')) {
+              categories = 'Women > Western Wear > Tops & Tunics';
+            } else if (titleLower.includes('t-shirt') || titleLower.includes('shirt') || titleLower.includes('men')) {
+              categories = 'Men > Top Wear > T-Shirts';
+            } else {
+              categories = subsubName || catName || 'All';
+            }
+          }
+        }
         const categoriesPath = parseCategoryPath(categories);
         const images = normalizeImageList(item.images || item.product_images || item.image || item.collage_image);
         const firstImage = images[0] || normalizeFirestoreImage(item.image) || img(item.hero_pid || item.id || item.product_id || String(Math.random()));
@@ -420,24 +451,115 @@ async function loadProductsFromLocalJson() {
 }
 
 async function loadProducts() {
-  const firestoreProducts = await loadProductsFromFirestore();
-  if (firestoreProducts.length) {
-    PRODUCTS = firestoreProducts;
-    buildCategoriesFromProducts(PRODUCTS);
-    groupVariantProducts(PRODUCTS);
-    return;
-  }
-
+  // 1. Fast local catalog load (<5ms)
   const localProducts = await loadProductsFromLocalJson();
-  if (localProducts.length) {
+  if (localProducts && localProducts.length) {
     PRODUCTS = localProducts;
     buildCategoriesFromProducts(PRODUCTS);
     groupVariantProducts(PRODUCTS);
-    console.warn('Using local fallback product data from JSON files.');
-    return;
   }
 
-  console.error('No products loaded from Firestore or local JSON. Please check Firebase config and product files.');
+  // 2. Query Firestore if online
+  try {
+    const firestoreProducts = await loadProductsFromFirestore();
+    if (firestoreProducts && firestoreProducts.length) {
+      PRODUCTS = firestoreProducts;
+      buildCategoriesFromProducts(PRODUCTS);
+      groupVariantProducts(PRODUCTS);
+    }
+  } catch (err) {
+    console.warn('Firestore products fetch skipped or offline:', err);
+  }
+}
+
+/* ============ Instant Local Storage Cache Layer ============ */
+const CACHE_KEY_PRODUCTS = 'nila_store_products_v3';
+const CACHE_KEY_BANNERS = 'nila_store_banners_v3';
+
+function loadProductsFromCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY_PRODUCTS);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      PRODUCTS = parsed;
+      buildCategoriesFromProducts(PRODUCTS);
+      groupVariantProducts(PRODUCTS);
+      return true;
+    }
+  } catch (e) {
+    console.warn('Failed to parse cached products:', e);
+  }
+  return false;
+}
+
+function saveProductsToCache(products) {
+  try {
+    if (!Array.isArray(products) || !products.length) return;
+    const minified = products.map((p) => ({
+      id: p.id,
+      sku: p.sku,
+      cat: p.cat,
+      subcat: p.subcat,
+      subsubcat: p.subsubcat,
+      categoriesPath: p.categoriesPath,
+      categoriesLabel: p.categoriesLabel,
+      brand: p.brand,
+      title: p.title,
+      description: p.description,
+      price: p.price,
+      mrp: p.mrp,
+      rating: p.rating,
+      reviews: p.reviews,
+      images: p.images,
+      img: p.img,
+      deal: p.deal,
+      published: p.published,
+      in_stock: p.in_stock,
+      stock: p.stock,
+      parent: p.parent,
+      attribute_1_global: p.attribute_1_global,
+      attribute_1_name: p.attribute_1_name,
+      attribute_1_value: p.attribute_1_value,
+      type: p.type
+    }));
+    localStorage.setItem(CACHE_KEY_PRODUCTS, JSON.stringify(minified));
+  } catch (e) {
+    console.warn('Failed to save products to localStorage:', e);
+  }
+}
+
+function loadBannersFromCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY_BANNERS);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      BANNER_SLIDES = parsed;
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+function saveBannersToCache(banners) {
+  try {
+    if (Array.isArray(banners) && banners.length) {
+      localStorage.setItem(CACHE_KEY_BANNERS, JSON.stringify(banners));
+    }
+  } catch (e) {}
+}
+
+function renderSkeletonCards(count = 6) {
+  return Array.from({ length: count }, () => `
+    <div class="skeleton-card" aria-hidden="true">
+      <div class="skeleton-media"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line w-40"></div>
+        <div class="skeleton-line w-60"></div>
+      </div>
+    </div>
+  `).join('');
 }
 
 const CART_KEY = 'nila-store-cart';
@@ -577,20 +699,73 @@ function getProductSlug(product) {
 }
 
 function getProductUrl(product) {
+  if (!product) return 'product.html';
   const slug = getProductSlug(product);
-  const isCategoryPage = window.location.pathname.includes('category.html');
-  const basePath = isCategoryPage
-    ? window.location.pathname.replace(/category\.html.*$/, 'index.html')
-    : window.location.pathname;
-  const url = new URL(window.location.origin + (basePath.startsWith('/') ? basePath : '/' + basePath));
-  url.searchParams.set('product', slug);
-  return url.toString();
+  if (slug) {
+    return `product.html?product=${encodeURIComponent(slug)}`;
+  }
+  if (product.id) {
+    return `product.html?id=${encodeURIComponent(product.id)}`;
+  }
+  return 'product.html';
+}
+
+function getProductAbsoluteUrl(product) {
+  const relUrl = getProductUrl(product);
+  try {
+    const base = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+    return new URL(relUrl, base).toString();
+  } catch {
+    return relUrl;
+  }
+}
+
+function parseProductSpecs(description, product) {
+  const desc = String(description || '');
+  const specs = [];
+
+  const fabricMatch = desc.match(/(?:^|\n)\s*Fabric:\s*([^\n]+)/i);
+  if (fabricMatch) specs.push({ label: 'Fabric', value: fabricMatch[1].trim() });
+
+  const patternMatch = desc.match(/(?:^|\n)\s*Pattern:\s*([^\n]+)/i);
+  if (patternMatch) specs.push({ label: 'Pattern', value: patternMatch[1].trim() });
+
+  const originMatch = desc.match(/(?:^|\n)\s*Country of Origin:\s*([^\n]+)/i);
+  if (originMatch) specs.push({ label: 'Country of Origin', value: originMatch[1].trim() });
+
+  const dispatchMatch = desc.match(/(?:^|\n)\s*Dispatch:\s*([^\n]+)/i);
+  if (dispatchMatch) specs.push({ label: 'Dispatch', value: dispatchMatch[1].trim() });
+
+  const netQtyMatch = desc.match(/(?:^|\n)\s*Net Quantity:\s*([^\n]+)/i);
+  if (netQtyMatch) specs.push({ label: 'Net Quantity', value: netQtyMatch[1].trim() });
+
+  if (product.categoriesLabel) {
+    specs.push({ label: 'Category', value: product.categoriesLabel });
+  }
+
+  if (product.sku || product.id) {
+    specs.push({ label: 'Product Code / SKU', value: product.sku || product.id });
+  }
+
+  return specs;
+}
+
+function orderProductOnWhatsApp(productId, requestedSize = '', requestedQty = 1) {
+  const p = PRODUCTS.find((x) => x.id === productId || slugify(x.title) === slugify(productId) || x.sku === productId);
+  if (!p) return;
+  const sizeDetail = requestedSize ? ` (Size: ${requestedSize})` : '';
+  const itemSku = p.sku || p.id || '';
+  const skuDetail = itemSku ? ` (N-Item No: ${itemSku})` : '';
+  const totalVal = rupee(p.price * requestedQty);
+  const text = `Hello Nila Store, I would like to order this product:\n\n*${p.title}*${sizeDetail}${skuDetail}\nQuantity: ${requestedQty}\nPrice: ${rupee(p.price)} each\nTotal: ${totalVal}\nProduct Link: ${getProductAbsoluteUrl(p)}\n\nPlease confirm availability and delivery details.`;
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
 }
 
 async function shareProduct(productId) {
   const product = PRODUCTS.find((p) => p.id === productId || slugify(p.title) === productId || p.sku === productId);
   if (!product) return;
-  const shareUrl = getProductUrl(product);
+  const shareUrl = getProductAbsoluteUrl(product);
   const shareData = {
     title: `${product.title} — Nila Store`,
     text: `Check out ${product.title} on Nila Store for ${rupee(product.price)}:`,
@@ -617,227 +792,13 @@ async function shareProduct(productId) {
   window.prompt('Copy product link:', shareUrl);
 }
 
-function openModal(targetId, updateUrl = true) {
-  const overlay = document.getElementById('modalOverlay');
-  const modalEl = document.getElementById('productModal');
-  if (!overlay || !modalEl) return;
-
+function openModal(targetId) {
+  if (!targetId) return;
   const targetSlug = slugify(targetId);
   const product = PRODUCTS.find((p) => p.id === targetId || slugify(p.title) === targetSlug || p.sku === targetId);
-  if (!product) return;
-
-  const variants = product.groupVariants || [product];
-  // Select the representative (parent) product which holds the full description and primary images
-  const representative = variants.find((item) => !item.parent) || variants[0] || product;
-  let selectedProduct = representative;
-  
-  const productDesc = selectedProduct.description || variants.find((v) => v.description)?.description || product.description || '';
-  let selectedSize = variationValuesForProduct(selectedProduct)[0] || '';
-
-  const imageSources = [...new Set(variants.flatMap((item) => (item.images && item.images.length ? item.images : [item.img])))].filter(Boolean);
-  let currentImg = selectedProduct.img || imageSources[0] || '';
-
-  const variantOptions = selectedProduct.optionValues && selectedProduct.optionValues.length 
-    ? selectedProduct.optionValues 
-    : variationValuesForProduct(selectedProduct);
-
-  const renderImageThumbs = () => imageSources.map((src) => `
-      <button type="button" class="variant-thumb${src === currentImg ? ' selected' : ''}" data-variant-img="${esc(src)}">
-        <img src="${esc(src)}" alt="${esc(selectedProduct.title)}" width="64" height="64" loading="lazy" decoding="async">
-      </button>`).join('');
-
-window.toggleSizeChartModal = function(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
+  if (product) {
+    window.location.href = getProductUrl(product);
   }
-  const box = document.getElementById('sizeChartDetails');
-  if (!box) return;
-  const isHidden = box.style.display === 'none' || !box.style.display;
-  box.style.display = isHidden ? 'block' : 'none';
-  const btn = document.getElementById('sizeChartToggleBtn');
-  if (btn) {
-    btn.textContent = isHidden ? '✕ Hide Size Chart' : '📏 Size Chart';
-  }
-};
-
-  const isFreeSize = (options) => {
-    if (!options || !options.length) return true;
-    const cleanList = options.map(extractCleanSizeLabel).map(s => s.toLowerCase().trim()).filter(Boolean);
-    if (!cleanList.length) return true;
-    if (cleanList.length === 1) {
-      const val = cleanList[0].replace(/[\s\-_]/g, '');
-      return val === 'freesize' || val === 'free' || val === 'onesize' || val === 'standard' || val === 'na' || val === 'all';
-    }
-    return false;
-  };
-
-  const renderOptionButtons = () => {
-    if (!variantOptions || !variantOptions.length || isFreeSize(variantOptions)) return '';
-    const optName = selectedProduct.optionName || 'Size';
-    const sizeChartItems = getDetailedSizeChart(productDesc);
-    const hasDetailedSpecs = sizeChartItems.length > 0 && sizeChartItems.some((item) => item.includes('('));
-
-    return `
-      <div class="variation-options">
-        <div class="variation-label-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-          <div class="variation-label" style="font-weight: 600;">Choose ${esc(optName)}</div>
-          ${hasDetailedSpecs ? `<button type="button" id="sizeChartToggleBtn" class="size-chart-link" onclick="toggleSizeChartModal(event)" style="background: none; border: none; color: #2563eb; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0.2rem 0.4rem; border-radius: 4px;">📏 Size Chart</button>` : ''}
-        </div>
-        <div class="variation-choices">
-          ${variantOptions.map((value) => {
-            const cleanVal = extractCleanSizeLabel(value);
-            return `
-            <label class="variation-choice${selectedSize === cleanVal ? ' selected' : ''}">
-              <input type="radio" name="variation-size" value="${esc(cleanVal)}" data-option-value="${esc(cleanVal)}"${selectedSize === cleanVal ? ' checked' : ''}>
-              <span>${esc(cleanVal)}</span>
-            </label>
-          `;
-          }).join('')}
-        </div>
-        ${hasDetailedSpecs ? `
-          <div id="sizeChartDetails" class="size-chart-box" style="display: none; margin-top: 0.75rem; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.82rem; line-height: 1.6; color: #334155;">
-            <div style="font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.4rem;">
-              <span>📏 Size Chart &amp; Measurements</span>
-              <span style="font-size: 0.72rem; color: #64748b; font-weight: normal;">(Inches / Specs)</span>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-              ${sizeChartItems.map((item) => {
-                const label = extractCleanSizeLabel(item);
-                const specs = item.includes('(') ? item.replace(/^[^(]*\(/, '(') : '';
-                return `
-                  <div style="display: flex; gap: 0.6rem; align-items: baseline;">
-                    <span style="font-weight: 700; color: #1e293b; min-width: 2.4rem; background: #e2e8f0; border-radius: 4px; text-align: center; padding: 0.15rem 0.4rem; font-size: 0.78rem;">${esc(label)}</span>
-                    <span style="color: #475569; font-size: 0.82rem;">${esc(specs || item)}</span>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        ` : ''}
-      </div>`;
-  };
-
-  const updateModalSelection = (newProduct, size = '', specificImg = null) => {
-    if (!newProduct) return;
-    selectedProduct = newProduct;
-    selectedSize = size || variationValuesForProduct(newProduct)[0] || selectedSize;
-    if (specificImg) {
-      currentImg = specificImg;
-    } else if (newProduct.img && imageSources.includes(newProduct.img)) {
-      currentImg = newProduct.img;
-    }
-
-    const mainImage = modalEl.querySelector('.modal-media img');
-    const modalTitle = modalEl.querySelector('.modal-title');
-    const modalBrand = modalEl.querySelector('.modal-brand');
-    const modalPrice = modalEl.querySelector('.modal-price-row .price-now');
-    const modalMrp = modalEl.querySelector('.modal-price-row .price-was');
-    const modalOff = modalEl.querySelector('.modal-price-row .price-off');
-    const addButton = modalEl.querySelector('[data-modal-add]');
-    const wishButton = modalEl.querySelector('[data-modal-wish]');
-    const shareButton = modalEl.querySelector('[data-modal-share]');
-
-    if (mainImage) {
-      mainImage.src = currentImg;
-      mainImage.alt = esc(newProduct.title);
-    }
-    if (modalTitle) modalTitle.textContent = newProduct.title;
-    if (modalBrand) modalBrand.textContent = newProduct.brand;
-    if (modalPrice) modalPrice.textContent = rupee(newProduct.price);
-    if (modalMrp) modalMrp.textContent = newProduct.mrp ? rupee(newProduct.mrp) : '';
-    if (modalOff) modalOff.textContent = pctOff(newProduct) > 0 ? `${pctOff(newProduct)}% off` : '';
-    if (addButton) {
-      addButton.dataset.modalAdd = newProduct.id;
-      addButton.dataset.selectedSize = selectedSize;
-    }
-    if (wishButton) {
-      wishButton.dataset.modalWish = newProduct.id;
-      wishButton.textContent = wishlist.has(newProduct.id) ? 'Remove wishlist' : 'Add to wishlist';
-      wishButton.classList.toggle('active', wishlist.has(newProduct.id));
-    }
-    if (shareButton) {
-      shareButton.dataset.modalShare = newProduct.id;
-    }
-
-    modalEl.querySelectorAll('.variant-thumb').forEach((btn) => {
-      btn.classList.toggle('selected', btn.dataset.variantImg === currentImg);
-    });
-    modalEl.querySelectorAll('.variation-choice').forEach((choice) => {
-      const input = choice.querySelector('input');
-      const isSelected = input?.dataset.optionValue === selectedSize;
-      choice.classList.toggle('selected', isSelected);
-      if (input) input.checked = isSelected;
-    });
-  };
-
-  const modalImages = renderImageThumbs();
-  const modalOptions = renderOptionButtons();
-  const title = selectedProduct.title;
-  const brand = selectedProduct.brand;
-  const price = rupee(selectedProduct.price);
-  const mrp = selectedProduct.mrp ? rupee(selectedProduct.mrp) : '';
-  const off = pctOff(selectedProduct);
-
-  if (updateUrl) {
-    const slug = getProductSlug(selectedProduct);
-    const url = new URL(window.location);
-    url.searchParams.set('product', slug);
-    window.history.pushState({ productId: selectedProduct.id, productSlug: slug }, '', url);
-  }
-
-  overlay.classList.add('open');
-  modalEl.setAttribute('aria-hidden', 'false');
-  modalEl.innerHTML = `
-    <div class="modal-inner">
-      <div class="modal-media">
-        <button type="button" class="modal-close" aria-label="Close product preview">✕</button>
-        <img src="${esc(currentImg)}" alt="${esc(title)}" width="500" height="500" loading="eager" decoding="async">
-        <div class="modal-thumbs">${modalImages}</div>
-      </div>
-      <div class="modal-info">
-        <div class="modal-header">
-          <div>
-            <span class="modal-brand">${esc(brand)}</span>
-            <h2 class="modal-title">${esc(title)}</h2>
-          </div>
-        </div>
-        <div class="modal-price-row">
-          <span class="price-now">${price}</span>
-          ${off > 0 ? `<span class="price-was">${mrp}</span><span class="price-off">${off}% off</span>` : ''}
-        </div>
-        ${modalOptions}
-        <div class="modal-actions">
-          <button class="btn btn-primary" data-modal-add="${selectedProduct.id}" data-selected-size="${esc(selectedSize)}">Add to cart</button>
-          <button class="btn btn-outline" data-modal-wish="${selectedProduct.id}">${wishlist.has(selectedProduct.id) ? 'Remove wishlist' : 'Add to wishlist'}</button>
-          <button type="button" class="btn btn-outline btn-share" data-modal-share="${selectedProduct.id}" title="Share product link">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            Share
-          </button>
-        </div>
-      </div>
-    </div>`;
-
-  modalEl.querySelectorAll('.variant-thumb').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const imageUrl = btn.dataset.variantImg;
-      const candidate = variants.find((item) => (item.images && item.images.includes(imageUrl)) || item.img === imageUrl) || selectedProduct;
-      updateModalSelection(candidate, selectedSize, imageUrl);
-    });
-  });
-
-  modalEl.querySelectorAll('.variation-choice input').forEach((input) => {
-    input.addEventListener('change', () => {
-      const value = input.dataset.optionValue;
-      const candidate = variants.find((item) => productHasVariationValue(item, value)) || selectedProduct;
-      updateModalSelection(candidate, value, currentImg);
-    });
-  });
-
-  if (removeFocusTrap) { removeFocusTrap(); removeFocusTrap = null; }
-  lastFocusedElement = document.activeElement;
-  removeFocusTrap = trapFocus(modalEl);
-  modalEl.focus?.();
 }
 
 function closeModal() {
@@ -845,15 +806,6 @@ function closeModal() {
   const modalEl = document.getElementById("productModal");
   if (overlay) overlay.classList.remove("open");
   if (modalEl) modalEl.setAttribute('aria-hidden', 'true');
-  if (removeFocusTrap) { removeFocusTrap(); removeFocusTrap = null; }
-  if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') lastFocusedElement.focus();
-
-  const url = new URL(window.location);
-  if (url.searchParams.has('product') || url.searchParams.has('p')) {
-    url.searchParams.delete('product');
-    url.searchParams.delete('p');
-    window.history.replaceState({}, '', url);
-  }
 }
 
 function shuffleArray(array) {
@@ -890,47 +842,605 @@ function latestDealProducts(limit = 6) {
 function parseQueryParams() {
   const params = new URLSearchParams(window.location.search);
   return {
-    cat: params.get('cat'),
-    subcat: params.get('subcat'),
-    subsubcat: params.get('subsubcat'),
+    cat: params.get('cat') || '',
+    subcat: params.get('subcat') || '',
+    subsubcat: params.get('subsubcat') || '',
+    search: params.get('search') || params.get('q') || '',
   };
 }
 
+function renderProductPage() {
+  const pageContent = document.getElementById('productPageContent');
+  if (!pageContent) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const targetId = params.get('product') || params.get('name') || params.get('id') || params.get('p') || params.get('sku');
+
+  if (!targetId) {
+    pageContent.innerHTML = `
+      <div class="empty-state">
+        <div class="big-emoji">🛍️</div>
+        <h2>Select a product to view details</h2>
+        <p>Browse our top collections and deals from the homepage.</p>
+        <a href="index.html" class="btn btn-primary" style="margin-top: 14px; display: inline-block;">Back to Homepage</a>
+      </div>`;
+    return;
+  }
+
+  const targetSlug = slugify(targetId);
+  const product = PRODUCTS.find((p) =>
+    slugify(p.title) === targetSlug ||
+    getProductSlug(p) === targetSlug ||
+    p.id === targetId ||
+    p.sku === targetId
+  );
+
+  if (!product) {
+    pageContent.innerHTML = `
+      <div class="empty-state">
+        <div class="big-emoji">🔍</div>
+        <h2>Product not found</h2>
+        <p>The product you are looking for might have expired or the link is invalid.</p>
+        <a href="index.html" class="btn btn-primary" style="margin-top: 14px; display: inline-block;">Explore Other Products</a>
+      </div>`;
+    return;
+  }
+
+  // Ensure clean product name in URL bar if accessed via ?id= or legacy parameter
+  const productSlug = getProductSlug(product);
+  if (productSlug && params.get('product') !== productSlug) {
+    const cleanUrl = new URL(window.location);
+    cleanUrl.searchParams.delete('id');
+    cleanUrl.searchParams.delete('name');
+    cleanUrl.searchParams.delete('p');
+    cleanUrl.searchParams.delete('sku');
+    cleanUrl.searchParams.set('product', productSlug);
+    window.history.replaceState({ productId: product.id, productSlug }, '', cleanUrl);
+  }
+
+  // Update Page Title and SEO Meta
+  document.title = `${product.title} — Nila Store`;
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) {
+    metaDesc.setAttribute('content', `Buy ${product.title} at Nila Store for ${rupee(product.price)}. Fast delivery, cash on delivery, and easy 7-day returns.`);
+  }
+
+  const variants = product.groupVariants || [product];
+  const representative = variants.find((item) => !item.parent) || variants[0] || product;
+  let selectedProduct = representative;
+  let selectedQty = 1;
+
+  const productDesc = selectedProduct.description || variants.find((v) => v.description)?.description || product.description || '';
+  let selectedSize = variationValuesForProduct(selectedProduct)[0] || '';
+
+  const imageSources = [...new Set(variants.flatMap((item) => (item.images && item.images.length ? item.images : [item.img])))].filter(Boolean);
+  let currentImg = selectedProduct.img || imageSources[0] || '';
+
+  const variantOptions = selectedProduct.optionValues && selectedProduct.optionValues.length 
+    ? selectedProduct.optionValues 
+    : variationValuesForProduct(selectedProduct);
+
+  const isFreeSize = (options) => {
+    if (!options || !options.length) return true;
+    const cleanList = options.map(extractCleanSizeLabel).map(s => s.toLowerCase().trim()).filter(Boolean);
+    if (!cleanList.length) return true;
+    if (cleanList.length === 1) {
+      const val = cleanList[0].replace(/[\s\-_]/g, '');
+      return val === 'freesize' || val === 'free' || val === 'onesize' || val === 'standard' || val === 'na' || val === 'all';
+    }
+    return false;
+  };
+
+  const showVariants = variantOptions && variantOptions.length && !isFreeSize(variantOptions);
+  const sizeChartItems = getDetailedSizeChart(productDesc);
+  const hasDetailedSpecs = sizeChartItems.length > 0 && sizeChartItems.some((item) => item.includes('('));
+
+  // Category breadcrumbs
+  const category = CATEGORIES.find(c => c.id === selectedProduct.cat);
+  const parentSubcat = category?.subcats?.find(s => s.id === selectedProduct.subcat);
+  const childSubcat = parentSubcat?.children?.find(ch => ch.id === selectedProduct.subsubcat);
+
+  const breadcrumbsHtml = `
+    <nav class="pdp-breadcrumbs" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">›</span>
+      ${category ? `<a href="category.html?cat=${category.id}">${esc(category.label)}</a><span class="sep">›</span>` : ''}
+      ${parentSubcat ? `<a href="category.html?cat=${category?.id}&subcat=${parentSubcat.id}">${esc(parentSubcat.label)}</a><span class="sep">›</span>` : ''}
+      ${childSubcat ? `<a href="category.html?cat=${category?.id}&subcat=${parentSubcat.id}&subsubcat=${childSubcat.id}">${esc(childSubcat.label)}</a><span class="sep">›</span>` : ''}
+      <span class="current" title="${esc(selectedProduct.title)}">${esc(selectedProduct.title)}</span>
+    </nav>`;
+
+  const specsList = parseProductSpecs(productDesc, selectedProduct);
+
+  const renderThumbsHtml = () => {
+    if (imageSources.length <= 1) return '';
+    return `
+      <div class="pdp-thumbs" id="pdpThumbs">
+        ${imageSources.map((src) => `
+          <button type="button" class="pdp-thumb-btn${src === currentImg ? ' selected' : ''}" data-pdp-img="${esc(src)}" aria-label="View photo">
+            <img src="${esc(src)}" alt="${esc(selectedProduct.title)}" width="64" height="64" loading="lazy" decoding="async">
+          </button>
+        `).join('')}
+      </div>`;
+  };
+
+  const renderVariantsHtml = () => {
+    if (!showVariants) return '';
+    const optName = selectedProduct.optionName || 'Size';
+    return `
+      <div class="pdp-variants-section">
+        <div class="pdp-variants-head">
+          <span class="pdp-variants-title">Select ${esc(optName)}</span>
+          ${hasDetailedSpecs ? `<button type="button" id="pdpSizeChartBtn" class="pdp-sizechart-btn">📏 Size Chart</button>` : ''}
+        </div>
+        <div class="pdp-variant-chips" id="pdpVariantChips">
+          ${variantOptions.map((value) => {
+            const cleanVal = extractCleanSizeLabel(value);
+            const isSelected = selectedSize === cleanVal;
+            return `
+              <label class="pdp-chip-label${isSelected ? ' selected' : ''}">
+                <input type="radio" name="pdp-variation" value="${esc(cleanVal)}"${isSelected ? ' checked' : ''}>
+                <span class="pdp-chip-box">${esc(cleanVal)}</span>
+              </label>`;
+          }).join('')}
+        </div>
+        ${hasDetailedSpecs ? `
+          <div id="pdpSizeChartDetails" class="size-chart-box" style="display: none; margin-top: 0.75rem; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.82rem; line-height: 1.6; color: #334155;">
+            <div style="font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.4rem;">
+              <span>📏 Size Chart &amp; Measurements</span>
+              <span style="font-size: 0.72rem; color: #64748b; font-weight: normal;">(Inches / Specs)</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+              ${sizeChartItems.map((item) => {
+                const label = extractCleanSizeLabel(item);
+                const specs = item.includes('(') ? item.replace(/^[^(]*\(/, '(') : '';
+                return `
+                  <div style="display: flex; gap: 0.6rem; align-items: baseline;">
+                    <span style="font-weight: 700; color: #1e293b; min-width: 2.4rem; background: #e2e8f0; border-radius: 4px; text-align: center; padding: 0.15rem 0.4rem; font-size: 0.78rem;">${esc(label)}</span>
+                    <span style="color: #475569; font-size: 0.82rem;">${esc(specs || item)}</span>
+                  </div>`;
+              }).join('')}
+            </div>
+          </div>` : ''}
+      </div>`;
+  };
+
+  const off = pctOff(selectedProduct);
+  const isWished = wishlist.has(selectedProduct.id);
+
+  pageContent.innerHTML = `
+    <div class="pdp-wrap">
+      ${breadcrumbsHtml}
+
+      <div class="pdp-grid">
+        <!-- Gallery Column -->
+        <div class="pdp-gallery-col">
+          <div class="pdp-gallery-card">
+            <div class="pdp-main-media">
+              ${off > 0 ? `<span class="discount-tag" id="pdpDiscountTag">${off}% OFF</span>` : '<span class="discount-tag" id="pdpDiscountTag" style="display:none;"></span>'}
+              <div class="pdp-media-actions">
+                <button type="button" class="pdp-icon-btn ${isWished ? 'active' : ''}" id="pdpWishlistBtn" data-wish="${selectedProduct.id}" aria-label="Add to wishlist" aria-pressed="${isWished}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="${isWished ? 'currentColor' : 'none'}"><path d="M12 21s-7.5-4.6-10-9.3C.4 8 2 4.5 5.6 4.1 8 3.8 10 5 12 7.5 14 5 16 3.8 18.4 4.1 22 4.5 23.6 8 22 11.7 19.5 16.4 12 21 12 21z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                </button>
+                <button type="button" class="pdp-icon-btn" id="pdpShareBtn" title="Share product link">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                </button>
+              </div>
+              <img id="pdpMainImage" src="${esc(currentImg)}" alt="${esc(selectedProduct.title)}" width="600" height="600" loading="eager" fetchpriority="high" decoding="async">
+            </div>
+            ${renderThumbsHtml()}
+          </div>
+        </div>
+
+        <!-- Info Column -->
+        <div class="pdp-info-col">
+          <div class="pdp-header">
+            ${selectedProduct.brand ? `<span class="pdp-brand-tag">${esc(selectedProduct.brand)}</span>` : ''}
+            <h1 class="pdp-title" id="pdpTitle">${esc(selectedProduct.title)}</h1>
+            <div class="pdp-rating-strip">
+              <span class="pdp-rating-badge">★ ${selectedProduct.rating ? selectedProduct.rating.toFixed(1) : '4.2'}</span>
+              <span>${selectedProduct.reviews ? `${selectedProduct.reviews} ratings` : '50+ verified buyers'}</span>
+              <span class="pdp-verified-badge">✓ In Stock &amp; Ready to Ship</span>
+            </div>
+          </div>
+
+          <!-- Price Box -->
+          <div class="pdp-price-box">
+            <div class="pdp-price-row">
+              <span class="pdp-price-now" id="pdpPriceNow">${rupee(selectedProduct.price)}</span>
+              ${off > 0 ? `<span class="pdp-price-was" id="pdpPriceWas">${rupee(selectedProduct.mrp)}</span>` : '<span class="pdp-price-was" id="pdpPriceWas" style="display:none;"></span>'}
+              ${off > 0 ? `<span class="pdp-price-off" id="pdpPriceOff">${off}% OFF</span>` : '<span class="pdp-price-off" id="pdpPriceOff" style="display:none;"></span>'}
+            </div>
+            <span class="pdp-tax-note">Inclusive of all taxes • Free delivery on orders over ₹499</span>
+          </div>
+
+          <!-- Variant / Size Choices -->
+          ${renderVariantsHtml()}
+
+          <!-- Quantity & Action Buttons -->
+          <div class="pdp-action-group">
+            <div class="pdp-qty-row">
+              <span class="pdp-qty-label">Quantity:</span>
+              <div class="pdp-qty-picker">
+                <button type="button" class="pdp-qty-btn" id="pdpQtyDec" aria-label="Decrease quantity">−</button>
+                <span class="pdp-qty-num" id="pdpQtyNum">1</span>
+                <button type="button" class="pdp-qty-btn" id="pdpQtyInc" aria-label="Increase quantity">+</button>
+              </div>
+            </div>
+
+            <div class="pdp-main-buttons">
+              <button type="button" class="btn btn-primary pdp-btn-cart" id="pdpAddToCartBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                Add to Cart
+              </button>
+              <button type="button" class="pdp-btn-whatsapp" id="pdpWhatsAppBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                Order on WhatsApp
+              </button>
+            </div>
+
+            <div class="pdp-secondary-buttons">
+              <button type="button" class="btn btn-outline" id="pdpWishlistBtn2">
+                ${isWished ? '❤️ In Wishlist' : '🤍 Add to Wishlist'}
+              </button>
+              <button type="button" class="btn btn-outline" id="pdpShareBtn2">
+                🔗 Share Link
+              </button>
+            </div>
+          </div>
+
+          <!-- Value Perks Banner -->
+          <div class="pdp-perks-grid">
+            <div class="pdp-perk-item">
+              <span class="pdp-perk-icon">🚚</span>
+              <span>Free Delivery Above ₹499</span>
+            </div>
+            <div class="pdp-perk-item">
+              <span class="pdp-perk-icon">🔄</span>
+              <span>7-Day Easy Returns</span>
+            </div>
+            <div class="pdp-perk-item">
+              <span class="pdp-perk-icon">💵</span>
+              <span>Cash on Delivery</span>
+            </div>
+            <div class="pdp-perk-item">
+              <span class="pdp-perk-icon">🛡️</span>
+              <span>100% Quality Checked</span>
+            </div>
+          </div>
+
+          <!-- Product Details and Specifications Card -->
+          <div class="pdp-details-card">
+            <div>
+              <h3>Product Description</h3>
+              <p class="pdp-description-text">${esc(productDesc) || 'No additional description available.'}</p>
+            </div>
+
+            ${specsList.length ? `
+              <div>
+                <h3>Product Specifications</h3>
+                <table class="pdp-specs-table">
+                  <tbody>
+                    ${specsList.map(s => `<tr><th>${esc(s.label)}</th><td>${esc(s.value)}</td></tr>`).join('')}
+                  </tbody>
+                </table>
+              </div>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Sticky Action Bar -->
+      <div class="pdp-mobile-sticky-bar" id="pdpMobileStickyBar">
+        <div class="pdp-mobile-sticky-price">
+          <span class="now" id="pdpMobilePrice">${rupee(selectedProduct.price)}</span>
+          ${off > 0 ? `<span class="off">${off}% OFF</span>` : ''}
+        </div>
+        <div class="pdp-mobile-sticky-buttons">
+          <button type="button" class="btn btn-primary pdp-btn-cart" id="pdpMobileAddToCart">
+            Add to Cart
+          </button>
+          <button type="button" class="pdp-btn-whatsapp" id="pdpMobileWhatsApp">
+            WhatsApp Buy
+          </button>
+        </div>
+      </div>
+    </div>`;
+
+  // Attach interactive listeners for PDP
+  const mainImgEl = document.getElementById('pdpMainImage');
+  const priceNowEl = document.getElementById('pdpPriceNow');
+  const priceWasEl = document.getElementById('pdpPriceWas');
+  const priceOffEl = document.getElementById('pdpPriceOff');
+  const discountTagEl = document.getElementById('pdpDiscountTag');
+  const mobilePriceEl = document.getElementById('pdpMobilePrice');
+  const qtyNumEl = document.getElementById('pdpQtyNum');
+  const sizeChartDetails = document.getElementById('pdpSizeChartDetails');
+  const sizeChartBtn = document.getElementById('pdpSizeChartBtn');
+
+  // Thumbnail switching
+  pageContent.querySelectorAll('.pdp-thumb-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const src = btn.dataset.pdpImg;
+      if (!src) return;
+      currentImg = src;
+      if (mainImgEl) mainImgEl.src = src;
+      pageContent.querySelectorAll('.pdp-thumb-btn').forEach((b) => b.classList.toggle('selected', b === btn));
+    });
+  });
+
+  // Size Chart toggle
+  if (sizeChartBtn && sizeChartDetails) {
+    sizeChartBtn.addEventListener('click', () => {
+      const isHidden = sizeChartDetails.style.display === 'none' || !sizeChartDetails.style.display;
+      sizeChartDetails.style.display = isHidden ? 'block' : 'none';
+      sizeChartBtn.textContent = isHidden ? '✕ Hide Size Chart' : '📏 Size Chart';
+    });
+  }
+
+  // Variant change
+  pageContent.querySelectorAll('#pdpVariantChips input').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      selectedSize = radio.value;
+      pageContent.querySelectorAll('.pdp-chip-label').forEach((lbl) => {
+        const inp = lbl.querySelector('input');
+        lbl.classList.toggle('selected', inp?.value === selectedSize);
+      });
+      // Check if another variant object exists with this size
+      const candidate = variants.find((v) => productHasVariationValue(v, selectedSize)) || selectedProduct;
+      if (candidate && candidate !== selectedProduct) {
+        selectedProduct = candidate;
+        if (candidate.img && imageSources.includes(candidate.img)) {
+          currentImg = candidate.img;
+          if (mainImgEl) mainImgEl.src = currentImg;
+          pageContent.querySelectorAll('.pdp-thumb-btn').forEach((b) => b.classList.toggle('selected', b.dataset.pdpImg === currentImg));
+        }
+        const newOff = pctOff(selectedProduct);
+        if (priceNowEl) priceNowEl.textContent = rupee(selectedProduct.price);
+        if (mobilePriceEl) mobilePriceEl.textContent = rupee(selectedProduct.price);
+        if (priceWasEl) {
+          priceWasEl.textContent = selectedProduct.mrp ? rupee(selectedProduct.mrp) : '';
+          priceWasEl.style.display = newOff > 0 ? '' : 'none';
+        }
+        if (priceOffEl) {
+          priceOffEl.textContent = newOff > 0 ? `${newOff}% OFF` : '';
+          priceOffEl.style.display = newOff > 0 ? '' : 'none';
+        }
+        if (discountTagEl) {
+          discountTagEl.textContent = newOff > 0 ? `${newOff}% OFF` : '';
+          discountTagEl.style.display = newOff > 0 ? '' : 'none';
+        }
+      }
+    });
+  });
+
+  // Quantity changes
+  document.getElementById('pdpQtyInc')?.addEventListener('click', () => {
+    selectedQty = Math.min(20, selectedQty + 1);
+    if (qtyNumEl) qtyNumEl.textContent = selectedQty;
+  });
+  document.getElementById('pdpQtyDec')?.addEventListener('click', () => {
+    selectedQty = Math.max(1, selectedQty - 1);
+    if (qtyNumEl) qtyNumEl.textContent = selectedQty;
+  });
+
+  // Add to Cart
+  const handleAddToCart = () => {
+    addToCart(selectedProduct.id, selectedQty, selectedSize);
+  };
+  document.getElementById('pdpAddToCartBtn')?.addEventListener('click', handleAddToCart);
+  document.getElementById('pdpMobileAddToCart')?.addEventListener('click', handleAddToCart);
+
+  // WhatsApp Buy Now
+  const handleWhatsAppBuy = () => {
+    orderProductOnWhatsApp(selectedProduct.id, selectedSize, selectedQty);
+  };
+  document.getElementById('pdpWhatsAppBtn')?.addEventListener('click', handleWhatsAppBuy);
+  document.getElementById('pdpMobileWhatsApp')?.addEventListener('click', handleWhatsAppBuy);
+
+  // Wishlist toggle
+  const wishBtn1 = document.getElementById('pdpWishlistBtn');
+  const wishBtn2 = document.getElementById('pdpWishlistBtn2');
+  const handleWishlistToggle = () => {
+    toggleWishlist(selectedProduct.id, wishBtn1);
+    const isNowWished = wishlist.has(selectedProduct.id);
+    if (wishBtn1) {
+      wishBtn1.classList.toggle('active', isNowWished);
+      wishBtn1.setAttribute('aria-pressed', String(isNowWished));
+      const svg = wishBtn1.querySelector('svg');
+      if (svg) svg.setAttribute('fill', isNowWished ? 'currentColor' : 'none');
+    }
+    if (wishBtn2) {
+      wishBtn2.textContent = isNowWished ? '❤️ In Wishlist' : '🤍 Add to Wishlist';
+    }
+  };
+  wishBtn1?.addEventListener('click', handleWishlistToggle);
+  wishBtn2?.addEventListener('click', handleWishlistToggle);
+
+  // Share
+  const handleShare = () => shareProduct(selectedProduct.id);
+  document.getElementById('pdpShareBtn')?.addEventListener('click', handleShare);
+  document.getElementById('pdpShareBtn2')?.addEventListener('click', handleShare);
+
+  // Render Related Products
+  const relatedSection = document.getElementById('relatedProductsSection');
+  const relatedGrid = document.getElementById('relatedProductsGrid');
+  if (relatedSection && relatedGrid) {
+    const catalog = filterCatalogProducts(PRODUCTS);
+    const related = catalog.filter((p) => p.cat === selectedProduct.cat && p.id !== selectedProduct.id);
+    const selectedRelated = shuffleArray(related).slice(0, 6);
+    if (selectedRelated.length > 0) {
+      relatedGrid.innerHTML = selectedRelated.map(productCard).join('');
+      relatedSection.style.display = 'block';
+    } else {
+      relatedSection.style.display = 'none';
+    }
+  }
+}
+
+let categoryObserver = null;
 function renderCategoryPage() {
   const pageContent = document.getElementById('categoryPageContent');
   const pageTitle = document.getElementById('categoryPageTitle');
   const pageDesc = document.getElementById('categoryPageDescription');
-  if (!pageContent || !pageTitle || !pageDesc) return;
+  if (!pageContent) return;
 
-  const { cat, subcat, subsubcat } = parseQueryParams();
-  const category = CATEGORIES.find(c => c.id === cat);
-  if (!category) {
-    pageTitle.textContent = 'Category not found';
-    pageDesc.textContent = 'Please return to the homepage and choose a category.';
-    pageContent.innerHTML = `<div class="empty-state"><div class="big-emoji">⚠️</div><h3>Unknown category</h3><p>Use the homepage to find available collections.</p><a href="index.html" class="btn btn-outline">Back to home</a></div>`;
+  const { cat, subcat, subsubcat, search } = parseQueryParams();
+  const catalog = filterCatalogProducts(PRODUCTS);
+
+  // 1. Search Query Mode
+  if (search) {
+    const sTerm = search.trim().toLowerCase();
+    const matches = catalog.filter((p) =>
+      p.title.toLowerCase().includes(sTerm) ||
+      p.brand.toLowerCase().includes(sTerm) ||
+      (p.categoriesLabel && p.categoriesLabel.toLowerCase().includes(sTerm)) ||
+      p.cat.includes(sTerm) ||
+      (p.subcat || '').includes(sTerm) ||
+      (p.subsubcat || '').includes(sTerm)
+    );
+
+    if (pageTitle) pageTitle.textContent = `Search results for "${search}"`;
+    if (pageDesc) pageDesc.textContent = `${matches.length} product${matches.length === 1 ? '' : 's'} found.`;
+
+    if (!matches.length) {
+      pageContent.innerHTML = `<div class="empty-state"><div class="big-emoji">🔍</div><h3>No products found for "${esc(search)}"</h3><p>Try a different search keyword or browse categories.</p><a href="index.html" class="btn btn-outline">Back to home</a></div>`;
+      return;
+    }
+    renderProgressiveProductGrid(pageContent, matches);
     return;
   }
 
-  const parentSubcat = category.subcats?.find(s => s.id === subcat);
-  const childSubcat = parentSubcat?.children?.find(ch => ch.id === subsubcat);
-  const items = filterCatalogProducts(PRODUCTS).filter(p =>
-    p.cat === cat &&
-    (!subcat || p.subcat === subcat) &&
-    (!subsubcat || p.subsubcat === subsubcat)
-  );
+  // 2. Matching helpers for fuzzy plural / hierarchical matching
+  const matchCat = (p, targetCat) => {
+    if (!targetCat) return true;
+    const targetSlug = slugify(targetCat);
+    const cleanTarget = targetSlug.replace(/s$/, '');
+    if (p.cat && (slugify(p.cat) === targetSlug || slugify(p.cat).replace(/s$/, '') === cleanTarget)) return true;
+    if (Array.isArray(p.categoriesPath) && p.categoriesPath.some((cp) => slugify(cp) === targetSlug || slugify(cp).replace(/s$/, '') === cleanTarget)) return true;
+    if (p.categoriesLabel && (slugify(p.categoriesLabel).includes(targetSlug) || slugify(p.categoriesLabel).includes(cleanTarget))) return true;
+    return false;
+  };
 
-  const titleParts = [category.label];
-  if (parentSubcat) titleParts.push(parentSubcat.label);
-  if (childSubcat) titleParts.push(childSubcat.label);
-  pageTitle.textContent = titleParts.join(' › ');
-  pageDesc.textContent = `${items.length} product${items.length === 1 ? '' : 's'}${childSubcat ? ` in ${childSubcat.label}` : parentSubcat ? ` in ${parentSubcat.label}` : ''}.`;
+  const matchSub = (p, targetSub) => {
+    if (!targetSub) return true;
+    const targetSlug = slugify(targetSub);
+    const cleanTarget = targetSlug.replace(/s$/, '');
+    if (p.subcat && (slugify(p.subcat) === targetSlug || slugify(p.subcat).replace(/s$/, '') === cleanTarget)) return true;
+    if (p.subsubcat && (slugify(p.subsubcat) === targetSlug || slugify(p.subsubcat).replace(/s$/, '') === cleanTarget)) return true;
+    if (Array.isArray(p.categoriesPath) && p.categoriesPath.some((cp) => slugify(cp) === targetSlug || slugify(cp).replace(/s$/, '') === cleanTarget)) return true;
+    if (p.categoriesLabel && (slugify(p.categoriesLabel).includes(targetSlug) || slugify(p.categoriesLabel).includes(cleanTarget))) return true;
+    if (p.title && (slugify(p.title).includes(targetSlug) || slugify(p.title).includes(cleanTarget))) return true;
+    return false;
+  };
+
+  let items = [];
+  if (cat || subcat || subsubcat) {
+    items = catalog.filter((p) => matchCat(p, cat) && matchSub(p, subcat) && matchSub(p, subsubcat));
+  } else {
+    items = catalog;
+  }
+
+  // Build interactive breadcrumbs matching product page
+  const breadcrumbsEl = document.getElementById('categoryBreadcrumbs');
+  const cleanCat = cat ? cat.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : 'All Collections';
+  const cleanSub = subcat ? subcat.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '';
+  const cleanSubsub = subsubcat ? subsubcat.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '';
+
+  if (breadcrumbsEl) {
+    if (search) {
+      breadcrumbsEl.innerHTML = `
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Search: "${esc(search)}" (${items.length})</span>
+      `;
+    } else if (cat) {
+      let bHtml = `<a href="index.html">Home</a><span class="sep">›</span>`;
+      const category = CATEGORIES.find((c) => c.id === cat || slugify(c.id) === slugify(cat) || slugify(c.label) === slugify(cat));
+      const catLabel = category ? category.label : cleanCat;
+      const catId = category ? category.id : cat;
+
+      if (!subcat && !subsubcat) {
+        bHtml += `<span class="current">${esc(catLabel)} (${items.length})</span>`;
+      } else {
+        bHtml += `<a href="category.html?cat=${encodeURIComponent(catId)}">${esc(catLabel)}</a><span class="sep">›</span>`;
+        if (subcat && !subsubcat) {
+          const parentSub = category?.subcats?.find((s) => s.id === subcat || slugify(s.id) === slugify(subcat) || slugify(s.label) === slugify(subcat));
+          const subLabel = parentSub ? parentSub.label : cleanSub;
+          bHtml += `<span class="current">${esc(subLabel)} (${items.length})</span>`;
+        } else if (subcat && subsubcat) {
+          const parentSub = category?.subcats?.find((s) => s.id === subcat || slugify(s.id) === slugify(subcat) || slugify(s.label) === slugify(subcat));
+          const subLabel = parentSub ? parentSub.label : cleanSub;
+          const subId = parentSub ? parentSub.id : subcat;
+          bHtml += `<a href="category.html?cat=${encodeURIComponent(catId)}&subcat=${encodeURIComponent(subId)}">${esc(subLabel)}</a><span class="sep">›</span>`;
+          const childSub = parentSub?.children?.find((ch) => ch.id === subsubcat || slugify(ch.id) === slugify(subsubcat) || slugify(ch.label) === slugify(subsubcat));
+          const subsubLabel = childSub ? childSub.label : cleanSubsub;
+          bHtml += `<span class="current">${esc(subsubLabel)} (${items.length})</span>`;
+        }
+      }
+      breadcrumbsEl.innerHTML = bHtml;
+    } else {
+      breadcrumbsEl.innerHTML = `
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">All Collections (${items.length})</span>
+      `;
+    }
+  } else if (pageTitle) {
+    const titleParts = [cleanCat];
+    if (cleanSub) titleParts.push(cleanSub);
+    if (cleanSubsub) titleParts.push(cleanSubsub);
+    pageTitle.textContent = titleParts.join(' › ');
+  }
+
+  if (pageDesc) pageDesc.textContent = `${items.length} product${items.length === 1 ? '' : 's'} available.`;
 
   if (!items.length) {
     pageContent.innerHTML = `<div class="empty-state"><div class="big-emoji">😕</div><h3>No products found</h3><p>Try a different category or go back to the homepage.</p><a href="index.html" class="btn btn-outline">Back to home</a></div>`;
     return;
   }
 
-  pageContent.innerHTML = `<div class="product-grid">${items.map(productCard).join('')}</div>`;
+  renderProgressiveProductGrid(pageContent, items);
+}
+
+function renderProgressiveProductGrid(container, items) {
+  const CHUNK_SIZE = 16;
+  let renderedCount = 0;
+
+  container.innerHTML = `
+    <div class="product-grid" id="categoryProductGrid"></div>
+    <div id="categorySentinel" style="height: 30px; margin-top: 10px;"></div>
+  `;
+
+  const grid = document.getElementById('categoryProductGrid');
+  const sentinel = document.getElementById('categorySentinel');
+
+  const appendChunk = () => {
+    if (renderedCount >= items.length) {
+      if (categoryObserver && sentinel) categoryObserver.unobserve(sentinel);
+      if (sentinel) sentinel.remove();
+      return;
+    }
+    const nextBatch = items.slice(renderedCount, renderedCount + CHUNK_SIZE);
+    grid.insertAdjacentHTML('beforeend', nextBatch.map((p, i) => productCard(p, renderedCount + i)).join(''));
+    renderedCount += nextBatch.length;
+
+    if (renderedCount >= items.length && sentinel) {
+      if (categoryObserver) categoryObserver.unobserve(sentinel);
+      sentinel.remove();
+    }
+  };
+
+  appendChunk();
+
+  if (items.length > CHUNK_SIZE && sentinel) {
+    if (categoryObserver) categoryObserver.disconnect();
+    categoryObserver = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        appendChunk();
+      }
+    }, { rootMargin: '350px' });
+    categoryObserver.observe(sentinel);
+  }
 }
 
 function renderCategoryChrome() {
@@ -1034,37 +1544,37 @@ function renderCategoryChrome() {
 }
 
 /* ============ Product card ============ */
-function productCard(p) {
+function productCard(p, index) {
+  if (!p) return '';
   const off = pctOff(p);
-  const isWished = wishlist.has(p.id);
+  const isWished = wishlist && wishlist.has(p.id);
+  const url = getProductUrl(p);
+  const isPriority = typeof index === 'number' && index < 4;
+  const imageSrc = p.img || (Array.isArray(p.images) && p.images[0]) || img(p.id || '1');
 
   return `
-    <article class="card" data-id="${p.id}">
-      <div class="card-media" data-open="${p.id}">
+    <a href="${url}" class="card" data-id="${p.id || ''}">
+      <div class="card-media">
         ${off > 0 ? `<span class="discount-tag">${off}% OFF</span>` : ""}
-        <button type="button" class="wishlist-btn ${isWished ? "active" : ""}" data-wish="${p.id}" aria-label="Toggle wishlist" aria-pressed="${isWished}">
+        <button type="button" class="wishlist-btn ${isWished ? "active" : ""}" data-wish="${p.id || ''}" aria-label="Toggle wishlist" aria-pressed="${isWished}">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="${isWished ? 'currentColor' : 'none'}"><path d="M12 21s-7.5-4.6-10-9.3C.4 8 2 4.5 5.6 4.1 8 3.8 10 5 12 7.5 14 5 16 3.8 18.4 4.1 22 4.5 23.6 8 22 11.7 19.5 16.4 12 21 12 21z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         </button>
-        <img src="${p.img}" alt="${esc(p.title)}" loading="lazy" width="400" height="400" decoding="async">
+        <img src="${imageSrc}" alt="${esc(p.title || 'Product')}" loading="${isPriority ? 'eager' : 'lazy'}" decoding="async"${isPriority ? ' fetchpriority="high"' : ''} width="400" height="400">
       </div>
       <div class="card-body">
-        <span class="card-brand">${esc(p.brand)}</span>
-        <span class="card-title" data-open="${p.id}">${esc(p.title)}</span>
         <div class="card-price-row">
-          <span class="price-now">${rupee(p.price)}</span>
-          ${off > 0 ? `<span class="price-was">${rupee(p.mrp)}</span><span class="price-off">${off}% off</span>` : ""}
+          <span class="price-now">${rupee(p.price || 0)}</span>
+          ${off > 0 ? `<span class="price-was">${rupee(p.mrp || 0)}</span><span class="price-off">${off}% off</span>` : ""}
         </div>
       </div>
-    </article>`;
+    </a>`;
 }
 
 function attachCardEvents(root) {
   root.querySelectorAll("[data-add]").forEach(btn =>
-    btn.addEventListener("click", (e) => { e.stopPropagation(); addToCart(btn.dataset.add); }));
+    btn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); addToCart(btn.dataset.add); }));
   root.querySelectorAll("[data-wish]").forEach(btn =>
-    btn.addEventListener("click", (e) => { e.stopPropagation(); toggleWishlist(btn.dataset.wish, btn); }));
-  root.querySelectorAll("[data-open]").forEach(el =>
-    el.addEventListener("click", () => openModal(el.dataset.open)));
+    btn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(btn.dataset.wish, btn); }));
 }
 
 /* ============ Deals row ============ */
@@ -1072,7 +1582,8 @@ function renderDeals() {
   const row = document.getElementById('dealsRow');
   if (!row) return;
   const deals = latestDealProducts(6);
-  row.innerHTML = deals.map(productCard).join('');
+  if (!deals.length) return;
+  row.innerHTML = deals.map((p, i) => productCard(p, i)).join('');
 }
 
 /* ============ Category sections ============ */
@@ -1081,15 +1592,12 @@ function renderCategorySections() {
   if (!container) return;
 
   const allCatalog = filterCatalogProducts(PRODUCTS);
-  // Filter categories that have available products in the catalog
+  if (!allCatalog.length) return;
   const validCategories = CATEGORIES.filter(c => allCatalog.some(p => p.cat === c.id));
-  
-  // Randomly select 5 categories on every refresh (or all if fewer than 5)
   const selectedCategories = shuffleArray(validCategories).slice(0, 5);
 
   container.innerHTML = selectedCategories.map(c => {
     const catProducts = allCatalog.filter(p => p.cat === c.id);
-    // Randomly select 6 products for this category (1 full row on desktop, 2 rows on mobile)
     const randomProducts = shuffleArray(catProducts).slice(0, 6);
     if (!randomProducts.length) return '';
 
@@ -1103,14 +1611,14 @@ function renderCategorySections() {
             </div>
             <a href="category.html?cat=${c.id}" class="btn btn-outline">View all ${c.label}</a>
           </div>
-          <div class="product-grid">${randomProducts.map(productCard).join('')}</div>
+          <div class="product-grid">${randomProducts.map((p, i) => productCard(p, i)).join('')}</div>
         </div>
       </section>`;
   }).join('');
 }
 
 /* ============ Hero banner image carousel ============ */
-let BANNER_SLIDES = [
+const DEFAULT_BANNERS = [
   {
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1400&auto=format&fit=crop",
     title: "Mega Fashion Sale - Up to 70% Off on Women's & Men's Styles",
@@ -1131,8 +1639,9 @@ let BANNER_SLIDES = [
   }
 ];
 
+let BANNER_SLIDES = [...DEFAULT_BANNERS];
+
 async function loadBanners() {
-  // 1. Try local banners.json
   try {
     const res = await fetch('banners.json?v=' + Date.now());
     if (res.ok) {
@@ -1144,7 +1653,6 @@ async function loadBanners() {
     }
   } catch (e) {}
 
-  // 2. Try Firestore banners collection
   try {
     const db = initFirestore();
     if (db) {
@@ -1153,44 +1661,52 @@ async function loadBanners() {
         const loaded = [];
         snapshot.forEach(doc => {
           const d = doc.data();
-          if (d && d.image && d.active !== false) {
+          if (d && d.active !== false && (d.image || d.imageUrl)) {
             loaded.push({
-              image: d.image,
-              title: d.title || 'Special Promotion',
-              url: d.url || '#'
+              image: d.image || d.imageUrl,
+              title: d.title || '',
+              url: d.url || d.link || '#',
+              active: true
             });
           }
         });
         if (loaded.length) {
           BANNER_SLIDES = loaded;
+          return;
         }
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.warn('Could not load banners from Firestore —', e);
+  }
 }
 
-let carIndex = 0, carTimer;
+let carIndex = 0;
+let carTimer = null;
+
 function renderCarousel() {
   const track = document.getElementById('carouselTrack');
   const dots = document.getElementById('carDots');
   const carouselEl = document.getElementById('carousel');
-  if (!track || !dots || !BANNER_SLIDES.length) return;
+  if (!track || !BANNER_SLIDES.length) return;
 
   track.innerHTML = BANNER_SLIDES.map((s, i) => {
     const targetUrl = s.url || '#';
     const isExternal = /^https?:\/\//i.test(targetUrl) && !targetUrl.includes(window.location.hostname);
     return `
       <a href="${esc(targetUrl)}" class="slide" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} title="${esc(s.title || 'Banner Slide')}">
-        <img src="${esc(s.image)}" alt="${esc(s.title || 'Special Promotion')}" class="slide-banner-img" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async">
+        <img src="${esc(s.image)}" alt="${esc(s.title || 'Special Promotion')}" class="slide-banner-img" loading="${i === 0 ? 'eager' : 'lazy'}"${i === 0 ? ' fetchpriority="high"' : ''} decoding="async">
       </a>
     `;
   }).join('');
 
-  dots.innerHTML = BANNER_SLIDES.map((_, i) => `<button type="button" data-i="${i}" class="${i === 0 ? 'active' : ''}" aria-label="Go to slide ${i + 1}"></button>`).join('');
-  dots.querySelectorAll('button').forEach(b => b.addEventListener('click', (e) => {
-    e.stopPropagation();
-    goToSlide(+b.dataset.i);
-  }));
+  if (dots) {
+    dots.innerHTML = BANNER_SLIDES.map((_, i) => `<button type="button" data-i="${i}" class="${i === 0 ? 'active' : ''}" aria-label="Go to slide ${i + 1}"></button>`).join('');
+    dots.querySelectorAll('button').forEach(b => b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      goToSlide(+b.dataset.i);
+    }));
+  }
 
   document.getElementById('carPrev')?.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -1237,10 +1753,10 @@ function startCarouselAuto() {
 
 /* ============ Countdown ============ */
 function startCountdown() {
-  const end = new Date();
-  end.setHours(23, 59, 59, 999);
   const el = document.getElementById("countdownClock");
   if (!el) return;
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
   function tick() {
     const diff = Math.max(0, end - new Date());
     const h = String(Math.floor(diff / 3.6e6)).padStart(2, "0");
@@ -1251,6 +1767,47 @@ function startCountdown() {
   tick();
   setInterval(tick, 1000);
 }
+function pad(n) { return String(n).padStart(2, '0'); }
+
+/* ============ Search ============ */
+function runSearch(term) {
+  term = (term || '').trim().toLowerCase();
+  if (!term) return;
+
+  const catContainer = document.getElementById('categorySections') || document.getElementById('categoryPageContent');
+  if (!catContainer) {
+    window.location.href = `category.html?search=${encodeURIComponent(term)}`;
+    return;
+  }
+
+  const catalog = filterCatalogProducts(PRODUCTS);
+  const matches = catalog.filter(p =>
+    p.title.toLowerCase().includes(term) ||
+    p.brand.toLowerCase().includes(term) ||
+    (p.categoriesLabel && p.categoriesLabel.toLowerCase().includes(term))
+  );
+
+  catContainer.innerHTML = `
+    <section class="cat-section">
+      <div class="wrap">
+        <div class="section-head"><div><h2>Search results for "${esc(term)}"</h2><p class="section-sub">${matches.length} products found</p></div></div>
+        <div class="product-grid">${matches.map((p, i) => productCard(p, i)).join("")}</div>
+      </div>
+    </section>`;
+  attachCardEvents(catContainer);
+}
+
+/* ============ Toast ============ */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+
 
 /* ============ Cart ============ */
 function addToCart(id, qty = 1, requestedSize = '') {
@@ -1513,61 +2070,12 @@ function closeCheckoutPanel() {
   }
 /* ============ Mobile nav ============ */
 function openMobileNav() {
-  document.getElementById("mobileNav").classList.add("open");
-  document.getElementById("mobileNavOverlay").classList.add("open");
+  document.getElementById("mobileNav")?.classList.add("open");
+  document.getElementById("mobileNavOverlay")?.classList.add("open");
 }
 function closeMobileNav() {
-  document.getElementById("mobileNav").classList.remove("open");
-  document.getElementById("mobileNavOverlay").classList.remove("open");
-}
-
-/* ============ Search ============ */
-function runSearch(term) {
-  term = term.trim().toLowerCase();
-  const mainEl = document.querySelector("main");
-  const catContainer = document.getElementById("categorySections");
-  const dealSection = document.querySelector(".section-alt");
-  const heroSection = document.querySelector(".hero");
-  const trustSection = document.querySelector(".trust-strip");
-
-  if (!term) {
-    [catContainer, dealSection, heroSection, trustSection].forEach(s => s && (s.style.display = ""));
-    renderCategorySections();
-    return;
-  }
-  [dealSection, heroSection, trustSection].forEach(s => s && (s.style.display = "none"));
-
-  const matches = filterCatalogProducts(PRODUCTS).filter(p =>
-    p.title.toLowerCase().includes(term) ||
-    p.brand.toLowerCase().includes(term) ||
-    p.categoriesLabel.toLowerCase().includes(term) ||
-    p.cat.includes(term) ||
-    (p.subcat || '').includes(term) ||
-    (p.subsubcat || '').includes(term)
-  );
-
-  if (matches.length === 0) {
-    catContainer.innerHTML = `<div class="empty-state"><div class="big-emoji">🔍</div><h3>No results for "${esc(term)}"</h3><p>Try a different search term.</p></div>`;
-    return;
-  }
-  catContainer.innerHTML = `
-    <section class="cat-section">
-      <div class="wrap">
-        <div class="section-head"><div><h2>Search results for "${esc(term)}"</h2><p class="section-sub">${matches.length} products found</p></div></div>
-        <div class="product-grid">${matches.map(productCard).join("")}</div>
-      </div>
-    </section>`;
-  attachCardEvents(catContainer);
-}
-
-/* ============ Toast ============ */
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+  document.getElementById("mobileNav")?.classList.remove("open");
+  document.getElementById("mobileNavOverlay")?.classList.remove("open");
 }
 
 /* ============ Init ============ */
@@ -1575,30 +2083,80 @@ async function init() {
   loadCart();
   loadWishlist();
   updateWishlistCount();
-  // load product & banner data before rendering UI
-  await loadProducts();
-  await loadBanners();
+
+  // 1. FAST PATH: Instant local storage cache render (0ms delay)
+  const hasCachedProducts = loadProductsFromCache();
+  loadBannersFromCache();
+
   renderCategoryChrome();
   renderCarousel();
   renderDeals();
-  if (document.getElementById('categoryPageContent')) {
+  if (document.getElementById('productPageContent')) {
+    renderProductPage();
+  } else if (document.getElementById('categoryPageContent')) {
     renderCategoryPage();
   } else {
     renderCategorySections();
   }
   renderCart();
   startCountdown();
+  hidePageLoader();
+
+  // 2. BACKGROUND PATH: Stale-While-Revalidate data fetch
+  const syncData = async () => {
+    try {
+      const prevCount = PRODUCTS.length;
+      await loadProducts();
+      await loadBanners();
+      saveProductsToCache(PRODUCTS);
+      saveBannersToCache(BANNER_SLIDES);
+
+      // If cache was cold OR product count changed, update DOM smoothly
+      if (!hasCachedProducts || PRODUCTS.length !== prevCount) {
+        renderCategoryChrome();
+        renderCarousel();
+        renderDeals();
+        if (document.getElementById('productPageContent')) {
+          renderProductPage();
+        } else if (document.getElementById('categoryPageContent')) {
+          renderCategoryPage();
+        } else {
+          renderCategorySections();
+        }
+      }
+    } catch (err) {
+      console.warn('Sync data error:', err);
+    } finally {
+      hidePageLoader();
+    }
+  };
+
+  // Run network sync in background
+  if (!hasCachedProducts) {
+    await syncData();
+  } else {
+    syncData();
+  }
 
   // Global event delegation for dynamically generated controls
   document.body.addEventListener('click', (e) => {
     const add = e.target.closest('[data-add], [data-modal-add]');
     if (add) { e.preventDefault(); addToCart(add.dataset.add || add.dataset.modalAdd, 1, add.dataset.selectedSize || ''); return; }
     const wish = e.target.closest('[data-wish], [data-modal-wish]');
-    if (wish) { e.preventDefault(); toggleWishlist(wish.dataset.wish || wish.dataset.modalWish, wish); return; }
+    if (wish) { e.preventDefault(); e.stopPropagation(); toggleWishlist(wish.dataset.wish || wish.dataset.modalWish, wish); return; }
     const share = e.target.closest('[data-modal-share]');
-    if (share) { e.preventDefault(); shareProduct(share.dataset.modalShare); return; }
+    if (share) { e.preventDefault(); e.stopPropagation(); shareProduct(share.dataset.modalShare); return; }
     const open = e.target.closest('[data-open]');
-    if (open) { e.preventDefault(); openModal(open.dataset.open); return; }
+    if (open) {
+      // If any lingering data-open exists, navigate to product page instead of modal
+      e.preventDefault();
+      const targetSlug = open.dataset.open;
+      const matched = PRODUCTS.find((p) => p.id === targetSlug || slugify(p.title) === slugify(targetSlug) || p.sku === targetSlug);
+      if (matched) {
+        window.location.href = getProductUrl(matched);
+      }
+      return;
+    }
     const continueBtn = e.target.closest('[data-action="continue-shopping"]');
     if (continueBtn) { e.preventDefault(); closeCart(); return; }
     const modalClose = e.target.closest('.modal-close');
@@ -1650,26 +2208,21 @@ async function init() {
     if (e.key === "Escape") { closeCart(); closeWishlist(); closeModal(); closeMobileNav(); }
   });
 
-  // Auto-open product modal if URL contains ?product=slug or ?p=slug
+  // Legacy URL Redirect: if index.html or category.html is opened with ?product= or ?p= or ?id=
   const urlParams = new URLSearchParams(window.location.search);
-  const initialProductParam = urlParams.get('product') || urlParams.get('p');
-  if (initialProductParam) {
+  const initialProductParam = urlParams.get('product') || urlParams.get('p') || urlParams.get('id');
+  if (initialProductParam && !window.location.pathname.includes('product.html')) {
     const slugTarget = slugify(initialProductParam);
     const matched = PRODUCTS.find((p) => slugify(p.title) === slugTarget || p.id === initialProductParam || p.sku === initialProductParam);
     if (matched) {
-      openModal(matched.id, false);
+      window.location.replace(getProductUrl(matched));
+      return;
     }
   }
 
   window.addEventListener('popstate', () => {
-    const currentParams = new URLSearchParams(window.location.search);
-    const productParam = currentParams.get('product') || currentParams.get('p');
-    if (productParam) {
-      const slugTarget = slugify(productParam);
-      const matched = PRODUCTS.find((p) => slugify(p.title) === slugTarget || p.id === productParam || p.sku === productParam);
-      if (matched) openModal(matched.id, false);
-    } else {
-      closeModal();
+    if (document.getElementById('productPageContent')) {
+      renderProductPage();
     }
   });
 }

@@ -4,24 +4,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Return & Cancellation Policy — Nila Store</title>
-  <meta name="description" content="Read the official Return, Exchange, and Cancellation Policy for Nila Store.">
+  <title>Product Details — Nila Store</title>
+  <meta name="description" content="Shop quality products with best prices, fast delivery and easy returns at Nila Store.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preconnect" href="https://picsum.photos">
   <link
     href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=2">
-  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 
 <body>
-<!-- Page Loading Mask -->
-<div class="page-loader" id="pageLoader" aria-label="Loading page">
-  <div class="loader-spinner"></div>
-  <div class="loader-brand">Nila Store</div>
-</div>
+  <!-- Page Loading Mask -->
+  <div class="page-loader" id="pageLoader" aria-label="Loading page">
+    <div class="loader-spinner"></div>
+    <div class="loader-brand">Nila Store</div>
+  </div>
+
+  <!-- Header -->
   <header class="site-header">
     <div class="wrap header-inner">
       <button type="button" class="icon-btn menu-toggle" id="menuToggle" aria-label="Open menu">
@@ -29,7 +32,11 @@
           <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
         </svg>
       </button>
-      <a href="index.html" class="logo"><span class="logo-text">Nila Store</span></a>
+
+      <a href="index.html" class="logo">
+        <span class="logo-text">Nila Store</span>
+      </a>
+
       <div class="search-bar">
         <input type="search" id="searchInput" aria-label="Search products"
           placeholder="Search for products, brands and more" autocomplete="off">
@@ -40,6 +47,7 @@
           </svg>
         </button>
       </div>
+
       <div class="header-actions">
         <button type="button" class="header-action wishlist-toggle" id="wishlistToggle" aria-label="Open wishlist">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -62,64 +70,88 @@
         </button>
       </div>
     </div>
+
+    <!-- Mobile Search Bar -->
+    <div class="wrap mobile-search">
+      <input type="search" id="searchInputMobile" aria-label="Search products"
+        placeholder="Search for products, brands and more" autocomplete="off">
+      <button type="button" class="search-btn" id="searchBtnMobile" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+          <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
   </header>
+
+  <!-- Category rail -->
   <nav class="category-rail">
     <div class="wrap category-rail-inner" id="categoryRail"></div>
   </nav>
 
-  <main>
-    <section class="content-page-hero">
+  <!-- Main Product Detail Page Container -->
+  <main class="product-page-main">
+    <div class="wrap">
+      <div id="productPageContent" class="product-page-container">
+        <!-- Dynamic product content injected by JS -->
+      </div>
+    </div>
+
+    <!-- Related Products Section -->
+    <section class="section section-alt related-products-section" id="relatedProductsSection" style="display: none;">
       <div class="wrap">
-        <div class="breadcrumb-nav">
-          <a href="index.html">Home</a> <span>›</span> <span>Return policy</span>
+        <div class="section-head">
+          <div>
+            <h2>You may also like</h2>
+            <p class="section-sub">Similar styles & collections you might love</p>
+          </div>
         </div>
-        <h1>Return & Cancellation Policy</h1>
-        <p class="subtitle">Detailed guidelines regarding order returns, replacements, cancellations, and refunds.</p>
+        <div class="product-grid" id="relatedProductsGrid"></div>
       </div>
     </section>
 
-    <section class="content-page-body">
-      <div class="wrap">
-        <div class="content-card">
-          <h2>1. Return Window</h2>
-          <p>Customers may request a return or size exchange for eligible products within <strong>7 calendar
-              days</strong> from the date of package delivery. Requests initiated after 7 days will not be eligible for
-            return.</p>
-
-          <h2>2. Condition of Returned Items</h2>
-          <p>To qualify for a full refund or replacement, the item must:</p>
-          <ul>
-            <li>Be in its original, unused, and unworn condition.</li>
-            <li>Retain all original brand tags, labels, and packaging intact.</li>
-            <li>Be free from perfumes, stains, alterations, or wash wear.</li>
-          </ul>
-
-          <h2>3. Non-Returnable Items</h2>
-          <p>For hygiene and safety reasons, certain categories cannot be returned unless delivered in a damaged or
-            incorrect condition:</p>
-          <ul>
-            <li>Innerwear, lingerie, socks, and personal grooming items.</li>
-            <li>Customized or personalized orders.</li>
-            <li>Perishable or single-use items.</li>
-          </ul>
-
-          <h2>4. Order Cancellation</h2>
-          <p>Orders can be cancelled free of charge at any time prior to courier dispatch. Once the parcel is in
-            transit, please receive the item and initiate a standard 7-day return.</p>
-
-          <h2>5. Refund Process & Timelines</h2>
-          <p>Upon receipt and quality verification at our fulfillment center, refunds are processed within <strong>24 to
-              48 hours</strong> via your original payment method or direct UPI bank transfer for COD orders.</p>
+    <!-- Trust strip -->
+    <section class="trust-strip">
+      <div class="wrap trust-inner">
+        <div class="trust-item">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M3 12l6 6L21 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          <div><strong>Free delivery</strong><span>On orders above ₹499</span></div>
+        </div>
+        <div class="trust-item">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M4 4v6h6M20 20v-6h-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M5.5 15A8 8 0 0019 8.5M18.5 9A8 8 0 005 15.5" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" />
+          </svg>
+          <div><strong>7-day returns</strong><span>No questions asked</span></div>
+        </div>
+        <div class="trust-item">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3l7 3.5v5c0 4.5-3 7.7-7 9.5-4-1.8-7-5-7-9.5v-5L12 3z" stroke="currentColor" stroke-width="2.2"
+              stroke-linejoin="round" />
+          </svg>
+          <div><strong>Secure payments</strong><span>UPI, cards & wallets</span></div>
+        </div>
+        <div class="trust-item">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <rect x="2" y="6" width="20" height="13" rx="2" stroke="currentColor" stroke-width="2.2" />
+            <path d="M2 10h20M6 15h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+          <div><strong>Cash on delivery</strong><span>Pay when it arrives</span></div>
         </div>
       </div>
     </section>
   </main>
 
+  <!-- Footer -->
   <footer class="site-footer">
     <div class="wrap footer-inner">
       <div class="footer-col">
         <a href="index.html" class="logo"><span class="logo-text light">Nila Store</span></a>
-        <!--<p>A demo marketplace built for learning &amp; portfolio use. Not a real store.</p>-->
       </div>
       <div class="footer-col">
         <h3>Company</h3>
@@ -142,7 +174,6 @@
     </div>
     <div class="wrap footer-bottom">
       <span>© 2026 Nila Store. All rights reserved.</span>
-      <!--<span>Made for demo purposes.</span>-->
     </div>
   </footer>
 
@@ -165,17 +196,18 @@
           <input id="checkoutName" name="name" type="text" required placeholder="Your name">
         </div>
         <div>
-          <label for="checkoutPhone">Phone number</label>
-          <input id="checkoutPhone" name="phone" type="tel" required placeholder="10-digit mobile number">
+          <label for="checkoutAddress">Delivery address</label>
+          <textarea id="checkoutAddress" name="address" required
+            placeholder="Flat, street, area, city, pincode"></textarea>
         </div>
         <div>
-          <label for="checkoutAddress">Delivery address</label>
-          <textarea id="checkoutAddress" name="address" rows="3" required
-            placeholder="Street, city, PIN code"></textarea>
+          <label for="checkoutPhone">Phone number</label>
+          <input id="checkoutPhone" name="phone" type="tel" required placeholder="+91 98765 43210"
+            pattern="[0-9+\s-]{10,20}">
         </div>
         <div class="checkout-actions">
-          <button type="submit" class="btn btn-primary">Place order on WhatsApp</button>
-          <button type="button" class="btn btn-outline" id="checkoutCancel">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-block">Confirm</button>
+          <button type="button" class="btn btn-outline btn-block" id="checkoutCancel">Back to cart</button>
         </div>
       </form>
     </div>
@@ -188,6 +220,7 @@
     </div>
   </aside>
 
+  <!-- Wishlist drawer -->
   <aside class="cart-drawer wishlist-drawer" id="wishlistDrawer" role="dialog" aria-modal="true" aria-hidden="true"
     tabindex="-1" aria-label="Wishlist">
     <div class="drawer-head">
@@ -196,11 +229,6 @@
     </div>
     <div class="drawer-body" id="wishlistBody"></div>
   </aside>
-
-  <!-- Quick view modal -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal" id="productModal" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1"></div>
-  </div>
 
   <!-- Mobile nav -->
   <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
@@ -213,6 +241,9 @@
   </nav>
 
   <div class="toast" id="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="script.js?v=13"></script>
 </body>
 
