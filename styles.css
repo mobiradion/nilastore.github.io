@@ -1186,6 +1186,31 @@ a.card {
   background: var(--brand-dark);
 }
 
+.btn-whatsapp {
+  background: #25D366;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.28);
+}
+
+.btn-whatsapp:hover {
+  background: #1EBE5D;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.38);
+}
+
+.btn-whatsapp:active {
+  background: #179B4B;
+  transform: scale(.97);
+}
+
+.btn-whatsapp svg {
+  flex-shrink: 0;
+}
+
 .btn-outline {
   background: #fff;
   border: 1.5px solid var(--border);
@@ -1770,32 +1795,34 @@ a.card {
 /* ============ Toast ============ */
 .toast {
   position: fixed;
-  top: 20px;
-  bottom: auto;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(8px);
+  transform: translate(-50%, -50%) scale(0.88);
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(12px);
   color: #fff;
-  padding: 12px 24px;
-  border-radius: 999px;
-  font-size: 14px;
+  padding: 16px 26px;
+  border-radius: 16px;
+  font-size: 15px;
   font-weight: 600;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.45), 0 10px 20px -5px rgba(0, 0, 0, 0.3);
   opacity: 0;
   pointer-events: none;
   transition: opacity .25s ease, transform .25s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 9999;
+  z-index: 99999;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 10px;
   max-width: 90vw;
+  width: max-content;
   text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .toast.show {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .hidden {
@@ -1856,6 +1883,18 @@ a.card {
 .checkout-form textarea {
   resize: vertical;
   min-height: 100px;
+}
+
+.checkout-note {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: rgba(37, 211, 102, 0.12);
+  border: 1px solid rgba(37, 211, 102, 0.35);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 2px 0;
+  font-weight: 500;
 }
 
 .checkout-actions {
@@ -2618,12 +2657,13 @@ a.card {
 }
 
 .pdp-main-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
 .pdp-btn-cart {
+  width: 100%;
   height: 50px;
   font-size: 15px;
   display: inline-flex;
