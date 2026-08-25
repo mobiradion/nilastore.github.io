@@ -575,13 +575,50 @@ let removeFocusTrap = null;
 
 function findProductById(id) {
   if (id === undefined || id === null || id === '') return null;
-  const targetId = String(id).trim();
-  const targetSlug = slugify(targetId);
-  return PRODUCTS.find((p) =>
-    String(p.id || '').trim() === targetId ||
-    String(p.sku || '').trim().toLowerCase() === targetId.toLowerCase() ||
-    slugify(p.title || '') === targetSlug
-  ) || null;
+  const target = String(id).trim();
+  const targetSlug = slugify(target);
+
+  // 1. Direct top-level match
+  for (const p of PRODUCTS) {
+    if (
+      String(p.id || '').trim() === target ||
+      String(p.sku || '').trim().toLowerCase() === target.toLowerCase() ||
+      (p.groupId && String(p.groupId).trim() === target) ||
+      (p.parent && String(p.parent).trim() === target) ||
+      slugify(p.title || '') === targetSlug
+    ) {
+      return p;
+    }
+  }
+
+  // 2. Search all nested group variants
+  for (const p of PRODUCTS) {
+    if (p.groupVariants && Array.isArray(p.groupVariants)) {
+      for (const v of p.groupVariants) {
+        if (
+          String(v.id || '').trim() === target ||
+          String(v.sku || '').trim().toLowerCase() === target.toLowerCase() ||
+          (v.groupId && String(v.groupId).trim() === target) ||
+          (v.parent && String(v.parent).trim() === target) ||
+          slugify(v.title || '') === targetSlug
+        ) {
+          return v;
+        }
+      }
+    }
+  }
+
+  // 3. Fallback partial/fuzzy match
+  if (targetSlug.length > 3) {
+    for (const p of PRODUCTS) {
+      const pSlug = slugify(p.title || '');
+      if (pSlug && (pSlug.includes(targetSlug) || targetSlug.includes(pSlug))) {
+        return p;
+      }
+    }
+  }
+
+  return null;
 }
 
 function cartProductId(lineId) {
@@ -1303,7 +1340,11 @@ function renderProductPage() {
   });
 
   // Add to Cart
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     addToCart(selectedProduct.id, selectedQty, selectedSize);
   };
   window.currentPdpAddToCart = handleAddToCart;
@@ -1883,19 +1924,23 @@ function addToCart(id, qty = 1, requestedSize = '') {
   if (now - lastAddToCartTime < 150) return;
   lastAddToCartTime = now;
 
-  const product = findProductById(id);
-  if (!product) return;
+  let product = findProductById(id);
+  if (!product) {
+    const params = new URLSearchParams(window.location.search);
+    const targetParam = params.get('product') || params.get('name') || params.get('id') || params.get('sku');
+    if (targetParam) {
+      product = findProductById(targetParam);
+    }
+  }
+  if (!product) {
+    console.warn('addToCart: unable to find product for ID:', id);
+    return;
+  }
 
-  // Product cards represent a variation group. Store a concrete, in-stock
-  // variant so its selected option is preserved in the cart.
-  const selectedProduct = product.attribute_1_value
-    ? product
-    : product.isVariation && product.groupVariants
-      ? product.groupVariants.find((item) => item.attribute_1_value && item.in_stock !== false) || product
-      : product;
-  const selectedSize = requestedSize || variationValuesForProduct(selectedProduct)[0] || '';
+  const selectedProduct = product;
+  const selectedSize = requestedSize || (selectedProduct.optionValues && selectedProduct.optionValues[0]) || variationValuesForProduct(selectedProduct)[0] || '';
   const cartId = cartLineId(selectedProduct.id, selectedSize);
-  cart[cartId] = (cart[cartId] || 0) + qty;
+  cart[cartId] = (cart[cartId] || 0) + (Number(qty) || 1);
   saveCart();
   renderCart();
   showToast("Added to cart 🛒");
@@ -2204,9 +2249,10 @@ async function init() {
       saveProductsToCache(PRODUCTS);
       saveBannersToCache(BANNER_SLIDES);
 
-      // Re-render PDP and Category pages only if not previously cached or catalog data changed
+      // Re-render PDP only if not already rendered with product content
       if (document.getElementById('productPageContent')) {
-        if (!hasCachedProducts || PRODUCTS.length !== prevCount) {
+        const hasContent = document.getElementById('productPageContent').querySelector('.pdp-details-card, .pdp-grid, .pdp-title');
+        if (!hasContent) {
           renderProductPage();
         }
       } else if (document.getElementById('categoryPageContent')) {
@@ -2238,8 +2284,9 @@ async function init() {
     const pdpAdd = e.target.closest('[data-pdp-add], #pdpAddToCartBtn, #pdpMobileAddToCart');
     if (pdpAdd) {
       e.preventDefault();
+      e.stopPropagation();
       if (typeof window.currentPdpAddToCart === 'function') {
-        window.currentPdpAddToCart();
+        window.currentPdpAddToCart(e);
       }
       return;
     }
