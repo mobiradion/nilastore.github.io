@@ -645,44 +645,6 @@ img {
   image-rendering: -webkit-optimize-contrast;
 }
 
-@media (max-width: 768px) {
-  .hero {
-    margin-bottom: 16px;
-  }
-
-  .slide-banner-img {
-    aspect-ratio: 1200 / 347;
-    min-height: 140px;
-    object-fit: cover;
-  }
-
-  .carousel-nav {
-    display: none;
-  }
-
-  .carousel-dots {
-    bottom: 8px;
-    padding: 3px 8px;
-  }
-
-  .carousel-dots button {
-    width: 6px;
-    height: 6px;
-  }
-
-  .carousel-dots button.active {
-    width: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .slide-banner-img {
-    aspect-ratio: 1200 / 347;
-    min-height: 120px;
-    object-fit: cover;
-  }
-}
-
 .carousel-nav {
   position: absolute;
   top: 50%;
@@ -748,6 +710,44 @@ img {
 .carousel-dots button.active {
   width: 20px;
   background: #fff;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    margin-bottom: 16px;
+  }
+
+  .slide-banner-img {
+    aspect-ratio: 1200 / 347;
+    min-height: 140px;
+    object-fit: cover;
+  }
+
+  .carousel-nav {
+    display: none !important;
+  }
+
+  .carousel-dots {
+    bottom: 8px;
+    padding: 3px 8px;
+  }
+
+  .carousel-dots button {
+    width: 6px;
+    height: 6px;
+  }
+
+  .carousel-dots button.active {
+    width: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .slide-banner-img {
+    aspect-ratio: 1200 / 347;
+    min-height: 120px;
+    object-fit: cover;
+  }
 }
 
 /* ============ Sections ============ */
