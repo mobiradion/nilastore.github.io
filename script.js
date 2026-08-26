@@ -476,6 +476,54 @@ async function loadProducts() {
 const CACHE_KEY_PRODUCTS = 'nila_store_products_v3';
 const CACHE_KEY_BANNERS = 'nila_store_banners_v3';
 
+function cleanupLegacyCaches() {
+  try {
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (
+        key.startsWith('nila_store_products_v1') ||
+        key.startsWith('nila_store_products_v2') ||
+        key.startsWith('nila_store_banners_v1') ||
+        key.startsWith('nila_store_banners_v2') ||
+        key === 'nila_store_products' ||
+        key === 'nila_store_banners'
+      )) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((k) => {
+      try { localStorage.removeItem(k); } catch (e) { }
+    });
+  } catch (e) { }
+}
+
+function minifyProductForCache(p) {
+  return {
+    id: String(p.id || p.sku || ''),
+    sku: String(p.sku || p.id || ''),
+    cat: p.cat || '',
+    subcat: p.subcat || '',
+    subsubcat: p.subsubcat || '',
+    categoriesLabel: p.categoriesLabel || '',
+    brand: p.brand || '',
+    title: p.title || '',
+    description: typeof p.description === 'string' ? p.description.slice(0, 350) : '',
+    price: Number(p.price) || 0,
+    mrp: Number(p.mrp) || 0,
+    rating: Number(p.rating) || 0,
+    reviews: Number(p.reviews) || 0,
+    img: p.img || '',
+    images: Array.isArray(p.images) ? p.images.slice(0, 2) : [],
+    deal: Boolean(p.deal),
+    in_stock: p.in_stock !== false,
+    parent: p.parent || '',
+    attribute_1_name: p.attribute_1_name || '',
+    attribute_1_value: p.attribute_1_value || '',
+    type: p.type || 'simple'
+  };
+}
+
 function loadProductsFromCache() {
   try {
     const raw = localStorage.getItem(CACHE_KEY_PRODUCTS);
@@ -498,38 +546,44 @@ function loadProductsFromCache() {
 }
 
 function saveProductsToCache(products) {
+  if (!Array.isArray(products) || !products.length) return;
+  cleanupLegacyCaches();
+
+  const minified = products.map(minifyProductForCache);
+
+  // Attempt 1: Save full minified catalog
   try {
-    if (!Array.isArray(products) || !products.length) return;
-    const minified = products.map((p) => ({
-      id: String(p.id || p.sku || ''),
-      sku: String(p.sku || p.id || ''),
+    localStorage.setItem(CACHE_KEY_PRODUCTS, JSON.stringify(minified));
+    return;
+  } catch (e1) {
+    // Quota reached: purge and retry with compact top catalog
+    try { localStorage.removeItem(CACHE_KEY_PRODUCTS); } catch (e) { }
+  }
+
+  // Attempt 2: Cache top 80 products for fast-path above-the-fold render
+  try {
+    const subset = minified.slice(0, 80);
+    localStorage.setItem(CACHE_KEY_PRODUCTS, JSON.stringify(subset));
+    return;
+  } catch (e2) {
+    try { localStorage.removeItem(CACHE_KEY_PRODUCTS); } catch (e) { }
+  }
+
+  // Attempt 3: Ultra-compact top 40 products
+  try {
+    const micro = minified.slice(0, 40).map(p => ({
+      id: p.id,
+      sku: p.sku,
       cat: p.cat,
-      subcat: p.subcat,
-      subsubcat: p.subsubcat,
-      categoriesPath: p.categoriesPath,
-      categoriesLabel: p.categoriesLabel,
-      brand: p.brand,
       title: p.title,
-      description: p.description,
       price: p.price,
       mrp: p.mrp,
-      rating: p.rating,
-      reviews: p.reviews,
-      images: p.images,
       img: p.img,
-      deal: p.deal,
-      published: p.published,
-      in_stock: p.in_stock,
-      stock: p.stock,
-      parent: p.parent,
-      attribute_1_global: p.attribute_1_global,
-      attribute_1_name: p.attribute_1_name,
-      attribute_1_value: p.attribute_1_value,
-      type: p.type
+      deal: p.deal
     }));
-    localStorage.setItem(CACHE_KEY_PRODUCTS, JSON.stringify(minified));
-  } catch (e) {
-    console.warn('Failed to save products to localStorage:', e);
+    localStorage.setItem(CACHE_KEY_PRODUCTS, JSON.stringify(micro));
+  } catch (e3) {
+    // If browser localStorage is completely exhausted by other origins, safely ignore
   }
 }
 
@@ -549,7 +603,13 @@ function loadBannersFromCache() {
 function saveBannersToCache(banners) {
   try {
     if (Array.isArray(banners) && banners.length) {
-      localStorage.setItem(CACHE_KEY_BANNERS, JSON.stringify(banners));
+      const minifiedBanners = banners.slice(0, 10).map(b => ({
+        id: b.id || '',
+        title: b.title || '',
+        image: b.image || '',
+        url: b.url || ''
+      }));
+      localStorage.setItem(CACHE_KEY_BANNERS, JSON.stringify(minifiedBanners));
     }
   } catch (e) { }
 }
