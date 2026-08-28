@@ -47,19 +47,31 @@ DEFAULT_CATEGORIES = [
 ]
 
 def load_categories():
-    categories = list(DEFAULT_CATEGORIES)
     if os.path.exists(CATEGORIES_FILE):
         try:
             with open(CATEGORIES_FILE, "r", encoding="utf-8") as f:
                 saved = json.load(f)
                 if isinstance(saved, list):
-                    for c in saved:
-                        c_clean = str(c).strip()
-                        if c_clean and c_clean not in categories:
-                            categories.append(c_clean)
-        except Exception:
-            pass
-    return categories
+                    return [str(c).strip() for c in saved if str(c).strip()]
+        except Exception as e:
+            print(f"Error reading {CATEGORIES_FILE}: {e}")
+
+    # Initialize from DEFAULT_CATEGORIES only if file does not exist
+    save_all_categories(DEFAULT_CATEGORIES)
+    return list(DEFAULT_CATEGORIES)
+
+def save_all_categories(categories_list):
+    cleaned = []
+    for c in categories_list:
+        c_clean = str(c).strip()
+        if c_clean and c_clean not in cleaned:
+            cleaned.append(c_clean)
+    try:
+        with open(CATEGORIES_FILE, "w", encoding="utf-8") as f:
+            json.dump(cleaned, f, indent=2)
+    except Exception as e:
+        print(f"Warning: Could not save to {CATEGORIES_FILE}: {e}")
+    return cleaned
 
 def save_category(category_str):
     category_str = str(category_str).strip()
@@ -68,12 +80,232 @@ def save_category(category_str):
     categories = load_categories()
     if category_str not in categories:
         categories.insert(0, category_str)
-        try:
-            with open(CATEGORIES_FILE, "w", encoding="utf-8") as f:
-                json.dump(categories, f, indent=2)
-        except Exception as e:
-            print(f"Warning: Could not save category to {CATEGORIES_FILE}: {e}")
+        save_all_categories(categories)
+    invalidate_stats_cache()
     return categories
+
+def invalidate_stats_cache():
+    if os.path.exists("categories_stats_cache.json"):
+        try:
+            os.remove("categories_stats_cache.json")
+        except Exception:
+            pass
+
+def edit_category_in_file(old_category, new_category):
+    old_c = str(old_category).strip()
+    new_c = str(new_category).strip()
+    if not old_c or not new_c:
+        return load_categories()
+    categories = load_categories()
+    updated = []
+    replaced = False
+    for c in categories:
+        if "".join(c.lower().split()) == "".join(old_c.lower().split()):
+            if new_c not in updated:
+                updated.append(new_c)
+            replaced = True
+        else:
+            if c not in updated:
+                updated.append(c)
+    if not replaced and new_c not in updated:
+        updated.insert(0, new_c)
+    invalidate_stats_cache()
+    return save_all_categories(updated)
+
+def delete_category_from_file(category_str):
+    c_target = "".join(str(category_str).strip().lower().split())
+    categories = load_categories()
+    updated = [c for c in categories if "".join(c.strip().lower().split()) != c_target]
+    invalidate_stats_cache()
+    return save_all_categories(updated)
+
+def normalize_cat_str(s):
+    if not s:
+        return ""
+    return "".join(str(s).lower().replace("&", "and").replace(">", "/").replace("-", " ").split())
+
+def match_product_to_category(prod_cat_raw, target_cat):
+    if not prod_cat_raw or not target_cat:
+        return False
+    norm_p = normalize_cat_str(prod_cat_raw)
+    norm_t = normalize_cat_str(target_cat)
+    if norm_p == norm_t:
+        return True
+    
+    # Check leaf segment
+    p_parts = [p.strip() for p in str(prod_cat_raw).split(">") if p.strip()]
+    t_parts = [t.strip() for t in str(target_cat).split(">") if t.strip()]
+    
+    p_leaf = normalize_cat_str(p_parts[-1]) if p_parts else norm_p
+    t_leaf = normalize_cat_str(t_parts[-1]) if t_parts else norm_t
+    
+    if p_leaf == t_leaf and len(p_leaf) > 2:
+        if len(p_parts) > 1 and len(t_parts) > 1:
+            return normalize_cat_str(p_parts[0]) == normalize_cat_str(t_parts[0])
+        return True
+        
+    return False
+
+STATS_CACHE_FILE = "categories_stats_cache.json"
+
+def get_all_category_stats(force_refresh=False):
+    if not force_refresh and os.path.exists(STATS_CACHE_FILE):
+        try:
+            with open(STATS_CACHE_FILE, "r", encoding="utf-8") as f:
+                cached = json.load(f)
+                if isinstance(cached, dict) and cached.get("categories") and cached.get("timestamp", 0) > time.time() - 1800:
+                    return cached["categories"], cached.get("firestore_loaded", True), cached.get("error")
+        except Exception:
+            pass
+
+    menu_cats = load_categories()
+    stats = {}
+    for mc in menu_cats:
+        stats[mc] = {
+            "category": mc,
+            "parents_count": 0,
+            "variations_count": 0,
+            "total_docs": 0,
+            "in_menu": True,
+            "source": "Firestore"
+        }
+        
+    # 1. Try Firestore First
+    firestore_loaded = False
+    firestore_error = None
+    db_conn, err = init_firebase()
+    if db_conn:
+        try:
+            docs = db_conn.collection("products").stream()
+            for d in docs:
+                data = d.to_dict() or {}
+                raw_cat = str(data.get("categories") or data.get("category") or "").strip()
+                is_var = (data.get("type") == "variation" or (data.get("parent") and str(data.get("parent")).lower() != "parent"))
+                
+                if not raw_cat:
+                    raw_cat = "Uncategorized"
+
+                matched_key = None
+                for k in stats.keys():
+                    if normalize_cat_str(k) == normalize_cat_str(raw_cat):
+                        matched_key = k
+                        break
+                        
+                if not matched_key:
+                    for k in stats.keys():
+                        if match_product_to_category(raw_cat, k):
+                            matched_key = k
+                            break
+
+                if not matched_key:
+                    matched_key = raw_cat
+                    if matched_key not in stats:
+                        stats[matched_key] = {
+                            "category": matched_key,
+                            "parents_count": 0,
+                            "variations_count": 0,
+                            "total_docs": 0,
+                            "in_menu": False,
+                            "source": "Firestore"
+                        }
+
+                if is_var:
+                    stats[matched_key]["variations_count"] += 1
+                else:
+                    stats[matched_key]["parents_count"] += 1
+                stats[matched_key]["total_docs"] += 1
+                
+            firestore_loaded = True
+        except Exception as fe:
+            print(f"Firestore streaming notice: {fe}")
+            firestore_error = str(fe)
+            
+    # 2. Local JSON files (data.json, variation_data.json) if Firestore had 0 products or is offline/errored
+    total_firestore_parents = sum(s["parents_count"] for s in stats.values())
+    if not firestore_loaded or total_firestore_parents == 0:
+        for fn in ["data.json", "variation_data.json"]:
+            if os.path.exists(fn):
+                try:
+                    with open(fn, "r", encoding="utf-8") as f:
+                        content = json.load(f)
+                    items = content.get("catalogs", []) if isinstance(content, dict) else (content if isinstance(content, list) else [])
+                    for item in items:
+                        if not isinstance(item, dict):
+                            continue
+                        raw_cat = item.get("categories") or item.get("category") or ">".join(filter(None, [item.get("category_name"), item.get("sub_category_name"), item.get("sub_sub_category_name")])) or "Uncategorized"
+                        raw_cat = str(raw_cat).strip()
+                        
+                        matched_key = None
+                        for k in stats.keys():
+                            if normalize_cat_str(k) == normalize_cat_str(raw_cat) or match_product_to_category(raw_cat, k):
+                                matched_key = k
+                                break
+                        if not matched_key:
+                            matched_key = raw_cat
+                            if matched_key not in stats:
+                                stats[matched_key] = {
+                                    "category": matched_key,
+                                    "parents_count": 0,
+                                    "variations_count": 0,
+                                    "total_docs": 0,
+                                    "in_menu": False,
+                                    "source": "Local Catalog"
+                                }
+                        stats[matched_key]["parents_count"] += 1
+                        stats[matched_key]["total_docs"] += 1
+                        stats[matched_key]["source"] = "Local Catalog"
+                except Exception as je:
+                    print(f"Local file count notice: {je}")
+
+    results = []
+    for k, v in stats.items():
+        count = v["parents_count"] if v["parents_count"] > 0 else v["total_docs"]
+        results.append({
+            "category": v["category"],
+            "count": count,
+            "parents_count": v["parents_count"],
+            "variations_count": v["variations_count"],
+            "total_docs": v["total_docs"],
+            "in_menu": v["in_menu"],
+            "source": v["source"]
+        })
+
+    results.sort(key=lambda x: (-x["count"], 0 if x["in_menu"] else 1, x["category"].lower()))
+    effective_err = err or firestore_error
+
+    try:
+        with open(STATS_CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump({
+                "timestamp": time.time(),
+                "categories": results,
+                "firestore_loaded": firestore_loaded,
+                "error": effective_err
+            }, f, indent=2)
+    except Exception as ce:
+        print(f"Stats cache write notice: {ce}")
+
+    return results, firestore_loaded, effective_err
+
+def sync_firestore_to_local():
+    db_conn, err = init_firebase()
+    if not db_conn:
+        return False, 0, f"Firebase not initialized: {err}"
+    try:
+        docs = db_conn.collection("products").stream()
+        catalogs = []
+        for d in docs:
+            dt = d.to_dict() or {}
+            if "id" not in dt:
+                dt["id"] = d.id
+            catalogs.append(dt)
+        if catalogs:
+            with open("data.json", "w", encoding="utf-8") as f:
+                json.dump({"enable": True, "catalogs": catalogs}, f, indent=2)
+            invalidate_stats_cache()
+            return True, len(catalogs), None
+        return False, 0, "No products found in Firestore collection"
+    except Exception as e:
+        return False, 0, str(e)
 
 def load_banners():
     if os.path.exists(BANNERS_FILE):
@@ -523,21 +755,24 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
                 self.send_json_response({"success": False, "error": f"File '{safe_filename}' not found"}, status=404)
             return
 
-        if path == "/api/firestore-categories":
-            db_conn, err = init_firebase()
-            if not db_conn:
-                self.send_json_response({"success": False, "error": err or "Firebase not connected"}, status=500)
-                return
-            try:
-                cat_counts = {}
-                docs = db_conn.collection("products").stream()
-                for d in docs:
-                    cat = d.to_dict().get("categories", "Uncategorized")
-                    cat_counts[cat] = cat_counts.get(cat, 0) + 1
-                result = [{"category": k, "count": v} for k, v in sorted(cat_counts.items(), key=lambda x: x[1], reverse=True)]
-                self.send_json_response({"success": True, "categories": result})
-            except Exception as e:
-                self.send_json_response({"success": False, "error": str(e)}, status=500)
+        if path in ["/api/firestore-categories", "/api/categories-manager"]:
+            force_refresh = "refresh=true" in parsed_url.query.lower()
+            categories_list, firebase_ok, err = get_all_category_stats(force_refresh=force_refresh)
+            self.send_json_response({
+                "success": True,
+                "categories": categories_list,
+                "firebase_connected": firebase_ok,
+                "total_categories": len(categories_list),
+                "firebase_error": err
+            })
+        if path == "/api/sync-firestore-to-local":
+            ok, count, sync_err = sync_firestore_to_local()
+            self.send_json_response({
+                "success": ok,
+                "synced_count": count,
+                "error": sync_err,
+                "message": f"Successfully backed up {count} Firestore products to local data.json" if ok else f"Sync failed: {sync_err}"
+            })
             return
 
         if path == "/api/categories":
@@ -580,10 +815,63 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_json_response({"success": False, "error": f"Invalid JSON payload: {str(e)}"}, status=400)
             return
 
-        if path == "/api/categories":
+        if path in ["/api/categories", "/api/save-category"]:
             new_cat = payload.get("category", "")
             cats = save_category(new_cat)
             self.send_json_response({"success": True, "categories": cats})
+            return
+
+        if path == "/api/edit-category":
+            old_cat = str(payload.get("old_category", "")).strip()
+            new_cat = str(payload.get("new_category", "")).strip()
+            if not old_cat or not new_cat:
+                self.send_json_response({"success": False, "error": "Both old and new category names are required"}, status=400)
+                return
+
+            # 1. Update in categories.json
+            updated_cats = edit_category_in_file(old_cat, new_cat)
+
+            # 2. Update matching products in Firestore if connected
+            db_conn, _ = init_firebase()
+            updated_firestore_count = 0
+            if db_conn:
+                try:
+                    norm_old = "".join(old_cat.lower().split())
+                    all_docs = list(db_conn.collection("products").stream())
+                    batch = db_conn.batch()
+                    b_count = 0
+                    new_cat_parts = [p.strip() for p in new_cat.split(">") if p.strip()]
+                    new_cat_slug = new_cat_parts[0].lower().replace("&", "and").replace(" ", "-") if new_cat_parts else "all"
+
+                    for d in all_docs:
+                        d_dict = d.to_dict() or {}
+                        cat = str(d_dict.get("categories", "")).strip()
+                        if "".join(cat.lower().split()) == norm_old:
+                            doc_ref = db_conn.collection("products").document(d.id)
+                            batch.update(doc_ref, {
+                                "categories": new_cat,
+                                "categoriesPath": new_cat_parts,
+                                "cat": new_cat_slug
+                            })
+                            b_count += 1
+                            updated_firestore_count += 1
+                            if b_count >= 400:
+                                batch.commit()
+                                batch = db_conn.batch()
+                                b_count = 0
+                    if b_count > 0:
+                        batch.commit()
+                except Exception as fe:
+                    print(f"Firestore update error: {fe}")
+
+            self.send_json_response({
+                "success": True,
+                "old_category": old_cat,
+                "new_category": new_cat,
+                "categories": updated_cats,
+                "updated_firestore_count": updated_firestore_count,
+                "message": f"Successfully renamed '{old_cat}' to '{new_cat}'"
+            })
             return
 
         if path == "/api/banners":
@@ -632,46 +920,50 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/delete-category":
-            db_conn, err = init_firebase()
-            if not db_conn:
-                self.send_json_response({"success": False, "error": err or "Firebase not connected"}, status=500)
-                return
             target_cat = str(payload.get("category", "")).strip()
+            delete_products = bool(payload.get("delete_products", True))
             if not target_cat:
                 self.send_json_response({"success": False, "error": "No category specified for deletion"}, status=400)
                 return
-            try:
-                norm_target = "".join(target_cat.lower().split())
-                all_docs = list(db_conn.collection("products").stream())
-                to_delete = []
-                for d in all_docs:
-                    cat = str(d.to_dict().get("categories", "")).strip()
-                    if "".join(cat.lower().split()) == norm_target:
-                        to_delete.append(d.id)
-                
-                # Delete in batches
-                batch = db_conn.batch()
-                b_count = 0
-                total_del = 0
-                for doc_id in to_delete:
-                    batch.delete(db_conn.collection("products").document(doc_id))
-                    b_count += 1
-                    total_del += 1
-                    if b_count >= 400:
-                        batch.commit()
-                        batch = db_conn.batch()
-                        b_count = 0
-                if b_count > 0:
-                    batch.commit()
 
-                self.send_json_response({
-                    "success": True,
-                    "deleted_count": total_del,
-                    "category": target_cat,
-                    "message": f"Successfully deleted {total_del} products under category '{target_cat}'"
-                })
-            except Exception as e:
-                self.send_json_response({"success": False, "error": str(e)}, status=500)
+            # 1. Remove from categories.json
+            updated_cats = delete_category_from_file(target_cat)
+
+            # 2. If delete_products is requested, delete from Firestore
+            total_del = 0
+            db_conn, _ = init_firebase()
+            if delete_products and db_conn:
+                try:
+                    norm_target = "".join(target_cat.lower().split())
+                    all_docs = list(db_conn.collection("products").stream())
+                    to_delete = []
+                    for d in all_docs:
+                        cat = str(d.to_dict().get("categories", "")).strip()
+                        if "".join(cat.lower().split()) == norm_target:
+                            to_delete.append(d.id)
+                    
+                    batch = db_conn.batch()
+                    b_count = 0
+                    for doc_id in to_delete:
+                        batch.delete(db_conn.collection("products").document(doc_id))
+                        b_count += 1
+                        total_del += 1
+                        if b_count >= 400:
+                            batch.commit()
+                            batch = db_conn.batch()
+                            b_count = 0
+                    if b_count > 0:
+                        batch.commit()
+                except Exception as e:
+                    print(f"Firestore deletion notice: {e}")
+
+            self.send_json_response({
+                "success": True,
+                "deleted_count": total_del,
+                "category": target_cat,
+                "categories": updated_cats,
+                "message": f"Successfully removed '{target_cat}' from menus and database (deleted {total_del} products)"
+            })
             return
 
         if path in ["/api/preview", "/api/import", "/api/import-stream"]:

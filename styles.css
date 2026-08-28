@@ -2237,6 +2237,69 @@ a.card {
 .skeleton-line.w-60 { width: 60%; }
 .skeleton-line.w-80 { width: 80%; }
 
+/* ============ Smooth Transitions & Animations ============ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.pdp-skeleton {
+  padding: 24px 0 60px;
+}
+
+.pdp-skeleton-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+}
+
+@media (max-width: 768px) {
+  .pdp-skeleton-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.pagination-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 0;
+  color: var(--ink-faint);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pagination-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid #e2e8f0;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+
 /* =========================================================
    Product Details Page (product.html)
    ========================================================= */

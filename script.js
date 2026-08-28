@@ -97,22 +97,16 @@ function parseCategoryPath(categoriesText) {
     .filter(Boolean);
 }
 
-function buildCategoriesFromProducts(products) {
-  if (!Array.isArray(products) || !products.length) return;
+function buildCategoriesFromStrings(categoryStrings) {
+  if (!Array.isArray(categoryStrings) || !categoryStrings.length) return;
   const rootMap = new Map();
-  products.forEach((product) => {
-    if (!product) return;
-    if (!Array.isArray(product.categoriesPath) || !product.categoriesPath.length) {
-      if (product.categoriesLabel) {
-        product.categoriesPath = parseCategoryPath(product.categoriesLabel);
-      } else if (product.cat) {
-        product.categoriesPath = [product.cat];
-      } else {
-        return;
-      }
-    }
-    if (!product.categoriesPath.length) return;
-    const [rootLabel, subLabel, childLabel] = product.categoriesPath;
+  CATEGORIES.forEach(c => rootMap.set(c.id, { ...c, subcats: (c.subcats || []).map(s => ({ ...s, children: [...(s.children || [])] })) }));
+
+  categoryStrings.forEach((catStr) => {
+    if (!catStr) return;
+    const parts = parseCategoryPath(catStr);
+    if (!parts.length) return;
+    const [rootLabel, subLabel, childLabel] = parts;
     if (!rootLabel) return;
     const rootId = slugify(rootLabel);
     if (!rootId) return;
@@ -161,6 +155,61 @@ function buildCategoriesFromProducts(products) {
   });
 
   CATEGORIES = categoryList;
+}
+
+function buildCategoriesFromProducts(products) {
+  if (!Array.isArray(products) || !products.length) return;
+  const paths = [];
+  products.forEach((product) => {
+    if (!product) return;
+    if (Array.isArray(product.categoriesPath) && product.categoriesPath.length) {
+      paths.push(product.categoriesPath.join(' > '));
+    } else if (product.categoriesLabel) {
+      paths.push(product.categoriesLabel);
+    } else if (product.cat) {
+      paths.push(product.cat);
+    }
+  });
+  if (paths.length) {
+    buildCategoriesFromStrings(paths);
+  }
+}
+
+async function loadCategories() {
+  // 1. Fetch categories.json
+  try {
+    const res = await fetch('categories.json?v=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length) {
+        buildCategoriesFromStrings(data);
+      }
+    }
+  } catch (e) { }
+
+  // 2. Try Firestore categories collection if available
+  try {
+    const db = initFirestore();
+    if (db) {
+      const snapshot = await Promise.race([
+        db.collection('categories').get(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2500))
+      ]);
+      if (snapshot && !snapshot.empty) {
+        const firestoreCats = [];
+        snapshot.forEach(doc => {
+          const data = doc.data() || {};
+          if (data.name) firestoreCats.push(data.name);
+          else if (data.path) firestoreCats.push(data.path);
+        });
+        if (firestoreCats.length) {
+          buildCategoriesFromStrings(firestoreCats);
+        }
+      }
+    }
+  } catch (e) { }
+
+  renderCategoryChrome();
 }
 
 function groupVariantProducts(products) {
@@ -320,59 +369,216 @@ function normalizeFirestoreImage(images) {
   return '';
 }
 
-async function loadProductsFromFirestore() {
+function mapFirestoreDoc(doc) {
+  if (!doc) return null;
+  const data = typeof doc.data === 'function' ? (doc.data() || {}) : (doc || {});
+  const docId = doc.id || data.id || data.sku || '';
+  const categoriesPath = parseCategoryPath(data.categories || data.category);
+  const images = normalizeImageList(data.images || data.imageUrl || data.product_images);
+  const firstImage = images[0] || normalizeFirestoreImage(data.imageUrl) || normalizeFirestoreImage(data.image) || img(docId || '1');
+  const createdAt = parseFirestoreTimestamp(data.createdAt || data.created_at || data.publishedAt || data.published_at);
+
+  return {
+    id: String(data.id || data.sku || docId),
+    sku: String(data.sku || data.id || docId),
+    cat: slugify(categoriesPath[0]) || inferCategory(data.categories || data.category),
+    subcat: categoriesPath[1] ? slugify(categoriesPath[1]) : undefined,
+    subsubcat: categoriesPath[2] ? slugify(categoriesPath[2]) : undefined,
+    categoriesPath,
+    categoriesLabel: String(data.categories || data.category || '').trim(),
+    brand: String(data.brand || '').trim(),
+    title: String(data.name || data.title || '').trim(),
+    description: String(data.description || data.full_details || '').trim(),
+    price: Number(data.sale_price ?? data.regular_price ?? data.price ?? 0),
+    mrp: Number(data.regular_price ?? data.sale_price ?? data.mrp ?? data.price ?? 0),
+    rating: Number(data.rating ?? data.catalog_reviews_summary?.average_rating ?? 0),
+    reviews: Number(data.reviews ?? data.catalog_reviews_summary?.review_count ?? 0),
+    images,
+    img: firstImage,
+    deal: Boolean(data.deal || data.hot || false),
+    published: data.published !== false,
+    publishedAt: createdAt,
+    in_stock: Boolean(data.in_stock ?? (data.stock > 0 || data.stock === undefined)),
+    stock: Number(data.stock ?? 100),
+    parent: data.parent ? String(data.parent).trim() : '',
+    attribute_1_global: data.attribute_1_global,
+    attribute_1_name: String(data.attribute_1_name || '').trim(),
+    attribute_1_value: String(data.attribute_1_value || '').trim(),
+    type: String(data.type || 'simple').trim(),
+  };
+}
+
+let lastFirestoreDoc = null;
+let hasMoreFirestoreProducts = true;
+let isFetchingFirestoreChunk = false;
+
+function mergeProductsIntoGlobal(newItems) {
+  if (!Array.isArray(newItems) || !newItems.length) return;
+  const existingMap = new Map();
+  PRODUCTS.forEach(p => {
+    const key = String(p.id || p.sku || '');
+    if (key) existingMap.set(key, p);
+  });
+
+  newItems.forEach(item => {
+    if (!item) return;
+    const key = String(item.id || item.sku || '');
+    if (key) {
+      existingMap.set(key, item);
+    }
+  });
+
+  PRODUCTS = Array.from(existingMap.values());
+  buildCategoriesFromProducts(PRODUCTS);
+  groupVariantProducts(PRODUCTS);
+}
+
+async function fetchProductsChunk({ limit = 20, reset = false, category = '', subcat = '' } = {}) {
   const db = initFirestore();
   if (!db) return [];
 
-  try {
-    const fetchPromise = db.collection(FIRESTORE_PRODUCTS_COLLECTION).get();
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 3500));
-    const snapshot = await Promise.race([fetchPromise, timeoutPromise]);
-    const loaded = [];
-    snapshot.forEach((doc) => {
-      const data = doc.data() || {};
-      const categoriesPath = parseCategoryPath(data.categories);
-      const images = normalizeImageList(data.images || data.imageUrl);
-      const firstImage = images[0] || normalizeFirestoreImage(data.imageUrl) || img(doc.id);
-      const createdAt = parseFirestoreTimestamp(data.createdAt || data.created_at || data.publishedAt || data.published_at);
+  if (reset) {
+    lastFirestoreDoc = null;
+    hasMoreFirestoreProducts = true;
+  }
 
-      loaded.push({
-        id: String(data.id || data.sku || doc.id),
-        sku: String(data.sku || data.id || doc.id),
-        cat: slugify(categoriesPath[0]) || inferCategory(data.categories),
-        subcat: categoriesPath[1] ? slugify(categoriesPath[1]) : undefined,
-        subsubcat: categoriesPath[2] ? slugify(categoriesPath[2]) : undefined,
-        categoriesPath,
-        categoriesLabel: String(data.categories || '').trim(),
-        brand: String(data.brand || '').trim(),
-        title: String(data.name || data.title || '').trim(),
-        description: String(data.description || '').trim(),
-        price: Number(data.sale_price ?? data.regular_price ?? 0),
-        mrp: Number(data.regular_price ?? data.sale_price ?? data.price ?? 0),
-        rating: Number(data.rating ?? 0),
-        reviews: Number(data.reviews ?? 0),
-        images,
-        img: firstImage,
-        deal: Boolean(data.deal || false),
-        published: data.published,
-        publishedAt: createdAt,
-        in_stock: Boolean(data.in_stock ?? (data.stock > 0)),
-        stock: Number(data.stock ?? 0),
-        parent: data.parent ? String(data.parent).trim() : '',
-        attribute_1_global: data.attribute_1_global,
-        attribute_1_name: String(data.attribute_1_name || '').trim(),
-        attribute_1_value: String(data.attribute_1_value || '').trim(),
-        type: String(data.type || '').trim(),
-      });
-    });
-
-    buildCategoriesFromProducts(loaded);
-    groupVariantProducts(loaded);
-    return loaded;
-  } catch (err) {
-    console.warn('Could not load products from Firestore —', err);
+  if (!hasMoreFirestoreProducts || isFetchingFirestoreChunk) {
     return [];
   }
+
+  isFetchingFirestoreChunk = true;
+  try {
+    let query = db.collection(FIRESTORE_PRODUCTS_COLLECTION);
+    if (category) {
+      query = query.where('cat', '==', category);
+    }
+    if (lastFirestoreDoc) {
+      query = query.startAfter(lastFirestoreDoc);
+    }
+    query = query.limit(limit);
+
+    const snapshot = await Promise.race([
+      query.get(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 6000))
+    ]);
+
+    if (!snapshot || snapshot.empty) {
+      hasMoreFirestoreProducts = false;
+      return [];
+    }
+
+    lastFirestoreDoc = snapshot.docs[snapshot.docs.length - 1];
+    if (snapshot.docs.length < limit) {
+      hasMoreFirestoreProducts = false;
+    }
+
+    const chunk = [];
+    snapshot.forEach(doc => {
+      const mapped = mapFirestoreDoc(doc);
+      if (mapped) chunk.push(mapped);
+    });
+
+    mergeProductsIntoGlobal(chunk);
+    return chunk;
+  } catch (err) {
+    console.warn('Chunk fetch skipped / offline:', err);
+    hasMoreFirestoreProducts = false;
+    return [];
+  } finally {
+    isFetchingFirestoreChunk = false;
+  }
+}
+
+async function fetchSingleProduct(targetId) {
+  if (!targetId) return null;
+  const target = String(targetId).trim();
+
+  // 1. Check in-memory PRODUCTS
+  let found = findProductById(target);
+  if (found) return found;
+
+  // 2. Load local JSON baseline if not loaded
+  if (!PRODUCTS || !PRODUCTS.length) {
+    const local = await loadProductsFromLocalJson();
+    if (local && local.length) {
+      mergeProductsIntoGlobal(local);
+      found = findProductById(target);
+      if (found) return found;
+    }
+  }
+
+  // 3. Query Firestore directly for this specific document / SKU / ID
+  const db = initFirestore();
+  if (db) {
+    try {
+      // 3a. Direct doc ID lookup
+      const docRef = db.collection(FIRESTORE_PRODUCTS_COLLECTION).doc(target);
+      const docSnap = await Promise.race([
+        docRef.get(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
+      ]);
+
+      if (docSnap && docSnap.exists) {
+        const item = mapFirestoreDoc(docSnap);
+        if (item) {
+          const parentKey = item.parent || item.groupId || item.sku;
+          if (parentKey) {
+            try {
+              const varSnaps = await db.collection(FIRESTORE_PRODUCTS_COLLECTION).where('parent', '==', parentKey).limit(30).get();
+              const siblingVariants = [];
+              varSnaps.forEach(vDoc => {
+                const mappedV = mapFirestoreDoc(vDoc);
+                if (mappedV) siblingVariants.push(mappedV);
+              });
+              mergeProductsIntoGlobal([item, ...siblingVariants]);
+            } catch (e) {
+              mergeProductsIntoGlobal([item]);
+            }
+          } else {
+            mergeProductsIntoGlobal([item]);
+          }
+          return findProductById(target) || item;
+        }
+      }
+
+      // 3b. Query by SKU
+      const skuSnap = await Promise.race([
+        db.collection(FIRESTORE_PRODUCTS_COLLECTION).where('sku', '==', target).limit(1).get(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
+      ]);
+
+      if (skuSnap && !skuSnap.empty) {
+        const item = mapFirestoreDoc(skuSnap.docs[0]);
+        if (item) {
+          mergeProductsIntoGlobal([item]);
+          return findProductById(target) || item;
+        }
+      }
+
+      // 3c. Query by id property
+      const idSnap = await Promise.race([
+        db.collection(FIRESTORE_PRODUCTS_COLLECTION).where('id', '==', target).limit(1).get(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
+      ]);
+
+      if (idSnap && !idSnap.empty) {
+        const item = mapFirestoreDoc(idSnap.docs[0]);
+        if (item) {
+          mergeProductsIntoGlobal([item]);
+          return findProductById(target) || item;
+        }
+      }
+    } catch (e) {
+      console.warn('Single product fetch skipped:', e);
+    }
+  }
+
+  // 4. Final attempt from PRODUCTS
+  return findProductById(target);
+}
+
+async function loadProductsFromFirestore() {
+  return fetchProductsChunk({ limit: 20, reset: true });
 }
 
 async function loadProductsFromLocalJson() {
@@ -454,21 +660,14 @@ async function loadProducts() {
   // 1. Fast local catalog load (<5ms)
   const localProducts = await loadProductsFromLocalJson();
   if (localProducts && localProducts.length) {
-    PRODUCTS = localProducts;
-    buildCategoriesFromProducts(PRODUCTS);
-    groupVariantProducts(PRODUCTS);
+    mergeProductsIntoGlobal(localProducts);
   }
 
-  // 2. Query Firestore if online
+  // 2. Query initial 20-product chunk from Firestore if online
   try {
-    const firestoreProducts = await loadProductsFromFirestore();
-    if (firestoreProducts && firestoreProducts.length) {
-      PRODUCTS = firestoreProducts;
-      buildCategoriesFromProducts(PRODUCTS);
-      groupVariantProducts(PRODUCTS);
-    }
+    await fetchProductsChunk({ limit: 20, reset: true });
   } catch (err) {
-    console.warn('Firestore products fetch skipped or offline:', err);
+    console.warn('Firestore initial products fetch skipped:', err);
   }
 }
 
@@ -989,7 +1188,7 @@ function parseQueryParams() {
   };
 }
 
-function renderProductPage() {
+async function renderProductPage() {
   const pageContent = document.getElementById('productPageContent');
   if (!pageContent) return;
 
@@ -998,7 +1197,7 @@ function renderProductPage() {
 
   if (!targetId) {
     pageContent.innerHTML = `
-      <div class="empty-state">
+      <div class="empty-state fade-in">
         <div class="big-emoji">🛍️</div>
         <h2>Select a product to view details</h2>
         <p>Browse our top collections and deals from the homepage.</p>
@@ -1007,60 +1206,26 @@ function renderProductPage() {
     return;
   }
 
-  // If products are still loading, show a skeleton placeholder instead of premature "Product not found"
-  if (!PRODUCTS || PRODUCTS.length === 0) {
-    pageContent.innerHTML = `
-      <div class="pdp-wrap" style="padding: 24px 0 60px;">
-        <div class="skeleton" style="height: 18px; width: 220px; margin-bottom: 20px; border-radius: 4px;"></div>
-        <div class="pdp-grid">
-          <div class="skeleton" style="aspect-ratio: 1/1; width: 100%; border-radius: 12px;"></div>
-          <div style="display: flex; flex-direction: column; gap: 14px;">
-            <div class="skeleton" style="height: 28px; width: 85%; border-radius: 6px;"></div>
-            <div class="skeleton" style="height: 20px; width: 35%; border-radius: 6px;"></div>
-            <div class="skeleton" style="height: 44px; width: 55%; border-radius: 8px;"></div>
-            <div class="skeleton" style="height: 48px; width: 100%; border-radius: 8px; margin-top: 14px;"></div>
-          </div>
+  // Display smooth shimmer skeleton immediately while resolving single product
+  pageContent.innerHTML = `
+    <div class="pdp-wrap pdp-skeleton fade-in">
+      <div class="skeleton-line w-40" style="margin-bottom: 20px; height: 16px;"></div>
+      <div class="pdp-skeleton-grid">
+        <div class="skeleton-media" style="aspect-ratio: 1/1; border-radius: 12px;"></div>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="skeleton-line w-80" style="height: 28px;"></div>
+          <div class="skeleton-line w-40" style="height: 20px;"></div>
+          <div class="skeleton-line w-60" style="height: 40px; margin-top: 8px;"></div>
+          <div class="skeleton-line" style="height: 48px; border-radius: 8px; margin-top: 14px;"></div>
         </div>
-      </div>`;
-    return;
-  }
+      </div>
+    </div>`;
 
-  const targetSlug = slugify(targetId);
-  let product = PRODUCTS.find((p) =>
-    slugify(p.title) === targetSlug ||
-    getProductSlug(p) === targetSlug ||
-    String(p.id) === String(targetId) ||
-    String(p.sku || '').toLowerCase() === String(targetId).toLowerCase()
-  );
-
-  // Check variants if not matched directly
-  if (!product) {
-    for (const p of PRODUCTS) {
-      if (p.groupVariants && p.groupVariants.length) {
-        const match = p.groupVariants.find((v) =>
-          String(v.id) === String(targetId) ||
-          String(v.sku || '').toLowerCase() === String(targetId).toLowerCase() ||
-          slugify(v.title) === targetSlug
-        );
-        if (match) {
-          product = p;
-          break;
-        }
-      }
-    }
-  }
-
-  // Fuzzy partial match as fallback
-  if (!product && targetSlug.length > 3) {
-    product = PRODUCTS.find((p) =>
-      slugify(p.title).includes(targetSlug) ||
-      targetSlug.includes(slugify(p.title))
-    );
-  }
+  const product = await fetchSingleProduct(targetId);
 
   if (!product) {
     pageContent.innerHTML = `
-      <div class="empty-state">
+      <div class="empty-state fade-in">
         <div class="big-emoji">🔍</div>
         <h2>Product not found</h2>
         <p>The product you are looking for might have expired or the link is invalid.</p>
@@ -1192,7 +1357,7 @@ function renderProductPage() {
   const isWished = wishlist.has(selectedProduct.id);
 
   pageContent.innerHTML = `
-    <div class="pdp-wrap">
+    <div class="pdp-wrap fade-in">
       ${breadcrumbsHtml}
 
       <div class="pdp-grid">
@@ -1445,6 +1610,73 @@ function renderProductPage() {
   }
 }
 
+function matchesSearchQuery(product, query) {
+  if (!product || !query) return false;
+  const q = String(query).trim().toLowerCase();
+  if (!q) return false;
+  const qClean = q.replace(/[^a-z0-9]/gi, '');
+  const qWords = q.split(/\s+/).filter((w) => w.length > 1);
+
+  const checkItem = (item) => {
+    if (!item) return false;
+    const idStr = String(item.id || '').trim().toLowerCase();
+    const skuStr = String(item.sku || '').trim().toLowerCase();
+    const groupIdStr = String(item.groupId || '').trim().toLowerCase();
+    const parentStr = String(item.parent || '').trim().toLowerCase();
+    const titleStr = String(item.title || item.name || '').trim().toLowerCase();
+    const brandStr = String(item.brand || '').trim().toLowerCase();
+    const descStr = String(item.description || '').trim().toLowerCase();
+    const catLabelStr = String(item.categoriesLabel || item.categories || '').trim().toLowerCase();
+    const catStr = String(item.cat || '').trim().toLowerCase();
+    const subcatStr = String(item.subcat || '').trim().toLowerCase();
+    const subsubcatStr = String(item.subsubcat || '').trim().toLowerCase();
+
+    // 1. Exact or sanitized SKU / ID / Code match
+    if (idStr === q || skuStr === q || groupIdStr === q || parentStr === q) return true;
+    if (qClean && (idStr.replace(/[^a-z0-9]/gi, '') === qClean || skuStr.replace(/[^a-z0-9]/gi, '') === qClean)) return true;
+
+    // 2. Partial SKU / ID match
+    if (idStr.includes(q) || skuStr.includes(q) || (qClean.length >= 4 && (idStr.includes(qClean) || skuStr.includes(qClean)))) return true;
+
+    // 3. Text match across title, brand, categories, description
+    if (
+      titleStr.includes(q) ||
+      brandStr.includes(q) ||
+      catLabelStr.includes(q) ||
+      catStr.includes(q) ||
+      subcatStr.includes(q) ||
+      subsubcatStr.includes(q) ||
+      descStr.includes(q)
+    ) return true;
+
+    // 4. Clean unspaced match (e.g. "facewash" matches "face wash", "tshirt" matches "t-shirt")
+    if (qClean.length >= 3) {
+      const fullCleanText = `${titleStr} ${brandStr} ${catLabelStr} ${descStr}`.replace(/[^a-z0-9]/gi, '');
+      if (fullCleanText.includes(qClean)) return true;
+    }
+
+    // 5. Multi-word match: all search words must be found in item text
+    if (qWords.length > 1) {
+      const combined = `${titleStr} ${brandStr} ${catLabelStr} ${catStr} ${subcatStr} ${descStr}`;
+      if (qWords.every((w) => combined.includes(w))) return true;
+    }
+
+    return false;
+  };
+
+  // Check top-level product
+  if (checkItem(product)) return true;
+
+  // Check all nested groupVariants
+  if (Array.isArray(product.groupVariants)) {
+    for (const variant of product.groupVariants) {
+      if (checkItem(variant)) return true;
+    }
+  }
+
+  return false;
+}
+
 let categoryObserver = null;
 function renderCategoryPage() {
   const pageContent = document.getElementById('categoryPageContent');
@@ -1457,21 +1689,24 @@ function renderCategoryPage() {
 
   // 1. Search Query Mode
   if (search) {
-    const sTerm = search.trim().toLowerCase();
-    const matches = catalog.filter((p) =>
-      p.title.toLowerCase().includes(sTerm) ||
-      p.brand.toLowerCase().includes(sTerm) ||
-      (p.categoriesLabel && p.categoriesLabel.toLowerCase().includes(sTerm)) ||
-      p.cat.includes(sTerm) ||
-      (p.subcat || '').includes(sTerm) ||
-      (p.subsubcat || '').includes(sTerm)
-    );
+    let matches = catalog.filter((p) => matchesSearchQuery(p, search));
+
+    if (!matches.length) {
+      const rawMatches = PRODUCTS.filter((p) => matchesSearchQuery(p, search));
+      const seen = new Set();
+      matches = rawMatches.filter((p) => {
+        const key = p.groupId || p.parent || p.id;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
 
     if (pageTitle) pageTitle.textContent = `Search results for "${search}"`;
     if (pageDesc) pageDesc.textContent = `${matches.length} product${matches.length === 1 ? '' : 's'} found.`;
 
     if (!matches.length) {
-      pageContent.innerHTML = `<div class="empty-state"><div class="big-emoji">🔍</div><h3>No products found for "${esc(search)}"</h3><p>Try a different search keyword or browse categories.</p><a href="index.html" class="btn btn-outline">Back to home</a></div>`;
+      pageContent.innerHTML = `<div class="empty-state"><div class="big-emoji">🔍</div><h3>No products found for "${esc(search)}"</h3><p>Try searching with product name, SKU / code, or category.</p><a href="index.html" class="btn btn-outline">Back to home</a></div>`;
       return;
     }
     renderProgressiveProductGrid(pageContent, matches);
@@ -1483,9 +1718,18 @@ function renderCategoryPage() {
     if (!targetCat) return true;
     const targetSlug = slugify(targetCat);
     const cleanTarget = targetSlug.replace(/s$/, '');
-    if (p.cat && (slugify(p.cat) === targetSlug || slugify(p.cat).replace(/s$/, '') === cleanTarget)) return true;
-    if (Array.isArray(p.categoriesPath) && p.categoriesPath.some((cp) => slugify(cp) === targetSlug || slugify(cp).replace(/s$/, '') === cleanTarget)) return true;
-    if (p.categoriesLabel && (slugify(p.categoriesLabel).includes(targetSlug) || slugify(p.categoriesLabel).includes(cleanTarget))) return true;
+    const cleanNoDash = cleanTarget.replace(/-/g, '');
+
+    const checkStr = (val) => {
+      if (!val) return false;
+      const s = slugify(val);
+      const sNoDash = s.replace(/-/g, '');
+      return s === targetSlug || s.replace(/s$/, '') === cleanTarget || (cleanNoDash.length >= 3 && sNoDash.includes(cleanNoDash));
+    };
+
+    if (checkStr(p.cat) || checkStr(p.subcat) || checkStr(p.subsubcat)) return true;
+    if (Array.isArray(p.categoriesPath) && p.categoriesPath.some(checkStr)) return true;
+    if (p.categoriesLabel && (slugify(p.categoriesLabel).includes(targetSlug) || slugify(p.categoriesLabel).replace(/-/g, '').includes(cleanNoDash))) return true;
     return false;
   };
 
@@ -1493,11 +1737,19 @@ function renderCategoryPage() {
     if (!targetSub) return true;
     const targetSlug = slugify(targetSub);
     const cleanTarget = targetSlug.replace(/s$/, '');
-    if (p.subcat && (slugify(p.subcat) === targetSlug || slugify(p.subcat).replace(/s$/, '') === cleanTarget)) return true;
-    if (p.subsubcat && (slugify(p.subsubcat) === targetSlug || slugify(p.subsubcat).replace(/s$/, '') === cleanTarget)) return true;
-    if (Array.isArray(p.categoriesPath) && p.categoriesPath.some((cp) => slugify(cp) === targetSlug || slugify(cp).replace(/s$/, '') === cleanTarget)) return true;
-    if (p.categoriesLabel && (slugify(p.categoriesLabel).includes(targetSlug) || slugify(p.categoriesLabel).includes(cleanTarget))) return true;
-    if (p.title && (slugify(p.title).includes(targetSlug) || slugify(p.title).includes(cleanTarget))) return true;
+    const cleanNoDash = cleanTarget.replace(/-/g, '');
+
+    const checkStr = (val) => {
+      if (!val) return false;
+      const s = slugify(val);
+      const sNoDash = s.replace(/-/g, '');
+      return s === targetSlug || s.replace(/s$/, '') === cleanTarget || (cleanNoDash.length >= 3 && sNoDash.includes(cleanNoDash));
+    };
+
+    if (checkStr(p.subcat) || checkStr(p.subsubcat) || checkStr(p.cat)) return true;
+    if (Array.isArray(p.categoriesPath) && p.categoriesPath.some(checkStr)) return true;
+    if (p.categoriesLabel && (slugify(p.categoriesLabel).includes(targetSlug) || slugify(p.categoriesLabel).replace(/-/g, '').includes(cleanNoDash))) return true;
+    if (p.title && (slugify(p.title).includes(targetSlug) || slugify(p.title).replace(/-/g, '').includes(cleanNoDash))) return true;
     return false;
   };
 
@@ -1567,40 +1819,77 @@ function renderCategoryPage() {
     return;
   }
 
-  renderProgressiveProductGrid(pageContent, items);
+  renderProgressiveProductGrid(pageContent, items, { cat });
 }
 
-function renderProgressiveProductGrid(container, items) {
-  const CHUNK_SIZE = 16;
+function populateSearchCategoryDropdown() {
+  const searchCatSelects = document.querySelectorAll('#searchCat');
+  if (!searchCatSelects.length) return;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentCat = urlParams.get('cat') || 'all';
+
+  searchCatSelects.forEach((select) => {
+    const existingVal = select.value || currentCat;
+    const options = [`<option value="all">All categories</option>`];
+    CATEGORIES.forEach((c) => {
+      const isSelected = c.id === existingVal ? ' selected' : '';
+      options.push(`<option value="${esc(c.id)}"${isSelected}>${esc(c.label)}</option>`);
+    });
+    select.innerHTML = options.join('');
+  });
+}
+
+function renderProgressiveProductGrid(container, items, queryContext = {}) {
+  const CHUNK_SIZE = 20;
   let renderedCount = 0;
 
   container.innerHTML = `
     <div class="product-grid" id="categoryProductGrid"></div>
-    <div id="categorySentinel" style="height: 30px; margin-top: 10px;"></div>
+    <div id="categorySentinel" style="height: 40px; margin-top: 15px; display: flex; align-items: center; justify-content: center;"></div>
   `;
 
   const grid = document.getElementById('categoryProductGrid');
   const sentinel = document.getElementById('categorySentinel');
 
-  const appendChunk = () => {
-    if (renderedCount >= items.length) {
-      if (categoryObserver && sentinel) categoryObserver.unobserve(sentinel);
-      if (sentinel) sentinel.remove();
-      return;
+  const appendChunk = async () => {
+    // 1. Render in-memory items first
+    if (renderedCount < items.length) {
+      const nextBatch = items.slice(renderedCount, renderedCount + CHUNK_SIZE);
+      grid.insertAdjacentHTML('beforeend', nextBatch.map((p, i) => productCard(p, renderedCount + i)).join(''));
+      renderedCount += nextBatch.length;
     }
-    const nextBatch = items.slice(renderedCount, renderedCount + CHUNK_SIZE);
-    grid.insertAdjacentHTML('beforeend', nextBatch.map((p, i) => productCard(p, renderedCount + i)).join(''));
-    renderedCount += nextBatch.length;
 
-    if (renderedCount >= items.length && sentinel) {
-      if (categoryObserver) categoryObserver.unobserve(sentinel);
-      sentinel.remove();
+    // 2. If finished in-memory list and Firestore has more, load next chunk
+    if (renderedCount >= items.length && typeof hasMoreFirestoreProducts !== 'undefined' && hasMoreFirestoreProducts && !isFetchingFirestoreChunk) {
+      if (sentinel) {
+        sentinel.innerHTML = `<div class="pagination-loader"><div class="pagination-spinner"></div><span>Loading more products...</span></div>`;
+      }
+      try {
+        const moreProducts = await fetchProductsChunk({ limit: CHUNK_SIZE, category: queryContext.cat || '' });
+        if (moreProducts && moreProducts.length) {
+          const newMatching = moreProducts.filter(p => {
+            if (queryContext.cat && !matchCat(p, queryContext.cat)) return false;
+            if (queryContext.search && !matchesSearchQuery(p, queryContext.search)) return false;
+            return true;
+          });
+          if (newMatching.length) {
+            grid.insertAdjacentHTML('beforeend', newMatching.map((p, i) => productCard(p, renderedCount + i)).join(''));
+            renderedCount += newMatching.length;
+          }
+        }
+      } catch (e) { }
+    }
+
+    if ((typeof hasMoreFirestoreProducts === 'undefined' || !hasMoreFirestoreProducts) && renderedCount >= items.length) {
+      if (categoryObserver && sentinel) categoryObserver.unobserve(sentinel);
+      if (sentinel) sentinel.innerHTML = '';
     }
   };
 
   appendChunk();
 
-  if (items.length > CHUNK_SIZE && sentinel) {
+  if (sentinel) {
     if (categoryObserver) categoryObserver.disconnect();
     categoryObserver = new IntersectionObserver((entries) => {
       if (entries[0]?.isIntersecting) {
@@ -1612,6 +1901,8 @@ function renderProgressiveProductGrid(container, items) {
 }
 
 function renderCategoryChrome() {
+  populateSearchCategoryDropdown();
+
   const rail = document.getElementById('categoryRail');
   if (rail) {
     rail.innerHTML = CATEGORIES.map(c => {
@@ -1939,7 +2230,7 @@ function pad(n) { return String(n).padStart(2, '0'); }
 
 /* ============ Search ============ */
 function runSearch(term) {
-  term = (term || '').trim().toLowerCase();
+  term = (term || '').trim();
   if (!term) return;
 
   const catContainer = document.getElementById('categorySections') || document.getElementById('categoryPageContent');
@@ -1949,17 +2240,59 @@ function runSearch(term) {
   }
 
   const catalog = filterCatalogProducts(PRODUCTS);
-  const matches = catalog.filter(p =>
-    p.title.toLowerCase().includes(term) ||
-    p.brand.toLowerCase().includes(term) ||
-    (p.categoriesLabel && p.categoriesLabel.toLowerCase().includes(term))
-  );
+  let matches = catalog.filter((p) => matchesSearchQuery(p, term));
+
+  if (!matches.length) {
+    const rawMatches = PRODUCTS.filter((p) => matchesSearchQuery(p, term));
+    const seen = new Set();
+    matches = rawMatches.filter((p) => {
+      const key = p.groupId || p.parent || p.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  if (document.getElementById('categoryPageTitle')) {
+    document.getElementById('categoryPageTitle').textContent = `Search results for "${term}"`;
+  }
+  if (document.getElementById('categoryPageDescription')) {
+    document.getElementById('categoryPageDescription').textContent = `${matches.length} product${matches.length === 1 ? '' : 's'} found.`;
+  }
+
+  if (document.getElementById('categoryPageContent')) {
+    if (!matches.length) {
+      document.getElementById('categoryPageContent').innerHTML = `
+        <div class="empty-state">
+          <div class="big-emoji">🔍</div>
+          <h3>No products found for "${esc(term)}"</h3>
+          <p>Try searching with product name, SKU / code, or category.</p>
+          <a href="index.html" class="btn btn-outline">Back to home</a>
+        </div>`;
+      return;
+    }
+    renderProgressiveProductGrid(document.getElementById('categoryPageContent'), matches);
+    return;
+  }
 
   catContainer.innerHTML = `
     <section class="cat-section">
       <div class="wrap">
-        <div class="section-head"><div><h2>Search results for "${esc(term)}"</h2><p class="section-sub">${matches.length} products found</p></div></div>
-        <div class="product-grid">${matches.map((p, i) => productCard(p, i)).join("")}</div>
+        <div class="section-head">
+          <div>
+            <h2>Search results for "${esc(term)}"</h2>
+            <p class="section-sub">${matches.length} product${matches.length === 1 ? '' : 's'} found</p>
+          </div>
+        </div>
+        ${!matches.length ? `
+          <div class="empty-state">
+            <div class="big-emoji">🔍</div>
+            <h3>No products found for "${esc(term)}"</h3>
+            <p>Try searching with product name, SKU / code, or category.</p>
+          </div>
+        ` : `
+          <div class="product-grid">${matches.map((p, i) => productCard(p, i)).join("")}</div>
+        `}
       </div>
     </section>`;
   attachCardEvents(catContainer);
@@ -2285,6 +2618,9 @@ async function init() {
   // 1. FAST PATH: Instant local storage cache render (0ms delay)
   const hasCachedProducts = loadProductsFromCache();
   loadBannersFromCache();
+
+  // Load dynamic category tree
+  loadCategories();
 
   renderCategoryChrome();
   renderCarousel();

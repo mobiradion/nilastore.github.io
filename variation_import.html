@@ -1144,26 +1144,66 @@
   </main>
 
   <!-- Category Manager Modal -->
-  <div id="categoryManagerModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 1.5rem;">
-    <div style="background: white; border-radius: var(--radius-md); max-width: 650px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden;">
+  <div id="categoryManagerModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; padding: 1.5rem;">
+    <div style="background: white; border-radius: var(--radius-md); max-width: 780px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden;">
+      
+      <!-- Modal Header -->
       <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fafbfc;">
-        <div style="font-weight: 700; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-          <span>📂</span> Firestore Database Categories
+        <div>
+          <div style="font-weight: 700; font-size: 1.05rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📂</span> Database &amp; Menu Categories Manager
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem;">
+            Add, rename/edit, or delete categories displayed across your website menus and Firestore database.
+          </div>
         </div>
-        <button type="button" class="btn btn-outline btn-sm" onclick="closeCategoryManager()" style="padding: 0.2rem 0.5rem; font-size: 1rem; line-height: 1;">&times;</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeCategoryManager()" style="padding: 0.2rem 0.5rem; font-size: 1.1rem; line-height: 1;">&times;</button>
       </div>
-      <div style="padding: 1.25rem; overflow-y: auto; flex: 1;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Active categories and product counts currently stored in Firestore:</p>
-          <button type="button" class="btn btn-outline btn-sm" onclick="loadFirestoreCategories()">🔄 Refresh</button>
+
+      <!-- Modal Body -->
+      <div style="padding: 1.25rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <!-- Add New Category Box -->
+        <div style="background: #f8fafc; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 1rem 1.25rem;">
+          <div style="font-weight: 700; font-size: 0.88rem; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>➕</span> Add New Category to Menus &amp; Database
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input type="text" id="newCatInputModal" class="form-control" placeholder="e.g. Women > Western Wear > Designer Tops" style="flex: 1; font-size: 0.88rem;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="addNewCategoryFromModal()" style="white-space: nowrap;">
+              <span>➕</span> Add Category
+            </button>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem;">
+            💡 Format with <code>&gt;</code> separators for subcategories (e.g. <code>Main Category &gt; Subcategory &gt; Item Type</code>).
+          </div>
         </div>
+
+        <!-- Filter & Search Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 200px;">
+            <input type="text" id="catFilterInput" class="form-control" placeholder="🔍 Search categories..." oninput="filterCategoryManagerList()" style="font-size: 0.85rem; padding: 0.4rem 0.75rem;">
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span id="catTotalCountBadge" style="font-size: 0.75rem; background: #f1f5f9; color: #475569; padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 600;">0 Categories</span>
+            <button type="button" class="btn btn-outline btn-sm" id="syncToLocalBtn" onclick="syncFirestoreToLocalFile()" title="Download & backup all cloud products into data.json to ensure 100% offline & quota immunity">📥 Sync to Local</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="loadFirestoreCategories(true)">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <!-- Categories List Container -->
         <div id="firestoreCatList" style="display: flex; flex-direction: column; gap: 0.6rem;">
-          <div style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading categories from Firestore...</div>
+          <div style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading categories...</div>
         </div>
+
       </div>
-      <div style="padding: 0.85rem 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; background: #fafbfc;">
-        <button type="button" class="btn btn-outline btn-sm" onclick="closeCategoryManager()">Close</button>
+
+      <!-- Modal Footer -->
+      <div style="padding: 0.85rem 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fafbfc;">
+        <span style="font-size: 0.78rem; color: var(--text-muted);">Edits and deletions take effect immediately in menus and product listings.</span>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeCategoryManager()">Done</button>
       </div>
+
     </div>
   </div>
 
@@ -1319,59 +1359,34 @@
       }
     }
 
-    let savedCategories = [
-      "Women > Western Wear Ladies > Top",
-      "Women > Ethnic Wear > Kurtis",
-      "Women > Sarees > Silk Sarees",
-      "Women > Sarees > Cotton Sarees",
-      "Women > Sarees > Poonam Sarees",
-      "Men > Western Wear > Casual Shirts",
-      "Men > Western Wear > T-Shirts",
-      "Men > Bottomwear > Pants & Trousers",
-      "Men > Bottomwear > Jeans",
-      "Home & Kitchen > Home Decor > Covers",
-      "Home & Kitchen > Home Decor > Curtains",
-      "Mobiles > Smartphones > Android",
-      "Mobiles > Accessories > Chargers",
-      "Electronics > Audio > Headphones",
-      "Electronics > Laptops > Accessories",
-      "Beauty > Skincare > Moisturizers",
-      "Health > Wellness > Supplements"
-    ];
+    let savedCategories = [];
 
     // Initialize category management
     async function initCategories() {
-      // 1. Load from localStorage
-      try {
-        const localSaved = JSON.parse(localStorage.getItem('nila_saved_categories') || '[]');
-        if (Array.isArray(localSaved) && localSaved.length > 0) {
-          localSaved.forEach(c => {
-            const clean = String(c).trim();
-            if (clean && !savedCategories.includes(clean)) {
-              savedCategories.unshift(clean);
-            }
-          });
-        }
-      } catch (e) {
-        console.warn('Could not read localStorage categories:', e);
-      }
-
-      // 2. Fetch from server API
+      // 1. Fetch from server API (authoritative categories.json)
       try {
         const res = await fetch('/api/categories');
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.categories)) {
-            data.categories.forEach(c => {
-              const clean = String(c).trim();
-              if (clean && !savedCategories.includes(clean)) {
-                savedCategories.push(clean);
-              }
-            });
+            savedCategories = data.categories.map(c => String(c).trim()).filter(Boolean);
+            localStorage.setItem('nila_saved_categories', JSON.stringify(savedCategories));
           }
         }
       } catch (err) {
         console.warn('Could not fetch server categories:', err);
+      }
+
+      // Fallback to localStorage only if server is offline and savedCategories is empty
+      if (!savedCategories.length) {
+        try {
+          const localSaved = JSON.parse(localStorage.getItem('nila_saved_categories') || '[]');
+          if (Array.isArray(localSaved) && localSaved.length > 0) {
+            savedCategories = localSaved.map(c => String(c).trim()).filter(Boolean);
+          }
+        } catch (e) {
+          console.warn('Could not read localStorage categories:', e);
+        }
       }
 
       // 3. Render UI components
@@ -2132,7 +2147,10 @@
       }
     }
 
-    // Category Manager Modal Functions
+    // Category Manager Modal State & Functions
+    let allManagedCategories = [];
+    let editingCategoryName = null;
+
     function openCategoryManager() {
       const modal = document.getElementById('categoryManagerModal');
       modal.style.display = 'flex';
@@ -2142,14 +2160,16 @@
     function closeCategoryManager() {
       const modal = document.getElementById('categoryManagerModal');
       modal.style.display = 'none';
+      editingCategoryName = null;
     }
 
-    async function loadFirestoreCategories() {
+    async function loadFirestoreCategories(force = false) {
       const listContainer = document.getElementById('firestoreCatList');
-      listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">Scanning Firestore database...</div>';
+      const badge = document.getElementById('catTotalCountBadge');
+      listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);"><div class="loading-spinner" style="margin: 0 auto 0.5rem;"></div>Scanning database & menu categories...</div>';
 
       try {
-        const res = await fetch('/api/firestore-categories');
+        const res = await fetch('/api/firestore-categories' + (force ? '?refresh=true' : ''));
         const text = await res.text();
         
         let data;
@@ -2158,12 +2178,9 @@
         } catch (jsonErr) {
           listContainer.innerHTML = `
             <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: var(--radius-sm); padding: 1.25rem; color: #9f1239; text-align: center;">
-              <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem;">⚠️ Server Restart Required</div>
+              <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem;">⚠️ Server Restart Notice</div>
               <div style="font-size: 0.85rem; color: #881337; line-height: 1.5;">
-                The server returned HTML instead of JSON because the Python process is still running the older version in memory.
-              </div>
-              <div style="font-size: 0.8rem; margin-top: 0.75rem; background: white; padding: 0.5rem; border-radius: 4px; border: 1px solid #fda4af;">
-                Please stop your terminal (<strong>Ctrl + C</strong>) and restart: <br><code>python import_server.py</code>
+                Please restart your Python server to activate new category endpoints.
               </div>
             </div>
           `;
@@ -2171,25 +2188,22 @@
         }
 
         if (data.success && Array.isArray(data.categories)) {
-          if (data.categories.length === 0) {
-            listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">No products found in Firestore yet.</div>';
-            return;
-          }
+          allManagedCategories = data.categories;
+          if (badge) badge.textContent = `${allManagedCategories.length} Categories`;
 
-          listContainer.innerHTML = data.categories.map(item => {
-            return `
-              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
-                <div style="flex: 1; overflow: hidden;">
-                  <div style="font-weight: 700; font-size: 0.88rem; color: #1e293b; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${escapeHtml(item.category)}</div>
-                  <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">${item.count} documents (parents + variations)</div>
-                </div>
-                <div style="display: flex; gap: 0.4rem;">
-                  <button type="button" class="btn btn-outline btn-sm" onclick="selectFromManager('${escapeHtml(item.category)}')" title="Select this category for importing">Use</button>
-                  <button type="button" class="btn btn-outline btn-sm" style="color: #ef4444; border-color: #fecdd3;" onclick="deleteCategoryProducts('${escapeHtml(item.category)}', ${item.count})" title="Delete all products under this category">🗑️ Delete</button>
-                </div>
-              </div>
-            `;
-          }).join('');
+          // Sync savedCategories for dropdown
+          savedCategories = data.categories.map(item => String(item.category).trim()).filter(Boolean);
+          localStorage.setItem('nila_saved_categories', JSON.stringify(savedCategories));
+          renderCategoryUI();
+
+          window._catManagerNotice = (!data.firebase_connected || data.firebase_error)
+            ? `<div style="font-size: 0.78rem; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 0.5rem 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+                 <span>📦 <strong>Catalog Scan Active:</strong> ${data.firebase_error ? `Firestore note: ${escapeHtml(data.firebase_error)}.` : ''} Displaying verified product counts.</span>
+                 <span style="font-size: 0.7rem; background: #dbeafe; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600;">Active</span>
+               </div>`
+            : '';
+
+          renderCategoryManagerList();
         } else {
           listContainer.innerHTML = `<div style="color: #ef4444; padding: 1.5rem; text-align: center;">${escapeHtml(data.error || 'Failed to load categories')}</div>`;
         }
@@ -2198,31 +2212,242 @@
       }
     }
 
-    function selectFromManager(categoryPath) {
-      document.getElementById('categoryInput').value = categoryPath;
-      onCategoryInputChange();
-      closeCategoryManager();
-      showToast(`Selected "${categoryPath}"`, 'success');
+    function filterCategoryManagerList() {
+      renderCategoryManagerList();
     }
 
-    async function deleteCategoryProducts(categoryPath, count) {
-      const confirmMsg = `⚠️ WARNING: Are you sure you want to delete all ${count} products under:\n\n"${categoryPath}"?\n\nThis will permanently delete parent products and their variations from Firestore.`;
+    function renderCategoryManagerList() {
+      const listContainer = document.getElementById('firestoreCatList');
+      const filterTerm = (document.getElementById('catFilterInput')?.value || '').toLowerCase().trim();
+
+      const filtered = allManagedCategories.filter(item => {
+        if (!filterTerm) return true;
+        return item.category.toLowerCase().includes(filterTerm);
+      });
+
+      const noticeHtml = window._catManagerNotice || '';
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `
+          ${noticeHtml}
+          <div style="text-align: center; padding: 2rem; color: var(--text-muted); background: #f8fafc; border-radius: var(--radius-sm); border: 1px dashed var(--border);">
+            ${filterTerm ? `No categories matching "<strong>${escapeHtml(filterTerm)}</strong>"` : 'No categories found.'}
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = noticeHtml + filtered.map((item, idx) => {
+        const isEditing = editingCategoryName === item.category;
+        const parts = item.category.split('>').map(p => p.trim()).filter(Boolean);
+        
+        let countBadge = '';
+        if (item.parents_count > 0 && item.variations_count > 0) {
+          countBadge = `<span style="font-size: 0.72rem; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 0.12rem 0.5rem; border-radius: 999px; font-weight: 700;">📦 ${item.parents_count} Products <span style="font-weight: 500; color: #3b82f6;">(${item.total_docs} variants)</span></span>`;
+        } else if (item.count > 0) {
+          countBadge = `<span style="font-size: 0.72rem; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 0.12rem 0.5rem; border-radius: 999px; font-weight: 700;">📦 ${item.count} Products</span>`;
+        } else {
+          countBadge = `<span style="font-size: 0.72rem; background: #f1f5f9; color: #64748b; padding: 0.12rem 0.5rem; border-radius: 999px; font-weight: 500;">0 Products</span>`;
+        }
+
+        if (isEditing) {
+          return `
+            <div class="cat-item-card" style="background: #eff6ff; border: 1.5px solid #3b82f6; border-radius: var(--radius-sm); padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.6rem;">
+              <div style="font-weight: 700; font-size: 0.82rem; color: #1e40af; display: flex; align-items: center; justify-content: space-between;">
+                <span>✏️ Rename Category:</span>
+                <span style="font-size: 0.72rem; color: #60a5fa;">Updates menus and all Firestore products</span>
+              </div>
+              <input type="text" id="editCatInputField" class="form-control" value="${escapeHtml(item.category)}" style="font-size: 0.88rem; font-weight: 600;">
+              <div style="display: flex; justify-content: flex-end; gap: 0.4rem;">
+                <button type="button" class="btn btn-outline btn-sm" id="cancelEditBtn">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" id="saveEditBtn" data-oldcat="${encodeURIComponent(item.category)}">💾 Save Changes</button>
+              </div>
+            </div>
+          `;
+        }
+
+        const breadcrumbChips = parts.map((part, pIdx) => {
+          const isLast = pIdx === parts.length - 1;
+          return `<span style="font-weight: ${isLast ? '700' : '500'}; color: ${isLast ? '#0f172a' : '#64748b'};">${escapeHtml(part)}</span>`;
+        }).join('<span style="color: #94a3b8; margin: 0 0.25rem;">›</span>');
+
+        return `
+          <div class="cat-item-card" style="background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 0.88rem; display: flex; align-items: center; flex-wrap: wrap;">
+                ${breadcrumbChips}
+              </div>
+              <div style="display: flex; gap: 0.45rem; align-items: center; margin-top: 0.3rem; flex-wrap: wrap;">
+                ${countBadge}
+                ${item.in_menu ? `<span style="font-size: 0.7rem; color: #166534; background: #dcfce7; border: 1px solid #bbf7d0; padding: 0.08rem 0.4rem; border-radius: 4px; font-weight: 600;">✓ In Menu</span>` : ''}
+                ${item.source ? `<span style="font-size: 0.68rem; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.08rem 0.35rem; border-radius: 4px;">${escapeHtml(item.source)}</span>` : ''}
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.35rem; align-items: center; flex-shrink: 0;">
+              <button type="button" class="btn btn-outline btn-sm use-cat-btn" data-cat="${encodeURIComponent(item.category)}" title="Use this category for importing" style="font-size: 0.78rem; padding: 0.25rem 0.6rem;">🚀 Use</button>
+              <button type="button" class="btn btn-outline btn-sm edit-cat-btn" data-cat="${encodeURIComponent(item.category)}" title="Rename / edit category" style="font-size: 0.78rem; padding: 0.25rem 0.6rem;">✏️ Edit</button>
+              <button type="button" class="btn btn-outline btn-sm delete-cat-btn" data-cat="${encodeURIComponent(item.category)}" data-count="${item.count}" style="color: #dc2626; border-color: #fecdd3; font-size: 0.78rem; padding: 0.25rem 0.6rem;" title="Delete category from menus and database">🗑️ Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Attach event listeners safely
+      listContainer.querySelectorAll('.use-cat-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const cat = decodeURIComponent(btn.dataset.cat);
+          selectFromManager(cat);
+        });
+      });
+
+      listContainer.querySelectorAll('.edit-cat-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const cat = decodeURIComponent(btn.dataset.cat);
+          startEditCategory(cat);
+        });
+      });
+
+      listContainer.querySelectorAll('.delete-cat-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const cat = decodeURIComponent(btn.dataset.cat);
+          const count = parseInt(btn.dataset.count || '0', 10);
+          deleteCategoryItem(cat, count);
+        });
+      });
+
+      const saveBtn = document.getElementById('saveEditBtn');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const oldCat = decodeURIComponent(saveBtn.dataset.oldcat);
+          saveEditedCategory(oldCat);
+        });
+      }
+
+      const cancelBtn = document.getElementById('cancelEditBtn');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          cancelEditCategory();
+        });
+      }
+    }
+
+    async function addNewCategoryFromModal() {
+      const input = document.getElementById('newCatInputModal');
+      const val = (input?.value || '').trim();
+      if (!val) {
+        showToast('Please enter a category name (e.g. Women > Western Wear > Tops)', 'warning');
+        input?.focus();
+        return;
+      }
+
+      showToast(`Adding category "${val}"...`, 'info');
+      try {
+        const res = await fetch('/api/save-category', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ category: val })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast(`✅ Added "${val}" to categories!`, 'success');
+          input.value = '';
+          loadFirestoreCategories();
+        } else {
+          showToast(`Error: ${result.error}`, 'error');
+        }
+      } catch (err) {
+        showToast(`Failed: ${err.message}`, 'error');
+      }
+    }
+
+    function startEditCategory(categoryName) {
+      editingCategoryName = categoryName;
+      renderCategoryManagerList();
+      setTimeout(() => {
+        const el = document.getElementById('editCatInputField');
+        if (el) { el.focus(); el.select(); }
+      }, 50);
+    }
+
+    function cancelEditCategory() {
+      editingCategoryName = null;
+      renderCategoryManagerList();
+    }
+
+    async function saveEditedCategory(oldCatName) {
+      const input = document.getElementById('editCatInputField');
+      const newCatName = (input?.value || '').trim();
+
+      if (!newCatName) {
+        showToast('Category name cannot be empty', 'warning');
+        input?.focus();
+        return;
+      }
+
+      if (newCatName === oldCatName) {
+        cancelEditCategory();
+        return;
+      }
+
+      showToast(`Renaming "${oldCatName}" to "${newCatName}"...`, 'info');
+      logTerminal(`✏️ Renaming category "${oldCatName}" -> "${newCatName}"...`, 'log-info');
+
+      try {
+        const res = await fetch('/api/edit-category', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ old_category: oldCatName, new_category: newCatName })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast(`✅ Renamed successfully! Updated ${result.updated_firestore_count || 0} products.`, 'success');
+          logTerminal(`✓ ${result.message}`, 'log-success');
+          editingCategoryName = null;
+          loadFirestoreCategories();
+        } else {
+          showToast(`Error: ${result.error}`, 'error');
+          logTerminal(`✗ Error: ${result.error}`, 'log-error');
+        }
+      } catch (err) {
+        showToast(`Failed: ${err.message}`, 'error');
+      }
+    }
+
+    async function deleteCategoryItem(categoryPath, count) {
+      let confirmMsg = `Are you sure you want to delete the category:\n\n"${categoryPath}"?\n\n`;
+      if (count > 0) {
+        confirmMsg += `⚠️ This category currently has ${count} products in Firestore.\n\nClick OK to delete this category from menus and delete all ${count} products from Firestore.`;
+      } else {
+        confirmMsg += `This will permanently remove it from the menus and database.`;
+      }
+
       if (!confirm(confirmMsg)) return;
 
-      showToast(`Deleting products for "${categoryPath}"...`, 'info');
-      logTerminal(`🗑️ Deleting all products under "${categoryPath}"...`, 'log-info');
+      showToast(`Deleting category "${categoryPath}"...`, 'info');
+      logTerminal(`🗑️ Removing category "${categoryPath}"...`, 'log-info');
 
       try {
         const res = await fetch('/api/delete-category', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ category: categoryPath })
+          body: JSON.stringify({ category: categoryPath, delete_products: count > 0 })
         });
         const result = await res.json();
         if (result.success) {
-          showToast(`Deleted ${result.deleted_count} products!`, 'success');
+          showToast(`✅ Deleted "${categoryPath}"!`, 'success');
           logTerminal(`✓ ${result.message}`, 'log-success');
-          loadFirestoreCategories(); // Refresh modal list
+          
+          // Remove from local savedCategories array
+          savedCategories = savedCategories.filter(c => c.trim().toLowerCase() !== categoryPath.trim().toLowerCase());
+          localStorage.setItem('nila_saved_categories', JSON.stringify(savedCategories));
+          renderCategoryUI();
+
+          loadFirestoreCategories();
         } else {
           showToast(`Error: ${result.error}`, 'error');
           logTerminal(`✗ Delete error: ${result.error}`, 'log-error');
@@ -2231,6 +2456,41 @@
         showToast(`Failed: ${err.message}`, 'error');
         logTerminal(`✗ Delete request failed: ${err.message}`, 'log-error');
       }
+    }
+
+    async function syncFirestoreToLocalFile() {
+      const btn = document.getElementById('syncToLocalBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Syncing...';
+      }
+      showToast('⏳ Downloading and syncing Firestore products to local data.json...', 'info');
+      try {
+        const res = await fetch('/api/sync-firestore-to-local');
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✅ Synced ${data.synced_count} products to data.json!`, 'success');
+          logTerminal(`✓ ${data.message}`, 'log-success');
+          loadFirestoreCategories(true);
+        } else {
+          showToast(`Sync notice: ${data.error}`, 'error');
+          logTerminal(`⚠️ Sync error: ${data.error}`, 'log-error');
+        }
+      } catch (err) {
+        showToast(`Sync failed: ${err.message}`, 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '📥 Sync to Local';
+        }
+      }
+    }
+
+    function selectFromManager(categoryPath) {
+      document.getElementById('categoryInput').value = categoryPath;
+      onCategoryInputChange();
+      closeCategoryManager();
+      showToast(`Selected "${categoryPath}"`, 'success');
     }
 
     function escapeHtml(str) {
