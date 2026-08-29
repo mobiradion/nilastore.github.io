@@ -494,6 +494,7 @@ async function fetchProductsChunk({ limit = 20, reset = false, category = '', su
 async function fetchSingleProduct(targetId) {
   if (!targetId) return null;
   const target = String(targetId).trim();
+  const rawId = extractProductIdFromSlug(target);
 
   // 1. Check in-memory PRODUCTS first
   let found = findProductById(target);
@@ -503,8 +504,12 @@ async function fetchSingleProduct(targetId) {
   const sb = initSupabase();
   if (sb) {
     try {
+      let orFilter = `id.eq."${target}",sku.eq."${target}"`;
+      if (rawId && rawId !== target) {
+        orFilter += `,id.eq."${rawId}",sku.eq."${rawId}"`;
+      }
       const res = await Promise.race([
-        sb.from('products').select('*').or(`id.eq."${target}",sku.eq."${target}"`).limit(1),
+        sb.from('products').select('*').or(orFilter).limit(1),
         new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
       ]);
 
@@ -724,34 +729,47 @@ let wishlist = new Set();
 let lastFocusedElement = null;
 let removeFocusTrap = null;
 
+function extractProductIdFromSlug(slugOrId) {
+  if (!slugOrId) return '';
+  const str = String(slugOrId).trim();
+  // If format is slug-{id} (e.g. bluetooth-headphones-and-earphones-540792198)
+  const lastDash = str.lastIndexOf('-');
+  if (lastDash > 0) {
+    const candidate = str.slice(lastDash + 1).trim();
+    if (candidate && (/^\d+$/.test(candidate) || candidate.length >= 4)) {
+      return candidate;
+    }
+  }
+  return str;
+}
+
 function findProductById(id) {
   if (id === undefined || id === null || id === '') return null;
   const target = String(id).trim();
   const targetSlug = slugify(target);
+  const targetLower = target.toLowerCase();
 
-  // 1. Direct top-level match
+  // 1. Direct EXACT ID / SKU / groupId / parent match (Raw untouched value)
   for (const p of PRODUCTS) {
     if (
       String(p.id || '').trim() === target ||
-      String(p.sku || '').trim().toLowerCase() === target.toLowerCase() ||
+      String(p.sku || '').trim().toLowerCase() === targetLower ||
       (p.groupId && String(p.groupId).trim() === target) ||
-      (p.parent && String(p.parent).trim() === target) ||
-      slugify(p.title || '') === targetSlug
+      (p.parent && String(p.parent).trim() === target)
     ) {
       return p;
     }
   }
 
-  // 2. Search all nested group variants
+  // 2. Direct EXACT match inside nested group variants
   for (const p of PRODUCTS) {
     if (p.groupVariants && Array.isArray(p.groupVariants)) {
       for (const v of p.groupVariants) {
         if (
           String(v.id || '').trim() === target ||
-          String(v.sku || '').trim().toLowerCase() === target.toLowerCase() ||
+          String(v.sku || '').trim().toLowerCase() === targetLower ||
           (v.groupId && String(v.groupId).trim() === target) ||
-          (v.parent && String(v.parent).trim() === target) ||
-          slugify(v.title || '') === targetSlug
+          (v.parent && String(v.parent).trim() === target)
         ) {
           return v;
         }
@@ -759,7 +777,38 @@ function findProductById(id) {
     }
   }
 
-  // 3. Fallback partial/fuzzy match
+  // 3. Exact full getProductSlug(p) match (e.g. bluetooth-headphones-and-earphones-540792198)
+  for (const p of PRODUCTS) {
+    if (getProductSlug(p) === targetSlug) {
+      return p;
+    }
+  }
+  for (const p of PRODUCTS) {
+    if (p.groupVariants && Array.isArray(p.groupVariants)) {
+      for (const v of p.groupVariants) {
+        if (getProductSlug(v) === targetSlug) {
+          return v;
+        }
+      }
+    }
+  }
+
+  // 4. Match by slugified SKU / ID suffix in getProductSlug
+  for (const p of PRODUCTS) {
+    const pSkuSlug = slugify(p.sku || p.id || '');
+    if (pSkuSlug && targetSlug.endsWith(pSkuSlug)) {
+      return p;
+    }
+  }
+
+  // 5. Fallback title slug match (for legacy URLs)
+  for (const p of PRODUCTS) {
+    if (slugify(p.title || '') === targetSlug) {
+      return p;
+    }
+  }
+
+  // 6. Fallback partial/fuzzy match
   if (targetSlug.length > 3) {
     for (const p of PRODUCTS) {
       const pSlug = slugify(p.title || '');
@@ -909,7 +958,13 @@ function productHasVariationValue(product, value) {
 }
 
 function getProductSlug(product) {
-  return slugify(product?.title || product?.id || '');
+  if (!product) return '';
+  const titleSlug = slugify(product.title || product.name || 'product');
+  const uniqueId = String(product.sku || product.id || '').trim();
+  if (uniqueId && !titleSlug.endsWith(uniqueId)) {
+    return `${titleSlug}-${uniqueId}`;
+  }
+  return titleSlug || uniqueId;
 }
 
 function getProductUrl(product) {
@@ -983,7 +1038,7 @@ function openWhatsAppUrl(rawText) {
 }
 
 function orderProductOnWhatsApp(productId, requestedSize = '', requestedQty = 1) {
-  const p = PRODUCTS.find((x) => x.id === productId || slugify(x.title) === slugify(productId) || x.sku === productId);
+  const p = findProductById(productId);
   if (!p) return;
   const sizeDetail = requestedSize ? ` (Size: ${requestedSize})` : '';
   const itemSku = p.sku || p.id || '';
@@ -994,7 +1049,7 @@ function orderProductOnWhatsApp(productId, requestedSize = '', requestedQty = 1)
 }
 
 async function shareProduct(productId) {
-  const product = PRODUCTS.find((p) => p.id === productId || slugify(p.title) === productId || p.sku === productId);
+  const product = findProductById(productId);
   if (!product) return;
   const shareUrl = getProductAbsoluteUrl(product);
   const shareData = {
@@ -1025,8 +1080,7 @@ async function shareProduct(productId) {
 
 function openModal(targetId) {
   if (!targetId) return;
-  const targetSlug = slugify(targetId);
-  const product = PRODUCTS.find((p) => p.id === targetId || slugify(p.title) === targetSlug || p.sku === targetId);
+  const product = findProductById(targetId);
   if (product) {
     window.location.href = getProductUrl(product);
   }
@@ -2344,20 +2398,23 @@ function removeFromCart(id) {
   renderCart();
 }
 function renderCart() {
-  // Remove stale saved-cart entries when the catalogue has changed.
-  const ids = Object.keys(cart).filter((id) => {
-    const isAvailable = Boolean(findProductById(cartProductId(id)));
-    if (!isAvailable) delete cart[id];
-    return isAvailable;
-  });
-  saveCart();
+  // Prune stale entries only when full product catalog is loaded
+  if (Array.isArray(PRODUCTS) && PRODUCTS.length > 0) {
+    Object.keys(cart).forEach((id) => {
+      const isAvailable = Boolean(findProductById(cartProductId(id)));
+      if (!isAvailable) delete cart[id];
+    });
+    saveCart();
+  }
+
+  const ids = Object.keys(cart);
   const body = document.getElementById("cartBody");
   const foot = document.getElementById("cartFoot");
   const countEl = document.getElementById("cartCount");
   const checkoutBtn = document.getElementById("checkoutBtn");
   const checkoutPanel = document.getElementById("checkoutPanel");
   if (!body || !foot || !countEl) return;
-  const totalQty = ids.reduce((s, id) => s + cart[id], 0);
+  const totalQty = ids.reduce((s, id) => s + (Number(cart[id]) || 0), 0);
   countEl.textContent = totalQty;
   countEl.style.display = totalQty > 0 ? "flex" : "none";
 
