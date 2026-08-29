@@ -9,7 +9,6 @@
     content="Nila Store — mobiles, electronics, men's & women's fashion, home & more. Fast delivery, easy returns.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://firestore.googleapis.com">
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://picsum.photos">
   <link
@@ -103,7 +102,112 @@
 
   <!-- Category rail -->
   <nav class="category-rail">
-    <div class="wrap category-rail-inner" id="categoryRail"></div>
+    <div class="wrap category-rail-inner" id="categoryRail">
+      <!-- Women -->
+      <div class="cat-chip-wrap" data-parent="women">
+        <button type="button" class="cat-chip has-sub" aria-expanded="false" data-cat-id="women">
+          Women <span class="chevron">▾</span>
+        </button>
+        <div class="cat-dropdown">
+          <div class="dropdown-group">
+            <a href="category.html?cat=women&subcat=sarees" class="dropdown-heading-link">Sarees</a>
+            <a href="category.html?cat=women&subcat=sarees&subsubcat=cotton-sarees">Cotton Sarees</a>
+            <a href="category.html?cat=women&subcat=sarees&subsubcat=silk-sarees">Silk Sarees</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Men -->
+      <div class="cat-chip-wrap" data-parent="men">
+        <button type="button" class="cat-chip has-sub" aria-expanded="false" data-cat-id="men">
+          Men <span class="chevron">▾</span>
+        </button>
+        <div class="cat-dropdown">
+          <a href="category.html?cat=men&subcat=shirts">Shirts</a>
+          <a href="category.html?cat=men&subcat=t-shirts">T-Shirts</a>
+        </div>
+      </div>
+
+      <!-- Kids -->
+      <div class="cat-chip-wrap" data-parent="kids">
+        <button type="button" class="cat-chip has-sub" aria-expanded="false" data-cat-id="kids">
+          Kids <span class="chevron">▾</span>
+        </button>
+        <div class="cat-dropdown">
+          <a href="category.html?cat=kids&subcat=boys">Boys</a>
+          <a href="category.html?cat=kids&subcat=girls">Girls</a>
+        </div>
+      </div>
+
+      <!-- Jewellery -->
+      <div class="cat-chip-wrap" data-parent="jewellery">
+        <button type="button" class="cat-chip has-sub" aria-expanded="false" data-cat-id="jewellery">
+          Jewellery <span class="chevron">▾</span>
+        </button>
+        <div class="cat-dropdown">
+          <a href="category.html?cat=jewellery&subcat=bangles-and-bracelets">Bangles &amp; Bracelets</a>
+          <a href="category.html?cat=jewellery&subcat=earrings">Earrings</a>
+          <a href="category.html?cat=jewellery&subcat=jewellery-sets">Jewellery Sets</a>
+          <a href="category.html?cat=jewellery&subcat=necklaces-and-chains">Necklaces &amp; Chains</a>
+        </div>
+      </div>
+
+      <!-- Beauty -->
+      <div class="cat-chip-wrap" data-parent="beauty">
+        <button type="button" class="cat-chip has-sub" aria-expanded="false" data-cat-id="beauty">
+          Beauty <span class="chevron">▾</span>
+        </button>
+        <div class="cat-dropdown">
+          <a href="category.html?cat=beauty&subcat=face-wash">Face Wash</a>
+          <a href="category.html?cat=beauty&subcat=hair-oil-shampoo">Hair Oil &amp; Shampoo</a>
+          <a href="category.html?cat=beauty&subcat=lipstick">Lipstick</a>
+        </div>
+      </div>
+
+      <!-- Kitchen -->
+      <div class="cat-chip-wrap" data-parent="kitchen">
+        <button type="button" class="cat-chip has-sub" aria-expanded="false" data-cat-id="kitchen">
+          Kitchen <span class="chevron">▾</span>
+        </button>
+        <div class="cat-dropdown">
+          <a href="category.html?cat=kitchen&subcat=kitchen-appliances">Kitchen Appliances</a>
+          <a href="category.html?cat=kitchen&subcat=kitchen-tools">Kitchen Tools</a>
+          <a href="category.html?cat=kitchen&subcat=storage-and-organisers">Storage &amp; Organisers</a>
+        </div>
+      </div>
+
+      <!-- Home -->
+      <div class="cat-chip-wrap" data-parent="home">
+        <button type="button" class="cat-chip has-sub" aria-expanded="false" data-cat-id="home">
+          Home <span class="chevron">▾</span>
+        </button>
+        <div class="cat-dropdown">
+          <a href="category.html?cat=home&subcat=bedsheets">Bedsheets</a>
+          <a href="category.html?cat=home&subcat=pillow-cushion-and-covers">Pillow, Cushion &amp; Covers</a>
+        </div>
+      </div>
+
+      <!-- Electronics -->
+      <div class="cat-chip-wrap" data-parent="electronics">
+        <button type="button" class="cat-chip has-sub" aria-expanded="false" data-cat-id="electronics">
+          Electronics <span class="chevron">▾</span>
+        </button>
+        <div class="cat-dropdown">
+          <a href="category.html?cat=electronics&subcat=bluetooth-headphones">Bluetooth Headphones</a>
+          <a href="category.html?cat=electronics&subcat=bluetooth-speakers">Bluetooth Speakers</a>
+        </div>
+      </div>
+
+      <!-- Health -->
+      <div class="cat-chip-wrap" data-parent="health">
+        <button type="button" class="cat-chip has-sub" aria-expanded="false" data-cat-id="health">
+          Health <span class="chevron">▾</span>
+        </button>
+        <div class="cat-dropdown">
+          <a href="category.html?cat=health&subcat=ayurveda-and-nutrition">Ayurveda &amp; Nutrition</a>
+        </div>
+      </div>
+    </div>
   </nav>
 
   <main>
@@ -292,9 +396,8 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="script.js?v=26"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js?v=27"></script>
 </body>
 
 </html>

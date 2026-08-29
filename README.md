@@ -1,65 +1,84 @@
 # Nila Store
 
-A static, front-end-only e-commerce demo site (Flipkart-style: search-led home page,
-category grid, deal cards, and a slide-in cart) built with plain HTML/CSS/JS —
-no build step, no backend, ready for GitHub Pages.
+A modern, fast e-commerce storefront (search-led home page, category navigation, deal cards, size variations, and a slide-in cart) powered by **Supabase PostgreSQL** and plain HTML/CSS/JS — ready for GitHub Pages.
 
-## Run locally
-Just open `index.html` in a browser, or serve it:
+---
+
+## ⚡ Supabase Setup (Quickstart)
+
+### 1. Create Supabase Table & Security Policies
+1. Create a project at [supabase.com](https://supabase.com).
+2. Open the **SQL Editor** in your Supabase dashboard.
+3. Paste the contents of `supabase_schema.sql` and click **Run**.
+
+### 2. Configure Credentials
+Add your Supabase Project URL and API Keys:
+
+1. **Backend / Admin Importer**: Edit `supabase_config.json`:
+```json
+{
+  "supabase_url": "https://your-project.supabase.co",
+  "supabase_anon_key": "your-anon-key",
+  "supabase_service_role_key": "your-service-role-key"
+}
 ```
-python3 -m http.server 8000
+
+2. **Frontend Website**: In `script.js` (top of State section):
+```javascript
+const SUPABASE_CONFIG = {
+  url: "https://your-project.supabase.co",
+  anonKey: "your-anon-key"
+};
 ```
-then visit `http://localhost:8000`.
 
-## Deploy to GitHub Pages
-1. Create a new GitHub repo and push these three files (`index.html`, `styles.css`, `script.js`) to the root (or to a `docs/` folder).
-2. In the repo, go to **Settings → Pages**.
-3. Under **Build and deployment**, set **Source** to "Deploy from a branch".
-4. Choose the branch (usually `main`) and folder (`/root` or `/docs`), then **Save**.
-5. Your site will be live at `https://<your-username>.github.io/<repo-name>/` within a minute or two.
+---
 
-## What's included
-- Sticky header with live search (filters products by title/brand/category)
-- Horizontally scrollable category rail + category tile grid
-- Auto-rotating hero deal carousel
-- "Deals of the day" row with a live countdown
-- Full product catalog across 6 top-level categories (Mobiles, Electronics, Men's, Women's, Home & Kitchen, Beauty, Health), rendered from a single JS data array
-- Men's and Women's have dropdown submenus (Shirts/Pants/T-Shirts, and Silk Sarees/Cotton Sarees/Kurtis/Poonam Sarees) — click a chip to open its submenu, or click a submenu link to jump straight to that collection
-- Slide-in cart drawer with quantity controls, persisted via `localStorage`
-- Wishlist toggle, persisted via `localStorage`
-- Quick-view product modal
-- Mobile nav drawer + fully responsive layout (down to ~360px)
+## 🚀 Migrate Existing Products to Supabase
+Run the automated migration tool to upload all products from `data.json` and `variation_data.json` directly into Supabase:
 
-## Customizing
-- **Products**: edit the `PRODUCTS` array in `script.js` — swap in your own titles, prices, and images (any image URL works).
-- **Categories**: edit the `CATEGORIES` array in `script.js`.
-- **Branding/colors**: edit the CSS custom properties at the top of `styles.css` (`:root { --brand: ...; --accent: ...; }`).
-- **Checkout**: currently a placeholder toast — wire `checkoutBtn`'s click handler in `script.js` to your real payment flow when you add a backend.
+```bash
+python migrate_to_supabase.py
+```
 
-## Firestore Variation Importer (Web Form & CLI)
-Easily import variable products and size variations with custom categories into Firebase Firestore:
+---
+
+## 🛠️ Variation Importer (Web Form & CLI)
 
 ### 1. Launch Interactive Web Form
 ```bash
 python import_server.py
-# Or: python variationImportFireStore.py --serve
 ```
 Open **`http://localhost:8080`** in your browser to:
-- Enter any custom category path (e.g. `Women > Western Wear Ladies > Top` or `Men > Topwear > T-Shirts`)
-- Paste JSON or upload a `.json` catalog file
+- Select or create custom category paths (e.g., `Women > Western Wear Ladies > Top`)
+- Paste catalog JSON or upload `.json` product files
 - Configure price markups (Regular Price & Sale Price)
-- Preview parsed size variations, prices, and images
-- Import directly to Firestore with real-time progress logs
+- Preview size variations, pricing, and images
+- Import directly to Supabase with real-time streaming progress
 
 ### 2. Command-Line Import
 ```bash
-# Import with custom category and custom JSON file
-python variationImportFireStore.py --category "Women > Ethnic Wear > Kurtis" --file my_catalog.json
+# Import with custom category and JSON file
+python variation_import_supabase.py --category "Women > Ethnic Wear > Kurtis" --file my_catalog.json
 
 # Import with custom pricing markups
-python variationImportFireStore.py --category "Men > Western Wear > Casual Shirts" --regular-markup 350 --sale-markup 75
+python variation_import_supabase.py --category "Men > Western Wear > Casual Shirts" --regular-markup 350 --sale-markup 75
 ```
 
-## Notes
-- All product images are placeholder photos from picsum.photos, generated by seed — replace with your own product photography before using this for anything real.
-- This is a demo/portfolio project and isn't affiliated with or a copy of any specific retailer's branding.
+---
+
+## 🌐 Deploy to GitHub Pages
+1. Push your repository to GitHub.
+2. Go to **Settings → Pages**.
+3. Under **Build and deployment**, select "Deploy from a branch" (`main` branch, root `/`).
+4. Your storefront will be live immediately.
+
+---
+
+## What's included
+- Sticky header with instant search (filters products by title, brand, or category)
+- 100% Dynamic real-time category rail and hierarchy navigation from Supabase
+- Deal cards, responsive grid, and live discount tags
+- Variable product size selection and automated sibling variant clustering
+- Slide-in cart and wishlist drawers, persisted via `localStorage`
+- WhatsApp Checkout integration
+- 100% Cloud database-driven with Supabase PostgreSQL

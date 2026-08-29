@@ -850,7 +850,7 @@
       <div>
         <div class="brand-title">Nila Store</div>
       </div>
-      <span class="brand-tag">Firestore Importer</span>
+      <span class="brand-tag">Supabase Importer</span>
     </a>
     <div style="display: flex; gap: 0.6rem; align-items: center;">
       <button type="button" class="btn btn-outline btn-sm" onclick="openBannerManager()" style="font-weight: 600;">
@@ -870,15 +870,15 @@
   <main class="container">
     <div class="header-intro">
       <h1>Dynamic Product Catalog Importer</h1>
-    <!-- Firebase Key Warning Alert -->
-    <div id="firebaseErrorBanner" style="display: none; background: #fff1f2; border: 1.5px solid #fecdd3; border-left: 5px solid #ef4444; border-radius: var(--radius-sm); padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: #9f1239;">
+    <!-- Supabase Warning Alert -->
+    <div id="supabaseErrorBanner" style="display: none; background: #eff6ff; border: 1.5px solid #bfdbfe; border-left: 5px solid #3b82f6; border-radius: var(--radius-sm); padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: #1e3a8a;">
       <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-        <span style="font-size: 1.4rem; line-height: 1;">⚠️</span>
+        <span style="font-size: 1.4rem; line-height: 1;">ℹ️</span>
         <div style="flex: 1;">
-          <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.25rem;">Firebase Service Account Notice</div>
-          <div id="firebaseErrorText" style="font-size: 0.85rem; line-height: 1.5; color: #881337;"></div>
-          <div style="font-size: 0.8rem; margin-top: 0.5rem; color: #4c0519;">
-            <strong>To fix:</strong> Go to Firebase Console &gt; Project Settings &gt; Service Accounts &gt; "Generate new private key", download the file, and replace <code>serviceAccountKey.json</code> in this project folder.
+          <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.25rem;">Supabase Connection Notice</div>
+          <div id="supabaseErrorText" style="font-size: 0.85rem; line-height: 1.5; color: #1e40af;"></div>
+          <div style="font-size: 0.8rem; margin-top: 0.5rem; color: #172554;">
+            <strong>To configure:</strong> Open <code>supabase_config.json</code> in this project folder and enter your Supabase URL and Service Role Key from your Supabase Dashboard (Project Settings &gt; API).
           </div>
         </div>
       </div>
@@ -999,8 +999,7 @@
           <div class="card-header" style="padding: 0;">
             <div class="tabs-nav" style="width: 100%;">
               <button class="tab-btn active" onclick="switchDataTab('paste', this)">📝 Paste JSON</button>
-              <button class="tab-btn" onclick="switchDataTab('upload', this)">📁 Upload File</button>
-              <button class="tab-btn" onclick="switchDataTab('server', this)">💾 Server Files</button>
+              <button class="tab-btn" onclick="switchDataTab('upload', this)">📁 Upload File (.json)</button>
             </div>
           </div>
 
@@ -1024,32 +1023,9 @@
               <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="handleFileSelect(event)">
               <div class="dropzone-icon">📥</div>
               <div class="dropzone-text">Click or Drag & Drop a .json file here</div>
-              <div class="dropzone-subtext">Supports variation_data.json, data.json, or custom catalog dumps</div>
+              <div class="dropzone-subtext">Supports any catalog dump or product export JSON file</div>
             </div>
             <div id="fileSelectedInfo" style="display: none; margin-top: 0.75rem; font-size: 0.85rem; color: #334155; background: #f8fafc; padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border);"></div>
-          </div>
-
-          <!-- Tab 3: Server Files -->
-          <div id="tab-server" class="tab-content">
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-              Load JSON catalog data directly from repository files on disk:
-            </p>
-            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-              <button type="button" class="btn btn-outline" style="justify-content: flex-start;" onclick="loadServerFile('variation_data.json')">
-                <span>📄</span>
-                <div style="text-align: left;">
-                  <div style="font-weight: 700; font-size: 0.85rem;">variation_data.json</div>
-                  <div style="font-size: 0.75rem; color: var(--text-muted);">Standard variation catalog with sizes & images</div>
-                </div>
-              </button>
-              <button type="button" class="btn btn-outline" style="justify-content: flex-start;" onclick="loadServerFile('data.json')">
-                <span>📄</span>
-                <div style="text-align: left;">
-                  <div style="font-weight: 700; font-size: 0.85rem;">data.json</div>
-                  <div style="font-size: 0.75rem; color: var(--text-muted);">Simple catalog collection</div>
-                </div>
-              </button>
-            </div>
           </div>
 
           <!-- Action Buttons -->
@@ -1059,7 +1035,7 @@
                 <span>👁️</span> Preview Catalogs
               </button>
               <button type="button" class="btn btn-accent" style="flex: 1.3;" id="btnImport" onclick="handleImport()">
-                <span>🚀</span> Import to Firestore
+                <span>⚡</span> Import to Supabase
               </button>
             </div>
           </div>
@@ -1071,7 +1047,7 @@
         <!-- Real-Time Progress Bar Section -->
         <div class="progress-section" id="progressSection">
           <div class="progress-header">
-            <span id="progressTitle">Importing to Firestore...</span>
+            <span id="progressTitle">Importing to Supabase...</span>
             <span id="progressPercent">0%</span>
           </div>
           <div class="progress-track">
@@ -1099,7 +1075,7 @@
           </div>
           <div class="stat-card success">
             <div class="stat-val" id="statTotalDocs">0</div>
-            <div class="stat-lbl">Total Firestore Docs</div>
+            <div class="stat-lbl">Total Supabase Docs</div>
           </div>
         </div>
 
@@ -1154,7 +1130,7 @@
             <span>📂</span> Database &amp; Menu Categories Manager
           </div>
           <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem;">
-            Add, rename/edit, or delete categories displayed across your website menus and Firestore database.
+            Add, rename/edit, or delete categories displayed across your website menus and Supabase database.
           </div>
         </div>
         <button type="button" class="btn btn-outline btn-sm" onclick="closeCategoryManager()" style="padding: 0.2rem 0.5rem; font-size: 1.1rem; line-height: 1;">&times;</button>
@@ -1186,13 +1162,12 @@
           </div>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
             <span id="catTotalCountBadge" style="font-size: 0.75rem; background: #f1f5f9; color: #475569; padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 600;">0 Categories</span>
-            <button type="button" class="btn btn-outline btn-sm" id="syncToLocalBtn" onclick="syncFirestoreToLocalFile()" title="Download & backup all cloud products into data.json to ensure 100% offline & quota immunity">📥 Sync to Local</button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="loadFirestoreCategories(true)">🔄 Refresh</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="loadSupabaseCategories(true)">🔄 Refresh</button>
           </div>
         </div>
 
         <!-- Categories List Container -->
-        <div id="firestoreCatList" style="display: flex; flex-direction: column; gap: 0.6rem;">
+        <div id="supabaseCatList" style="display: flex; flex-direction: column; gap: 0.6rem;">
           <div style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading categories...</div>
         </div>
 
@@ -1323,35 +1298,36 @@
       setupDropzone();
     });
 
-    let serverFirebaseState = { connected: false, error: null };
+    let serverSupabaseState = { connected: false, error: null };
 
     // Check server status
     async function checkServerStatus() {
       const dot = document.getElementById('statusDot');
       const text = document.getElementById('statusText');
-      const banner = document.getElementById('firebaseErrorBanner');
+      const banner = document.getElementById('supabaseErrorBanner');
 
       try {
         const res = await fetch('/api/status');
         if (res.ok) {
           const data = await res.json();
-          serverFirebaseState = { connected: data.firebase_connected, error: data.error };
-          if (data.firebase_connected) {
+          const isConnected = Boolean(data.supabase_connected);
+          serverSupabaseState = { connected: isConnected, error: data.error };
+          if (isConnected) {
             dot.className = 'status-dot online';
-            text.textContent = 'Server & Firestore Connected';
+            text.textContent = 'Server & Supabase Connected';
             if (banner) banner.style.display = 'none';
           } else {
             dot.className = 'status-dot offline';
-            text.textContent = 'Firebase Key Issue (Click for details)';
+            text.textContent = 'Supabase Setup Required';
             if (banner) {
               banner.style.display = 'block';
-              document.getElementById('firebaseErrorText').textContent = data.error || 'Invalid service account key';
+              document.getElementById('supabaseErrorText').textContent = data.error || 'Please configure supabase_config.json with valid keys';
             }
-            logTerminal(`⚠️ Firebase warning: ${data.error}`, 'log-error');
+            logTerminal(`ℹ️ Supabase status: ${data.error || 'Credentials required'}`, 'log-warning');
           }
         } else {
           dot.className = 'status-dot offline';
-          text.textContent = 'Server Error (' + res.status + ')';
+          text.textContent = 'Server Offline (Run python import_server.py)';
         }
       } catch (err) {
         dot.className = 'status-dot offline';
@@ -1363,36 +1339,23 @@
 
     // Initialize category management
     async function initCategories() {
-      // 1. Fetch from server API (authoritative categories.json)
+      // Fetch distinct categories directly from live server API / Supabase
       try {
         const res = await fetch('/api/categories');
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.categories)) {
             savedCategories = data.categories.map(c => String(c).trim()).filter(Boolean);
-            localStorage.setItem('nila_saved_categories', JSON.stringify(savedCategories));
           }
         }
       } catch (err) {
         console.warn('Could not fetch server categories:', err);
       }
 
-      // Fallback to localStorage only if server is offline and savedCategories is empty
-      if (!savedCategories.length) {
-        try {
-          const localSaved = JSON.parse(localStorage.getItem('nila_saved_categories') || '[]');
-          if (Array.isArray(localSaved) && localSaved.length > 0) {
-            savedCategories = localSaved.map(c => String(c).trim()).filter(Boolean);
-          }
-        } catch (e) {
-          console.warn('Could not read localStorage categories:', e);
-        }
-      }
-
-      // 3. Render UI components
+      // Render UI components
       renderCategoryUI();
 
-      // 4. Restore last selected category from localStorage if available
+      // Restore last selected category from localStorage if available
       const lastCat = localStorage.getItem('nila_last_category');
       if (lastCat && lastCat.trim()) {
         document.getElementById('categoryInput').value = lastCat.trim();
@@ -1444,27 +1407,33 @@
       }
       dropdown.innerHTML = dropdownHtml;
 
-      // 3. Populate Quick Chips
-      chipContainer.innerHTML = savedCategories.slice(0, 12).map(cat => {
-        const shortName = cat.split('>').pop().trim() || cat;
-        return `<button type="button" class="preset-chip" onclick="setPresetCategory('${escapeHtml(cat)}', this)" title="${escapeHtml(cat)}">${escapeHtml(shortName)}</button>`;
-      }).join('');
+      // 3. Quick Chips
+      if (chipContainer) {
+        const topChips = savedCategories.slice(0, 12);
+        chipContainer.innerHTML = topChips.map(c => {
+          const shortName = c.split('>').pop().trim();
+          return `<button type="button" class="preset-chip" onclick="setCategory('${escapeHtml(c)}')" title="${escapeHtml(c)}">${escapeHtml(shortName)}</button>`;
+        }).join('');
+      }
+    }
+
+    function setCategory(val) {
+      document.getElementById('categoryInput').value = val;
+      onCategoryInputChange();
+      try { localStorage.setItem('nila_last_category', val); } catch (e) {}
     }
 
     // Category Change Events
-    function onCategoryDropdownChange(val) {
-      if (!val) return;
-      document.getElementById('categoryInput').value = val;
-      onCategoryInputChange();
-      showToast(`Selected category: ${val}`, 'info');
-    }
-
     function onCategoryInputChange() {
       const val = document.getElementById('categoryInput').value.trim();
       updateCategoryBreadcrumbs();
       syncCategoryDropdownValue();
+      try { localStorage.setItem('nila_last_category', val); } catch (e) {}
+    }
+
+    function onCategoryDropdownChange(val) {
       if (val) {
-        localStorage.setItem('nila_last_category', val);
+        setCategory(val);
       }
     }
 
@@ -1495,9 +1464,7 @@
         savedCategories.unshift(val);
       }
 
-      // Save to localStorage
       try {
-        localStorage.setItem('nila_saved_categories', JSON.stringify(savedCategories));
         localStorage.setItem('nila_last_category', val);
       } catch (e) {}
 
@@ -1714,7 +1681,7 @@
         const result = await res.json();
         if (result.success) {
           renderPreview(result);
-          logTerminal(`✓ Preview ready: ${result.total_parent_products} Parent Products, ${result.total_variations} Size Variations (${result.total_firestore_documents} total docs).`, 'log-success');
+          logTerminal(`✓ Preview ready: ${result.total_parent_products} Parent Products, ${result.total_variations} Size Variations (${result.total_supabase_documents || result.total_documents} total docs).`, 'log-success');
           showToast(`Parsed ${result.total_parent_products} items with ${result.total_variations} variations!`, 'success');
         } else {
           showToast(result.error || 'Preview failed', 'error');
@@ -1734,7 +1701,7 @@
       document.getElementById('statCatalogs').textContent = result.total_catalogs;
       document.getElementById('statParents').textContent = result.total_parent_products;
       document.getElementById('statVariations').textContent = result.total_variations;
-      document.getElementById('statTotalDocs').textContent = result.total_firestore_documents;
+      document.getElementById('statTotalDocs').textContent = result.total_supabase_documents || result.total_documents;
       document.getElementById('previewCountBadge').textContent = `${result.total_parent_products} items`;
 
       const container = document.getElementById('previewContainer');
@@ -1787,23 +1754,23 @@
       container.innerHTML = `<div class="preview-list">${cardsHtml}</div>`;
     }
 
-    // Real-Time Streaming Import to Firestore Handler
+    // Real-Time Streaming Import to Supabase Handler
     async function handleImport() {
-      if (!serverFirebaseState.connected) {
-        showToast('Cannot import: Firebase credentials issue', 'error');
-        alert('Cannot Import to Firestore:\n\n' + (serverFirebaseState.error || 'Firebase is not connected.') + '\n\nPlease update serviceAccountKey.json with a valid key from Firebase Console.');
+      if (!serverSupabaseState.connected) {
+        showToast('Cannot import: Supabase credentials required', 'error');
+        alert('Cannot Import to Supabase:\n\n' + (serverSupabaseState.error || 'Supabase is not connected.') + '\n\nPlease update supabase_config.json with your Supabase Project URL and Service Role Key.');
         return;
       }
 
       const payload = getFormPayload();
       if (!payload) return;
 
-      const confirmMsg = `Ready to import to Firebase Firestore?\n\n` +
+      const confirmMsg = `Ready to import to Supabase PostgreSQL?\n\n` +
         `• Category: "${payload.category}"\n` +
         `• Regular Price: Base + ₹${payload.regular_price_markup}\n` +
         `• Sale Price: Base + ₹${payload.sale_price_markup}\n` +
         `• Download Images: ${payload.download_images ? 'Yes' : 'No'}\n\n` +
-        `Proceed with Firestore write?`;
+        `Proceed with Supabase write?`;
 
       if (!confirm(confirmMsg)) return;
 
@@ -1821,10 +1788,10 @@
       progressSection.style.display = 'block';
       progressFill.style.width = '0%';
       progressPercent.textContent = '0%';
-      progressStatusText.textContent = 'Connecting to Firestore...';
+      progressStatusText.textContent = 'Connecting to Supabase...';
       progressCountText.textContent = '0 / 0';
 
-      logTerminal(`🚀 STARTING FIRESTORE STREAM IMPORT for "${payload.category}"...`, 'log-info');
+      logTerminal(`🚀 STARTING SUPABASE STREAM IMPORT for "${payload.category}"...`, 'log-info');
 
       let parentsCreated = 0;
       let variationsCreated = 0;
@@ -1928,7 +1895,7 @@
         logTerminal(`✗ Import stream error: ${err.message}`, 'log-error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<span>🚀</span> Import to Firestore';
+        btn.innerHTML = '<span>⚡</span> Import to Supabase';
       }
     }
 
@@ -2154,7 +2121,7 @@
     function openCategoryManager() {
       const modal = document.getElementById('categoryManagerModal');
       modal.style.display = 'flex';
-      loadFirestoreCategories();
+      loadSupabaseCategories();
     }
 
     function closeCategoryManager() {
@@ -2163,13 +2130,13 @@
       editingCategoryName = null;
     }
 
-    async function loadFirestoreCategories(force = false) {
-      const listContainer = document.getElementById('firestoreCatList');
+    async function loadSupabaseCategories(force = false) {
+      const listContainer = document.getElementById('supabaseCatList');
       const badge = document.getElementById('catTotalCountBadge');
       listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);"><div class="loading-spinner" style="margin: 0 auto 0.5rem;"></div>Scanning database & menu categories...</div>';
 
       try {
-        const res = await fetch('/api/firestore-categories' + (force ? '?refresh=true' : ''));
+        const res = await fetch('/api/supabase-categories' + (force ? '?refresh=true' : ''));
         const text = await res.text();
         
         let data;
@@ -2191,14 +2158,9 @@
           allManagedCategories = data.categories;
           if (badge) badge.textContent = `${allManagedCategories.length} Categories`;
 
-          // Sync savedCategories for dropdown
-          savedCategories = data.categories.map(item => String(item.category).trim()).filter(Boolean);
-          localStorage.setItem('nila_saved_categories', JSON.stringify(savedCategories));
-          renderCategoryUI();
-
-          window._catManagerNotice = (!data.firebase_connected || data.firebase_error)
+          window._catManagerNotice = (!data.supabase_connected)
             ? `<div style="font-size: 0.78rem; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 0.5rem 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between;">
-                 <span>📦 <strong>Catalog Scan Active:</strong> ${data.firebase_error ? `Firestore note: ${escapeHtml(data.firebase_error)}.` : ''} Displaying verified product counts.</span>
+                 <span>📦 <strong>Catalog Scan Active:</strong> ${data.error ? `Database note: ${escapeHtml(data.error)}.` : ''} Displaying verified product counts.</span>
                  <span style="font-size: 0.7rem; background: #dbeafe; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600;">Active</span>
                </div>`
             : '';
@@ -2217,7 +2179,7 @@
     }
 
     function renderCategoryManagerList() {
-      const listContainer = document.getElementById('firestoreCatList');
+      const listContainer = document.getElementById('supabaseCatList');
       const filterTerm = (document.getElementById('catFilterInput')?.value || '').toLowerCase().trim();
 
       const filtered = allManagedCategories.filter(item => {
@@ -2255,7 +2217,7 @@
             <div class="cat-item-card" style="background: #eff6ff; border: 1.5px solid #3b82f6; border-radius: var(--radius-sm); padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.6rem;">
               <div style="font-weight: 700; font-size: 0.82rem; color: #1e40af; display: flex; align-items: center; justify-content: space-between;">
                 <span>✏️ Rename Category:</span>
-                <span style="font-size: 0.72rem; color: #60a5fa;">Updates menus and all Firestore products</span>
+                <span style="font-size: 0.72rem; color: #60a5fa;">Updates menus and all Supabase products</span>
               </div>
               <input type="text" id="editCatInputField" class="form-control" value="${escapeHtml(item.category)}" style="font-size: 0.88rem; font-weight: 600;">
               <div style="display: flex; justify-content: flex-end; gap: 0.4rem;">
@@ -2356,7 +2318,7 @@
         if (result.success) {
           showToast(`✅ Added "${val}" to categories!`, 'success');
           input.value = '';
-          loadFirestoreCategories();
+          loadSupabaseCategories();
         } else {
           showToast(`Error: ${result.error}`, 'error');
         }
@@ -2405,10 +2367,10 @@
         });
         const result = await res.json();
         if (result.success) {
-          showToast(`✅ Renamed successfully! Updated ${result.updated_firestore_count || 0} products.`, 'success');
+          showToast(`✅ Renamed successfully! Updated ${result.updated_count || 0} products.`, 'success');
           logTerminal(`✓ ${result.message}`, 'log-success');
           editingCategoryName = null;
-          loadFirestoreCategories();
+          loadSupabaseCategories();
         } else {
           showToast(`Error: ${result.error}`, 'error');
           logTerminal(`✗ Error: ${result.error}`, 'log-error');
@@ -2421,7 +2383,7 @@
     async function deleteCategoryItem(categoryPath, count) {
       let confirmMsg = `Are you sure you want to delete the category:\n\n"${categoryPath}"?\n\n`;
       if (count > 0) {
-        confirmMsg += `⚠️ This category currently has ${count} products in Firestore.\n\nClick OK to delete this category from menus and delete all ${count} products from Firestore.`;
+        confirmMsg += `⚠️ This category currently has ${count} products in Supabase.\n\nClick OK to delete this category from menus and delete all ${count} products from Supabase.`;
       } else {
         confirmMsg += `This will permanently remove it from the menus and database.`;
       }
@@ -2441,13 +2403,7 @@
         if (result.success) {
           showToast(`✅ Deleted "${categoryPath}"!`, 'success');
           logTerminal(`✓ ${result.message}`, 'log-success');
-          
-          // Remove from local savedCategories array
-          savedCategories = savedCategories.filter(c => c.trim().toLowerCase() !== categoryPath.trim().toLowerCase());
-          localStorage.setItem('nila_saved_categories', JSON.stringify(savedCategories));
-          renderCategoryUI();
-
-          loadFirestoreCategories();
+          loadSupabaseCategories();
         } else {
           showToast(`Error: ${result.error}`, 'error');
           logTerminal(`✗ Delete error: ${result.error}`, 'log-error');
@@ -2455,34 +2411,6 @@
       } catch (err) {
         showToast(`Failed: ${err.message}`, 'error');
         logTerminal(`✗ Delete request failed: ${err.message}`, 'log-error');
-      }
-    }
-
-    async function syncFirestoreToLocalFile() {
-      const btn = document.getElementById('syncToLocalBtn');
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '⏳ Syncing...';
-      }
-      showToast('⏳ Downloading and syncing Firestore products to local data.json...', 'info');
-      try {
-        const res = await fetch('/api/sync-firestore-to-local');
-        const data = await res.json();
-        if (data.success) {
-          showToast(`✅ Synced ${data.synced_count} products to data.json!`, 'success');
-          logTerminal(`✓ ${data.message}`, 'log-success');
-          loadFirestoreCategories(true);
-        } else {
-          showToast(`Sync notice: ${data.error}`, 'error');
-          logTerminal(`⚠️ Sync error: ${data.error}`, 'log-error');
-        }
-      } catch (err) {
-        showToast(`Sync failed: ${err.message}`, 'error');
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = '📥 Sync to Local';
-        }
       }
     }
 

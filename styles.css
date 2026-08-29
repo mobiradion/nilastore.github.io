@@ -620,6 +620,14 @@ img {
   width: 100%;
   transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
   will-change: transform;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.carousel-track.is-dragging {
+  cursor: grabbing;
+  transition: none !important;
 }
 
 .slide {
@@ -632,6 +640,7 @@ img {
   cursor: pointer;
   overflow: hidden;
   line-height: 0;
+  user-select: none;
 }
 
 .slide-banner-img {
@@ -643,6 +652,9 @@ img {
   object-position: center;
   display: block;
   image-rendering: -webkit-optimize-contrast;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .carousel-nav {

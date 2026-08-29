@@ -16,28 +16,105 @@ function hidePageLoader() {
 
 const img = (seed, size = 400) => `https://picsum.photos/seed/${seed}/${size}/${size}`;
 
-let CATEGORIES = [];
+/* ==========================================================================
+   NILA STORE — STATIC CATEGORY NAVIGATION
+   Configured to match the exact categories & subcategories in your database.
+   ========================================================================== */
+
+let CATEGORIES = [
+  {
+    id: 'women',
+    label: 'Women',
+    emoji: '👗',
+    subcats: [
+      {
+        id: 'sarees',
+        label: 'Sarees',
+        children: [
+          { id: 'cotton-sarees', label: 'Cotton Sarees' },
+          { id: 'silk-sarees', label: 'Silk Sarees' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'men',
+    label: 'Men',
+    emoji: '👔',
+    subcats: [
+      { id: 'shirts', label: 'Shirts' },
+      { id: 't-shirts', label: 'T-Shirts' }
+    ]
+  },
+  {
+    id: 'kids',
+    label: 'Kids',
+    emoji: '🧸',
+    subcats: [
+      { id: 'boys', label: 'Boys' },
+      { id: 'girls', label: 'Girls' }
+    ]
+  },
+  {
+    id: 'jewellery',
+    label: 'Jewellery',
+    emoji: '💍',
+    subcats: [
+      { id: 'bangles-and-bracelets', label: 'Bangles & Bracelets' },
+      { id: 'earrings', label: 'Earrings' },
+      { id: 'jewellery-sets', label: 'Jewellery Sets' },
+      { id: 'necklaces-and-chains', label: 'Necklaces & Chains' }
+    ]
+  },
+  {
+    id: 'beauty',
+    label: 'Beauty',
+    emoji: '💄',
+    subcats: [
+      { id: 'face-wash', label: 'Face Wash' },
+      { id: 'hair-oil-shampoo', label: 'Hair Oil & Shampoo' },
+      { id: 'lipstick', label: 'Lipstick' }
+    ]
+  },
+  {
+    id: 'kitchen',
+    label: 'Kitchen',
+    emoji: '🍳',
+    subcats: [
+      { id: 'kitchen-appliances', label: 'Kitchen Appliances' },
+      { id: 'kitchen-tools', label: 'Kitchen Tools' },
+      { id: 'storage-and-organisers', label: 'Storage & Organisers' }
+    ]
+  },
+  {
+    id: 'home',
+    label: 'Home',
+    emoji: '🛋️',
+    subcats: [
+      { id: 'bedsheets', label: 'Bedsheets' },
+      { id: 'pillow-cushion-and-covers', label: 'Pillow, Cushion & Covers' }
+    ]
+  },
+  {
+    id: 'electronics',
+    label: 'Electronics',
+    emoji: '💻',
+    subcats: [
+      { id: 'bluetooth-headphones', label: 'Bluetooth Headphones' },
+      { id: 'bluetooth-speakers', label: 'Bluetooth Speakers' }
+    ]
+  },
+  {
+    id: 'health',
+    label: 'Health',
+    emoji: '💊',
+    subcats: [
+      { id: 'ayurveda-and-nutrition', label: 'Ayurveda & Nutrition' }
+    ]
+  }
+];
+
 let PRODUCTS = [];
-
-const CATEGORY_ICON_LOOKUP = {
-  mobiles: '📱',
-  electronics: '💻',
-  mens: '👔',
-  womens: '👗',
-  home: '🛋️',
-  beauty: '💄',
-  health: '💊',
-};
-
-const CATEGORY_COLOR_LOOKUP = {
-  mobiles: '#EEF1FF',
-  electronics: '#E8F8F1',
-  mens: '#FFF6E0',
-  womens: '#FDEDEC',
-  home: '#E9F6FF',
-  beauty: '#F3ECFF',
-  health: '#E9FBF0',
-};
 
 function slugify(value) {
   return String(value || '')
@@ -49,11 +126,27 @@ function slugify(value) {
 }
 
 function categoryIcon(id) {
-  return CATEGORY_ICON_LOOKUP[id] || '🛍️';
+  const s = String(id || '').toLowerCase();
+  const matched = CATEGORIES.find(c => c.id === s || slugify(c.label) === s);
+  if (matched && matched.emoji) return matched.emoji;
+  if (s.includes('women') || s.includes('saree') || s.includes('dress') || s.includes('kurti')) return '👗';
+  if (s.includes('men') || s.includes('shirt') || s.includes('pant') || s.includes('trouser')) return '👔';
+  if (s.includes('mobile') || s.includes('phone')) return '📱';
+  if (s.includes('electronic') || s.includes('audio') || s.includes('headphone') || s.includes('speaker') || s.includes('laptop')) return '💻';
+  if (s.includes('home') || s.includes('decor') || s.includes('kitchen') || s.includes('bed') || s.includes('curtain')) return '🛋️';
+  if (s.includes('beauty') || s.includes('skincare') || s.includes('makeup') || s.includes('hair') || s.includes('face')) return '💄';
+  if (s.includes('health') || s.includes('wellness') || s.includes('supplement') || s.includes('nutrition')) return '💊';
+  if (s.includes('jewel') || s.includes('necklace') || s.includes('earring') || s.includes('bangle') || s.includes('ring')) return '💍';
+  if (s.includes('kid') || s.includes('boy') || s.includes('girl') || s.includes('baby') || s.includes('toy')) return '🧸';
+  if (s.includes('footwear') || s.includes('shoe') || s.includes('sandal') || s.includes('slipper')) return '👟';
+  if (s.includes('watch')) return '⌚';
+  if (s.includes('bag') || s.includes('wallet') || s.includes('purse')) return '👜';
+  if (s.includes('grocery') || s.includes('food')) return '🛒';
+  return '🛍️';
 }
 
 function categoryColor(id) {
-  return CATEGORY_COLOR_LOOKUP[id] || '#F3F4F8';
+  return '#F3F4F8';
 }
 
 function normalizeImageList(images) {
@@ -77,7 +170,7 @@ function normalizeImageList(images) {
   return [];
 }
 
-function parseFirestoreTimestamp(value) {
+function parseTimestamp(value) {
   if (!value) return null;
   if (typeof value === 'number') return new Date(value);
   if (typeof value === 'string') {
@@ -89,6 +182,7 @@ function parseFirestoreTimestamp(value) {
   }
   return null;
 }
+const parseFirestoreTimestamp = parseTimestamp;
 
 function parseCategoryPath(categoriesText) {
   return String(categoriesText || '')
@@ -97,118 +191,7 @@ function parseCategoryPath(categoriesText) {
     .filter(Boolean);
 }
 
-function buildCategoriesFromStrings(categoryStrings) {
-  if (!Array.isArray(categoryStrings) || !categoryStrings.length) return;
-  const rootMap = new Map();
-  CATEGORIES.forEach(c => rootMap.set(c.id, { ...c, subcats: (c.subcats || []).map(s => ({ ...s, children: [...(s.children || [])] })) }));
-
-  categoryStrings.forEach((catStr) => {
-    if (!catStr) return;
-    const parts = parseCategoryPath(catStr);
-    if (!parts.length) return;
-    const [rootLabel, subLabel, childLabel] = parts;
-    if (!rootLabel) return;
-    const rootId = slugify(rootLabel);
-    if (!rootId) return;
-
-    let root = rootMap.get(rootId);
-    if (!root) {
-      root = {
-        id: rootId,
-        label: rootLabel,
-        emoji: categoryIcon(rootId),
-        color: categoryColor(rootId),
-        subcats: [],
-      };
-      rootMap.set(rootId, root);
-    }
-
-    if (!subLabel) return;
-    const subId = slugify(subLabel);
-    if (!subId) return;
-    let sub = root.subcats.find((item) => item.id === subId);
-    if (!sub) {
-      sub = { id: subId, label: subLabel, children: [] };
-      root.subcats.push(sub);
-    }
-
-    if (childLabel) {
-      sub.children = sub.children || [];
-      const childId = slugify(childLabel);
-      if (childId && !sub.children.some((item) => item.id === childId)) {
-        sub.children.push({ id: childId, label: childLabel });
-      }
-    }
-  });
-
-  const categoryList = Array.from(rootMap.values());
-  categoryList.sort((a, b) => (a.label || '').localeCompare(b.label || '', undefined, { sensitivity: 'base' }));
-  categoryList.forEach((root) => {
-    if (Array.isArray(root.subcats)) {
-      root.subcats.sort((a, b) => (a.label || '').localeCompare(b.label || '', undefined, { sensitivity: 'base' }));
-      root.subcats.forEach((sub) => {
-        if (Array.isArray(sub.children)) {
-          sub.children.sort((a, b) => (a.label || '').localeCompare(b.label || '', undefined, { sensitivity: 'base' }));
-        }
-      });
-    }
-  });
-
-  CATEGORIES = categoryList;
-}
-
-function buildCategoriesFromProducts(products) {
-  if (!Array.isArray(products) || !products.length) return;
-  const paths = [];
-  products.forEach((product) => {
-    if (!product) return;
-    if (Array.isArray(product.categoriesPath) && product.categoriesPath.length) {
-      paths.push(product.categoriesPath.join(' > '));
-    } else if (product.categoriesLabel) {
-      paths.push(product.categoriesLabel);
-    } else if (product.cat) {
-      paths.push(product.cat);
-    }
-  });
-  if (paths.length) {
-    buildCategoriesFromStrings(paths);
-  }
-}
-
-async function loadCategories() {
-  // 1. Fetch categories.json
-  try {
-    const res = await fetch('categories.json?v=' + Date.now());
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data) && data.length) {
-        buildCategoriesFromStrings(data);
-      }
-    }
-  } catch (e) { }
-
-  // 2. Try Firestore categories collection if available
-  try {
-    const db = initFirestore();
-    if (db) {
-      const snapshot = await Promise.race([
-        db.collection('categories').get(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2500))
-      ]);
-      if (snapshot && !snapshot.empty) {
-        const firestoreCats = [];
-        snapshot.forEach(doc => {
-          const data = doc.data() || {};
-          if (data.name) firestoreCats.push(data.name);
-          else if (data.path) firestoreCats.push(data.path);
-        });
-        if (firestoreCats.length) {
-          buildCategoriesFromStrings(firestoreCats);
-        }
-      }
-    }
-  } catch (e) { }
-
+function loadCategories() {
   renderCategoryChrome();
 }
 
@@ -315,44 +298,49 @@ function filterCatalogProducts(items) {
 /* ============ State ============ */
 // Robust persisted state with basic validation
 let cart = {};
-// PRODUCTS are loaded from Firestore.
+// PRODUCTS are loaded from Supabase (with automatic fallback to local JSON).
 const WHATSAPP_NUMBER = '918610769343';
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyD-dUd1OnhKJ5UFWEtHJBaNmY44f1yU86I",
-  authDomain: "nila-store-729c2.firebaseapp.com",
-  projectId: "nila-store-729c2",
-  storageBucket: "nila-store-729c2.firebasestorage.app",
-  messagingSenderId: "371741649720",
-  appId: "1:371741649720:web:ddd8187649a5e7c77d2fcd",
-  measurementId: "G-886NBKM4J5"
-};
-const FIRESTORE_PRODUCTS_COLLECTION = 'products';
-let firestoreDb = null;
 
-function initFirestore() {
-  if (typeof firebase === 'undefined' || typeof firebase.initializeApp !== 'function' || !FIREBASE_CONFIG.projectId || !FIREBASE_CONFIG.apiKey) {
-    return null;
-  }
-  try {
-    if (!firebase.apps || !firebase.apps.length) {
-      firebase.initializeApp(FIREBASE_CONFIG);
+// Supabase Configuration
+// Update these values with your Supabase Project URL and Anon Public Key
+const SUPABASE_CONFIG = {
+  url: "https://vbwasvblogmvlkfmuevy.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZid2FzdmJsb2dtdmxrZm11ZXZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5NDkzMzMsImV4cCI6MjEwMzUyNTMzM30.lUu9HM0JBV0Kwtz2nFnnU1qv6MI_IWL_ED6ra0PdKbk"
+};
+
+let supabaseClient = null;
+
+function initSupabase() {
+  if (supabaseClient) return supabaseClient;
+  if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
+    if (SUPABASE_CONFIG.url && !SUPABASE_CONFIG.url.includes('YOUR_SUPABASE_PROJECT_ID') &&
+        SUPABASE_CONFIG.anonKey && !SUPABASE_CONFIG.anonKey.includes('YOUR_SUPABASE_ANON')) {
+      try {
+        supabaseClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        return supabaseClient;
+      } catch (err) {
+        console.warn('Failed to initialize Supabase client:', err);
+      }
     }
-    firestoreDb = firebase.firestore();
-    return firestoreDb;
-  } catch (err) {
-    console.warn('Failed to initialize Firestore:', err);
-    return null;
   }
+  return null;
+}
+
+// Backwards compatibility alias
+function initFirestore() {
+  return initSupabase();
 }
 
 function inferCategory(categories) {
   if (!categories) return 'all';
-  const text = categories.toString().toLowerCase();
-  const lookup = ['mobiles', 'electronics', 'mens', 'womens', 'home', 'beauty', 'health'];
-  return lookup.find(cat => text.includes(cat)) || 'all';
+  const parts = parseCategoryPath(categories);
+  if (parts.length && parts[0]) {
+    return slugify(parts[0]);
+  }
+  return slugify(categories) || 'all';
 }
 
-function normalizeFirestoreImage(images) {
+function normalizeProductImage(images) {
   if (!images) return '';
   if (typeof images === 'string') {
     const url = images.trim();
@@ -361,29 +349,30 @@ function normalizeFirestoreImage(images) {
     return `images/${url.replace(/^\/+/, '')}`;
   }
   if (Array.isArray(images) && images.length) {
-    return normalizeFirestoreImage(images[0]);
+    return normalizeProductImage(images[0]);
   }
   if (typeof images === 'object' && images.url) {
-    return normalizeFirestoreImage(images.url);
+    return normalizeProductImage(images.url);
   }
   return '';
 }
+const normalizeFirestoreImage = normalizeProductImage;
 
-function mapFirestoreDoc(doc) {
-  if (!doc) return null;
-  const data = typeof doc.data === 'function' ? (doc.data() || {}) : (doc || {});
-  const docId = doc.id || data.id || data.sku || '';
+function mapSupabaseDoc(row) {
+  if (!row) return null;
+  const data = typeof row.data === 'function' ? (row.data() || {}) : (row || {});
+  const docId = data.id || data.sku || '';
   const categoriesPath = parseCategoryPath(data.categories || data.category);
-  const images = normalizeImageList(data.images || data.imageUrl || data.product_images);
-  const firstImage = images[0] || normalizeFirestoreImage(data.imageUrl) || normalizeFirestoreImage(data.image) || img(docId || '1');
-  const createdAt = parseFirestoreTimestamp(data.createdAt || data.created_at || data.publishedAt || data.published_at);
+  const images = normalizeImageList(data.images || data.image_url || data.imageUrl || data.product_images);
+  const firstImage = images[0] || normalizeProductImage(data.image_url || data.imageUrl || data.image) || img(docId || '1');
+  const createdAt = parseFirestoreTimestamp(data.created_at || data.createdAt || data.published_at || data.publishedAt);
 
   return {
     id: String(data.id || data.sku || docId),
     sku: String(data.sku || data.id || docId),
-    cat: slugify(categoriesPath[0]) || inferCategory(data.categories || data.category),
-    subcat: categoriesPath[1] ? slugify(categoriesPath[1]) : undefined,
-    subsubcat: categoriesPath[2] ? slugify(categoriesPath[2]) : undefined,
+    cat: slugify(categoriesPath[0]) || data.cat || inferCategory(data.categories || data.category),
+    subcat: categoriesPath[1] ? slugify(categoriesPath[1]) : (data.subcat ? slugify(data.subcat) : undefined),
+    subsubcat: categoriesPath[2] ? slugify(categoriesPath[2]) : (data.subsubcat ? slugify(data.subsubcat) : undefined),
     categoriesPath,
     categoriesLabel: String(data.categories || data.category || '').trim(),
     brand: String(data.brand || '').trim(),
@@ -407,10 +396,11 @@ function mapFirestoreDoc(doc) {
     type: String(data.type || 'simple').trim(),
   };
 }
+const mapFirestoreDoc = mapSupabaseDoc;
 
-let lastFirestoreDoc = null;
-let hasMoreFirestoreProducts = true;
-let isFetchingFirestoreChunk = false;
+let currentSupabasePage = 0;
+let hasMoreSupabaseProducts = true;
+let isFetchingSupabaseChunk = false;
 
 function mergeProductsIntoGlobal(newItems) {
   if (!Array.isArray(newItems) || !newItems.length) return;
@@ -429,52 +419,64 @@ function mergeProductsIntoGlobal(newItems) {
   });
 
   PRODUCTS = Array.from(existingMap.values());
-  buildCategoriesFromProducts(PRODUCTS);
   groupVariantProducts(PRODUCTS);
 }
 
 async function fetchProductsChunk({ limit = 20, reset = false, category = '', subcat = '' } = {}) {
-  const db = initFirestore();
-  if (!db) return [];
-
-  if (reset) {
-    lastFirestoreDoc = null;
-    hasMoreFirestoreProducts = true;
-  }
-
-  if (!hasMoreFirestoreProducts || isFetchingFirestoreChunk) {
+  const sb = initSupabase();
+  if (!sb) {
+    hasMoreSupabaseProducts = false;
     return [];
   }
 
-  isFetchingFirestoreChunk = true;
-  try {
-    let query = db.collection(FIRESTORE_PRODUCTS_COLLECTION);
-    if (category) {
-      query = query.where('cat', '==', category);
-    }
-    if (lastFirestoreDoc) {
-      query = query.startAfter(lastFirestoreDoc);
-    }
-    query = query.limit(limit);
+  if (reset) {
+    currentSupabasePage = 0;
+    hasMoreSupabaseProducts = true;
+  }
 
-    const snapshot = await Promise.race([
-      query.get(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 6000))
+  if (!hasMoreSupabaseProducts || isFetchingSupabaseChunk) {
+    return [];
+  }
+
+  isFetchingSupabaseChunk = true;
+
+  try {
+    const from = currentSupabasePage * limit;
+    const to = from + limit - 1;
+
+    let query = sb
+      .from('products')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (category && category !== 'all') {
+      query = query.eq('cat', category);
+    }
+
+    const res = await Promise.race([
+      query,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase timeout')), 6000))
     ]);
 
-    if (!snapshot || snapshot.empty) {
-      hasMoreFirestoreProducts = false;
+    const data = res?.data || [];
+    const error = res?.error;
+
+    if (error || !data || data.length === 0) {
+      hasMoreSupabaseProducts = false;
       return [];
     }
 
-    lastFirestoreDoc = snapshot.docs[snapshot.docs.length - 1];
-    if (snapshot.docs.length < limit) {
-      hasMoreFirestoreProducts = false;
+    if (data.length < limit) {
+      hasMoreSupabaseProducts = false;
     }
 
+    currentSupabasePage++;
+
     const chunk = [];
-    snapshot.forEach(doc => {
-      const mapped = mapFirestoreDoc(doc);
+    data.forEach(row => {
+      const mapped = mapSupabaseDoc(row);
       if (mapped) chunk.push(mapped);
     });
 
@@ -482,10 +484,10 @@ async function fetchProductsChunk({ limit = 20, reset = false, category = '', su
     return chunk;
   } catch (err) {
     console.warn('Chunk fetch skipped / offline:', err);
-    hasMoreFirestoreProducts = false;
+    hasMoreSupabaseProducts = false;
     return [];
   } finally {
-    isFetchingFirestoreChunk = false;
+    isFetchingSupabaseChunk = false;
   }
 }
 
@@ -493,43 +495,29 @@ async function fetchSingleProduct(targetId) {
   if (!targetId) return null;
   const target = String(targetId).trim();
 
-  // 1. Check in-memory PRODUCTS
+  // 1. Check in-memory PRODUCTS first
   let found = findProductById(target);
   if (found) return found;
 
-  // 2. Load local JSON baseline if not loaded
-  if (!PRODUCTS || !PRODUCTS.length) {
-    const local = await loadProductsFromLocalJson();
-    if (local && local.length) {
-      mergeProductsIntoGlobal(local);
-      found = findProductById(target);
-      if (found) return found;
-    }
-  }
-
-  // 3. Query Firestore directly for this specific document / SKU / ID
-  const db = initFirestore();
-  if (db) {
+  // 2. Query Supabase directly for this specific document / SKU / ID
+  const sb = initSupabase();
+  if (sb) {
     try {
-      // 3a. Direct doc ID lookup
-      const docRef = db.collection(FIRESTORE_PRODUCTS_COLLECTION).doc(target);
-      const docSnap = await Promise.race([
-        docRef.get(),
+      const res = await Promise.race([
+        sb.from('products').select('*').or(`id.eq."${target}",sku.eq."${target}"`).limit(1),
         new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
       ]);
 
-      if (docSnap && docSnap.exists) {
-        const item = mapFirestoreDoc(docSnap);
+      const items = res?.data || [];
+      if (items.length > 0) {
+        const item = mapSupabaseDoc(items[0]);
         if (item) {
           const parentKey = item.parent || item.groupId || item.sku;
           if (parentKey) {
             try {
-              const varSnaps = await db.collection(FIRESTORE_PRODUCTS_COLLECTION).where('parent', '==', parentKey).limit(30).get();
-              const siblingVariants = [];
-              varSnaps.forEach(vDoc => {
-                const mappedV = mapFirestoreDoc(vDoc);
-                if (mappedV) siblingVariants.push(mappedV);
-              });
+              const varRes = await sb.from('products').select('*').eq('parent', parentKey).limit(50);
+              const siblingRows = varRes?.data || [];
+              const siblingVariants = siblingRows.map(vDoc => mapSupabaseDoc(vDoc)).filter(Boolean);
               mergeProductsIntoGlobal([item, ...siblingVariants]);
             } catch (e) {
               mergeProductsIntoGlobal([item]);
@@ -540,135 +528,40 @@ async function fetchSingleProduct(targetId) {
           return findProductById(target) || item;
         }
       }
-
-      // 3b. Query by SKU
-      const skuSnap = await Promise.race([
-        db.collection(FIRESTORE_PRODUCTS_COLLECTION).where('sku', '==', target).limit(1).get(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
-      ]);
-
-      if (skuSnap && !skuSnap.empty) {
-        const item = mapFirestoreDoc(skuSnap.docs[0]);
-        if (item) {
-          mergeProductsIntoGlobal([item]);
-          return findProductById(target) || item;
-        }
-      }
-
-      // 3c. Query by id property
-      const idSnap = await Promise.race([
-        db.collection(FIRESTORE_PRODUCTS_COLLECTION).where('id', '==', target).limit(1).get(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
-      ]);
-
-      if (idSnap && !idSnap.empty) {
-        const item = mapFirestoreDoc(idSnap.docs[0]);
-        if (item) {
-          mergeProductsIntoGlobal([item]);
-          return findProductById(target) || item;
-        }
-      }
     } catch (e) {
-      console.warn('Single product fetch skipped:', e);
+      console.warn('Single product fetch from Supabase skipped:', e);
     }
   }
 
-  // 4. Final attempt from PRODUCTS
+  // 3. Final attempt from PRODUCTS
   return findProductById(target);
 }
 
-async function loadProductsFromFirestore() {
-  return fetchProductsChunk({ limit: 20, reset: true });
+async function loadProductsFromSupabase() {
+  return loadProducts();
 }
-
-async function loadProductsFromLocalJson() {
-  const sources = ['data.json', 'variation_data.json'];
-  const loaded = [];
-
-  for (const source of sources) {
-    try {
-      const response = await fetch(source);
-      if (!response.ok) continue;
-      const json = await response.json();
-      const catalogs = Array.isArray(json.catalogs) ? json.catalogs : [];
-
-      catalogs.forEach((item) => {
-        let categories = String(item.categories || '').trim();
-        if (!categories) {
-          const catName = item.category_name || '';
-          const subcatName = item.sub_category_name || '';
-          const subsubName = item.sub_sub_category_name || '';
-          const parts = [catName, subcatName, subsubName].filter(Boolean);
-          if (parts.length >= 2) {
-            categories = parts.join(' > ');
-          } else {
-            const titleLower = String(item.name || item.hero_product_name || item.title || '').toLowerCase();
-            if (titleLower.includes('speaker') || titleLower.includes('karaoke') || titleLower.includes('headphone') || titleLower.includes('audio')) {
-              categories = 'Electronics > Audio > Bluetooth Speakers';
-            } else if (titleLower.includes('top') || titleLower.includes('tunic') || titleLower.includes('kurti') || titleLower.includes('saree') || titleLower.includes('dress') || titleLower.includes('women')) {
-              categories = 'Women > Western Wear > Tops & Tunics';
-            } else if (titleLower.includes('t-shirt') || titleLower.includes('shirt') || titleLower.includes('men')) {
-              categories = 'Men > Top Wear > T-Shirts';
-            } else {
-              categories = subsubName || catName || 'All';
-            }
-          }
-        }
-        const categoriesPath = parseCategoryPath(categories);
-        const images = normalizeImageList(item.images || item.product_images || item.image || item.collage_image);
-        const firstImage = images[0] || normalizeFirestoreImage(item.image) || img(item.hero_pid || item.id || item.product_id || String(Math.random()));
-        const publishedAt = parseFirestoreTimestamp(item.created_iso || item.activated_iso || item.created || item.activated);
-
-        loaded.push({
-          id: String(item.hero_pid || item.product_id || item.id || item.slug || `${item.name}-${loaded.length}`),
-          sku: String(item.hero_pid || item.product_id || item.id || item.slug || ''),
-          cat: slugify(categoriesPath[0]) || inferCategory(categories),
-          subcat: categoriesPath[1] ? slugify(categoriesPath[1]) : undefined,
-          subsubcat: categoriesPath[2] ? slugify(categoriesPath[2]) : undefined,
-          categoriesPath,
-          categoriesLabel: categories,
-          brand: String(item.brand || item.manufacturer || '').trim(),
-          title: String(item.name || item.hero_product_name || item.title || '').trim(),
-          description: String(item.description || item.full_details || '').trim(),
-          price: Number(item.min_product_price ?? item.sale_price ?? item.regular_price ?? item.original_price ?? item.price ?? 0),
-          mrp: Number(item.original_price ?? item.regular_price ?? item.min_product_price ?? item.price ?? 0),
-          rating: Number(item.catalog_reviews_summary?.average_rating ?? item.rating ?? 0),
-          reviews: Number(item.catalog_reviews_summary?.review_count ?? item.reviews ?? 0),
-          images,
-          img: firstImage,
-          deal: Boolean(item.hot || item.deal || item.discount_text),
-          published: item.published ?? true,
-          publishedAt,
-          in_stock: item.in_stock !== undefined ? Boolean(item.in_stock) : true,
-          stock: Number(item.stock ?? 100),
-          parent: item.parent ? String(item.parent).trim() : '',
-          attribute_1_global: item.attribute_1_global,
-          attribute_1_name: String(item.attribute_1_name || '').trim(),
-          attribute_1_value: String(item.attribute_1_value || '').trim(),
-          type: String(item.type || 'simple').trim(),
-        });
-      });
-    } catch (err) {
-      console.warn('Failed to load local product JSON:', source, err);
-    }
-  }
-
-  return loaded;
-}
+const loadProductsFromFirestore = loadProductsFromSupabase;
 
 async function loadProducts() {
-  // 1. Fast local catalog load (<5ms)
-  const localProducts = await loadProductsFromLocalJson();
-  if (localProducts && localProducts.length) {
-    mergeProductsIntoGlobal(localProducts);
+  // Load real-time products directly from Supabase PostgreSQL database
+  const sb = initSupabase();
+  if (sb) {
+    try {
+      const res = await Promise.race([
+        sb.from('products').select('*').eq('published', true).order('created_at', { ascending: false }).limit(2000),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 6000))
+      ]);
+      const data = res?.data || [];
+      if (data.length > 0) {
+        const mapped = data.map(mapSupabaseDoc).filter(Boolean);
+        mergeProductsIntoGlobal(mapped);
+        return mapped;
+      }
+    } catch (err) {
+      console.warn('Failed to load real-time products from Supabase:', err);
+    }
   }
-
-  // 2. Query initial 20-product chunk from Firestore if online
-  try {
-    await fetchProductsChunk({ limit: 20, reset: true });
-  } catch (err) {
-    console.warn('Firestore initial products fetch skipped:', err);
-  }
+  return [];
 }
 
 /* ============ Instant Local Storage Cache Layer ============ */
@@ -734,7 +627,6 @@ function loadProductsFromCache() {
         id: String(p.id || p.sku || ''),
         sku: String(p.sku || p.id || '')
       }));
-      buildCategoriesFromProducts(PRODUCTS);
       groupVariantProducts(PRODUCTS);
       return true;
     }
@@ -1678,13 +1570,20 @@ function matchesSearchQuery(product, query) {
 }
 
 let categoryObserver = null;
-function renderCategoryPage() {
+async function renderCategoryPage() {
   const pageContent = document.getElementById('categoryPageContent');
   const pageTitle = document.getElementById('categoryPageTitle');
   const pageDesc = document.getElementById('categoryPageDescription');
   if (!pageContent) return;
 
   const { cat, subcat, subsubcat, search } = parseQueryParams();
+
+  // If PRODUCTS array is empty on cold load or direct link visit, fetch from Supabase first
+  if (!PRODUCTS.length) {
+    pageContent.innerHTML = `<div class="empty-state"><div class="loader-spinner" style="margin: 0 auto 16px;"></div><h3>Loading products...</h3></div>`;
+    await loadProducts();
+  }
+
   const catalog = filterCatalogProducts(PRODUCTS);
 
   // 1. Search Query Mode
@@ -1713,58 +1612,52 @@ function renderCategoryPage() {
     return;
   }
 
-  // 2. Matching helpers for fuzzy plural / hierarchical matching
+  // 2. Matching helpers with resilient punctuation, ampersand and stopword normalization
+  const normalizeForMatch = (val) => {
+    return String(val || '')
+      .toLowerCase()
+      .replace(/[&_/-]+/g, ' ')
+      .replace(/\band\b/g, ' ')
+      .replace(/[^a-z0-9]+/g, '')
+      .replace(/s$/, '');
+  };
+
   const matchCat = (p, targetCat) => {
     if (!targetCat) return true;
-    const targetSlug = slugify(targetCat);
-    const cleanTarget = targetSlug.replace(/s$/, '');
-    const cleanNoDash = cleanTarget.replace(/-/g, '');
-
-    const checkStr = (val) => {
-      if (!val) return false;
-      const s = slugify(val);
-      const sNoDash = s.replace(/-/g, '');
-      return s === targetSlug || s.replace(/s$/, '') === cleanTarget || (cleanNoDash.length >= 3 && sNoDash.includes(cleanNoDash));
-    };
-
-    if (checkStr(p.cat) || checkStr(p.subcat) || checkStr(p.subsubcat)) return true;
-    if (Array.isArray(p.categoriesPath) && p.categoriesPath.some(checkStr)) return true;
-    if (p.categoriesLabel && (slugify(p.categoriesLabel).includes(targetSlug) || slugify(p.categoriesLabel).replace(/-/g, '').includes(cleanNoDash))) return true;
-    return false;
+    const nc = normalizeForMatch(targetCat);
+    if (!nc) return true;
+    const pCatAll = normalizeForMatch(`${p.cat || ''} ${p.categoriesLabel || ''} ${(Array.isArray(p.categoriesPath) ? p.categoriesPath.join(' ') : '')}`);
+    return pCatAll.includes(nc);
   };
 
   const matchSub = (p, targetSub) => {
     if (!targetSub) return true;
-    const targetSlug = slugify(targetSub);
-    const cleanTarget = targetSlug.replace(/s$/, '');
-    const cleanNoDash = cleanTarget.replace(/-/g, '');
+    const ns = normalizeForMatch(targetSub);
+    if (!ns) return true;
+    const pSubAll = normalizeForMatch(`${p.subcat || ''} ${p.categoriesLabel || ''} ${(Array.isArray(p.categoriesPath) ? p.categoriesPath.join(' ') : '')} ${p.title || ''}`);
+    return pSubAll.includes(ns);
+  };
 
-    const checkStr = (val) => {
-      if (!val) return false;
-      const s = slugify(val);
-      const sNoDash = s.replace(/-/g, '');
-      return s === targetSlug || s.replace(/s$/, '') === cleanTarget || (cleanNoDash.length >= 3 && sNoDash.includes(cleanNoDash));
-    };
-
-    if (checkStr(p.subcat) || checkStr(p.subsubcat) || checkStr(p.cat)) return true;
-    if (Array.isArray(p.categoriesPath) && p.categoriesPath.some(checkStr)) return true;
-    if (p.categoriesLabel && (slugify(p.categoriesLabel).includes(targetSlug) || slugify(p.categoriesLabel).replace(/-/g, '').includes(cleanNoDash))) return true;
-    if (p.title && (slugify(p.title).includes(targetSlug) || slugify(p.title).replace(/-/g, '').includes(cleanNoDash))) return true;
-    return false;
+  const matchSubsub = (p, targetSubsub) => {
+    if (!targetSubsub) return true;
+    const nss = normalizeForMatch(targetSubsub);
+    if (!nss) return true;
+    const pSubsubAll = normalizeForMatch(`${p.subsubcat || ''} ${p.categoriesLabel || ''} ${(Array.isArray(p.categoriesPath) ? p.categoriesPath.join(' ') : '')} ${p.title || ''}`);
+    return pSubsubAll.includes(nss);
   };
 
   let items = [];
   if (cat || subcat || subsubcat) {
-    items = catalog.filter((p) => matchCat(p, cat) && matchSub(p, subcat) && matchSub(p, subsubcat));
+    items = catalog.filter((p) => matchCat(p, cat) && matchSub(p, subcat) && matchSubsub(p, subsubcat));
   } else {
     items = catalog;
   }
 
   // Build interactive breadcrumbs matching product page
   const breadcrumbsEl = document.getElementById('categoryBreadcrumbs');
-  const cleanCat = cat ? cat.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : 'All Collections';
-  const cleanSub = subcat ? subcat.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '';
-  const cleanSubsub = subsubcat ? subsubcat.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '';
+  const cleanCat = cat ? cat.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : 'All Collections';
+  const cleanSub = subcat ? subcat.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '';
+  const cleanSubsub = subsubcat ? subsubcat.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '';
 
   if (breadcrumbsEl) {
     if (search) {
@@ -1775,7 +1668,7 @@ function renderCategoryPage() {
       `;
     } else if (cat) {
       let bHtml = `<a href="index.html">Home</a><span class="sep">›</span>`;
-      const category = CATEGORIES.find((c) => c.id === cat || slugify(c.id) === slugify(cat) || slugify(c.label) === slugify(cat));
+      const category = CATEGORIES.find((c) => c.id === cat || slugify(c.id) === slugify(cat) || normalizeForMatch(c.id) === normalizeForMatch(cat) || normalizeForMatch(c.label) === normalizeForMatch(cat));
       const catLabel = category ? category.label : cleanCat;
       const catId = category ? category.id : cat;
 
@@ -1784,15 +1677,15 @@ function renderCategoryPage() {
       } else {
         bHtml += `<a href="category.html?cat=${encodeURIComponent(catId)}">${esc(catLabel)}</a><span class="sep">›</span>`;
         if (subcat && !subsubcat) {
-          const parentSub = category?.subcats?.find((s) => s.id === subcat || slugify(s.id) === slugify(subcat) || slugify(s.label) === slugify(subcat));
+          const parentSub = category?.subcats?.find((s) => s.id === subcat || slugify(s.id) === slugify(subcat) || normalizeForMatch(s.id) === normalizeForMatch(subcat) || normalizeForMatch(s.label) === normalizeForMatch(subcat));
           const subLabel = parentSub ? parentSub.label : cleanSub;
           bHtml += `<span class="current">${esc(subLabel)} (${items.length})</span>`;
         } else if (subcat && subsubcat) {
-          const parentSub = category?.subcats?.find((s) => s.id === subcat || slugify(s.id) === slugify(subcat) || slugify(s.label) === slugify(subcat));
+          const parentSub = category?.subcats?.find((s) => s.id === subcat || slugify(s.id) === slugify(subcat) || normalizeForMatch(s.id) === normalizeForMatch(subcat) || normalizeForMatch(s.label) === normalizeForMatch(subcat));
           const subLabel = parentSub ? parentSub.label : cleanSub;
           const subId = parentSub ? parentSub.id : subcat;
           bHtml += `<a href="category.html?cat=${encodeURIComponent(catId)}&subcat=${encodeURIComponent(subId)}">${esc(subLabel)}</a><span class="sep">›</span>`;
-          const childSub = parentSub?.children?.find((ch) => ch.id === subsubcat || slugify(ch.id) === slugify(subsubcat) || slugify(ch.label) === slugify(subsubcat));
+          const childSub = parentSub?.children?.find((ch) => ch.id === subsubcat || slugify(ch.id) === slugify(subsubcat) || normalizeForMatch(ch.id) === normalizeForMatch(subsubcat) || normalizeForMatch(ch.label) === normalizeForMatch(subsubcat));
           const subsubLabel = childSub ? childSub.label : cleanSubsub;
           bHtml += `<span class="current">${esc(subsubLabel)} (${items.length})</span>`;
         }
@@ -1860,8 +1753,8 @@ function renderProgressiveProductGrid(container, items, queryContext = {}) {
       renderedCount += nextBatch.length;
     }
 
-    // 2. If finished in-memory list and Firestore has more, load next chunk
-    if (renderedCount >= items.length && typeof hasMoreFirestoreProducts !== 'undefined' && hasMoreFirestoreProducts && !isFetchingFirestoreChunk) {
+    // 2. If finished in-memory list and Supabase has more, load next chunk
+    if (renderedCount >= items.length && typeof hasMoreSupabaseProducts !== 'undefined' && hasMoreSupabaseProducts && !isFetchingSupabaseChunk) {
       if (sentinel) {
         sentinel.innerHTML = `<div class="pagination-loader"><div class="pagination-spinner"></div><span>Loading more products...</span></div>`;
       }
@@ -1881,7 +1774,7 @@ function renderProgressiveProductGrid(container, items, queryContext = {}) {
       } catch (e) { }
     }
 
-    if ((typeof hasMoreFirestoreProducts === 'undefined' || !hasMoreFirestoreProducts) && renderedCount >= items.length) {
+    if ((typeof hasMoreSupabaseProducts === 'undefined' || !hasMoreSupabaseProducts) && renderedCount >= items.length) {
       if (categoryObserver && sentinel) categoryObserver.unobserve(sentinel);
       if (sentinel) sentinel.innerHTML = '';
     }
@@ -1905,24 +1798,27 @@ function renderCategoryChrome() {
 
   const rail = document.getElementById('categoryRail');
   if (rail) {
-    rail.innerHTML = CATEGORIES.map(c => {
-      const hasSub = Array.isArray(c.subcats) && c.subcats.length > 0;
-      return `
-        <div class="cat-chip-wrap" data-parent="${c.id}">
-          <button type="button" class="cat-chip${hasSub ? ' has-sub' : ''}" aria-expanded="false" data-cat-id="${c.id}">
-            ${c.label}
-            ${hasSub ? '<span class="chevron">▾</span>' : ''}
-          </button>
-          ${hasSub ? `
-            <div class="cat-dropdown">
-              ${c.subcats.map(s => (s.children && s.children.length) ? `
-                <div class="dropdown-group">
-                  <a href="category.html?cat=${c.id}&subcat=${s.id}" class="dropdown-heading-link">${s.label}</a>
-                  ${s.children.map(child => `<a href="category.html?cat=${c.id}&subcat=${s.id}&subsubcat=${child.id}">${child.label}</a>`).join('')}
-                </div>` : `<a href="category.html?cat=${c.id}&subcat=${s.id}">${s.label}</a>`).join('')}
-            </div>` : ''}
-        </div>`;
-    }).join('');
+    // Only generate HTML if the category rail is completely empty in HTML
+    if (!rail.children.length && Array.isArray(CATEGORIES) && CATEGORIES.length > 0) {
+      rail.innerHTML = CATEGORIES.map(c => {
+        const hasSub = Array.isArray(c.subcats) && c.subcats.length > 0;
+        return `
+          <div class="cat-chip-wrap" data-parent="${c.id}">
+            <button type="button" class="cat-chip${hasSub ? ' has-sub' : ''}" aria-expanded="false" data-cat-id="${c.id}">
+              ${c.label}
+              ${hasSub ? '<span class="chevron">▾</span>' : ''}
+            </button>
+            ${hasSub ? `
+              <div class="cat-dropdown">
+                ${c.subcats.map(s => (s.children && s.children.length) ? `
+                  <div class="dropdown-group">
+                    <a href="category.html?cat=${c.id}&subcat=${s.id}" class="dropdown-heading-link">${s.label}</a>
+                    ${s.children.map(child => `<a href="category.html?cat=${c.id}&subcat=${s.id}&subsubcat=${child.id}">${child.label}</a>`).join('')}
+                  </div>` : `<a href="category.html?cat=${c.id}&subcat=${s.id}">${s.label}</a>`).join('')}
+              </div>` : ''}
+          </div>`;
+      }).join('');
+    }
 
     const wraps = rail.querySelectorAll('.cat-chip-wrap');
     wraps.forEach(wrap => {
@@ -1930,10 +1826,10 @@ function renderCategoryChrome() {
       const dropdown = wrap.querySelector('.cat-dropdown');
       if (!btn) return;
 
-      btn.addEventListener('click', (e) => {
+      btn.onclick = (e) => {
         e.stopPropagation();
         if (!dropdown) {
-          window.location.href = `category.html?cat=${btn.dataset.catId}`;
+          window.location.href = `category.html?cat=${btn.dataset.catId || slugify(btn.textContent)}`;
           return;
         }
         const isOpen = wrap.classList.contains('open');
@@ -1945,22 +1841,22 @@ function renderCategoryChrome() {
         } else {
           btn.setAttribute('aria-expanded', 'false');
         }
-      });
+      };
 
       if (dropdown) {
-        wrap.addEventListener('mouseenter', () => {
+        wrap.onmouseenter = () => {
           if (window.innerWidth > 768) {
             positionDropdown(btn, dropdown);
             wrap.classList.add('open');
             btn.setAttribute('aria-expanded', 'true');
           }
-        });
-        wrap.addEventListener('mouseleave', () => {
+        };
+        wrap.onmouseleave = () => {
           if (window.innerWidth > 768) {
             wrap.classList.remove('open');
             btn.setAttribute('aria-expanded', 'false');
           }
-        });
+        };
       }
     });
 
@@ -1975,14 +1871,14 @@ function renderCategoryChrome() {
       const rect = btn.getBoundingClientRect();
       dropdown.style.top = `${rect.bottom + 8}px`;
       let left = rect.left;
-      const maxLeft = window.innerWidth - 210;
+      const maxLeft = window.innerWidth - 220;
       if (left > maxLeft) left = Math.max(8, maxLeft);
       dropdown.style.left = `${left}px`;
     }
   }
 
   const mobileNavList = document.getElementById('mobileNavList');
-  if (mobileNavList) {
+  if (mobileNavList && !mobileNavList.children.length && Array.isArray(CATEGORIES) && CATEGORIES.length > 0) {
     mobileNavList.innerHTML = CATEGORIES.map(c => {
       if (c.subcats && c.subcats.length) {
         return `
@@ -2113,13 +2009,13 @@ async function loadBanners() {
   } catch (e) { }
 
   try {
-    const db = initFirestore();
-    if (db) {
-      const snapshot = await db.collection('banners').get();
-      if (!snapshot.empty) {
+    const sb = initSupabase();
+    if (sb) {
+      const res = await sb.from('banners').select('*').eq('active', true);
+      const data = res?.data || [];
+      if (data.length) {
         const loaded = [];
-        snapshot.forEach(doc => {
-          const d = doc.data();
+        data.forEach(d => {
           if (d && d.active !== false && (d.image || d.imageUrl)) {
             loaded.push({
               image: d.image || d.imageUrl,
@@ -2136,17 +2032,23 @@ async function loadBanners() {
       }
     }
   } catch (e) {
-    console.warn('Could not load banners from Firestore —', e);
+    console.warn('Could not load banners from Supabase —', e);
   }
 }
 
 let carIndex = 0;
 let carTimer = null;
+let isCarouselDragging = false;
+let carDragStartX = 0;
+let carDragCurrentX = 0;
+let hasCarDragMoved = false;
 
 function renderCarousel() {
   const track = document.getElementById('carouselTrack');
   const dots = document.getElementById('carDots');
   const carouselEl = document.getElementById('carousel');
+  const prevBtn = document.getElementById('carPrev');
+  const nextBtn = document.getElementById('carNext');
   if (!track || !BANNER_SLIDES.length) return;
 
   track.innerHTML = BANNER_SLIDES.map((s, i) => {
@@ -2154,42 +2056,125 @@ function renderCarousel() {
     const isExternal = /^https?:\/\//i.test(targetUrl) && !targetUrl.includes(window.location.hostname);
     return `
       <a href="${esc(targetUrl)}" class="slide" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} title="${esc(s.title || 'Banner Slide')}">
-        <img src="${esc(s.image)}" alt="${esc(s.title || 'Special Promotion')}" class="slide-banner-img" loading="${i === 0 ? 'eager' : 'lazy'}"${i === 0 ? ' fetchpriority="high"' : ''} decoding="async">
+        <img src="${esc(s.image)}" alt="${esc(s.title || 'Special Promotion')}" class="slide-banner-img" loading="${i === 0 ? 'eager' : 'lazy'}"${i === 0 ? ' fetchpriority="high"' : ''} decoding="async" draggable="false">
       </a>
     `;
   }).join('');
 
   if (dots) {
     dots.innerHTML = BANNER_SLIDES.map((_, i) => `<button type="button" data-i="${i}" class="${i === 0 ? 'active' : ''}" aria-label="Go to slide ${i + 1}"></button>`).join('');
-    dots.querySelectorAll('button').forEach(b => b.addEventListener('click', (e) => {
-      e.stopPropagation();
-      goToSlide(+b.dataset.i);
-    }));
+    dots.querySelectorAll('button').forEach(b => {
+      b.onclick = (e) => {
+        e.stopPropagation();
+        goToSlide(+b.dataset.i);
+      };
+    });
   }
 
-  document.getElementById('carPrev')?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    goToSlide(carIndex - 1);
-  });
-  document.getElementById('carNext')?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    goToSlide(carIndex + 1);
+  // Navigation Arrow Buttons
+  if (prevBtn) {
+    prevBtn.onclick = (e) => {
+      e.stopPropagation();
+      goToSlide(carIndex - 1);
+    };
+  }
+  if (nextBtn) {
+    nextBtn.onclick = (e) => {
+      e.stopPropagation();
+      goToSlide(carIndex + 1);
+    };
+  }
+
+  // Prevent link click when dragging
+  track.querySelectorAll('.slide').forEach(slide => {
+    slide.onclick = (e) => {
+      if (hasCarDragMoved) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
   });
 
-  // Touch Swipe gesture support
-  let touchStartX = 0, touchEndX = 0;
-  track.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  }, { passive: true });
-  track.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    if (touchStartX - touchEndX > 50) goToSlide(carIndex + 1);
-    if (touchEndX - touchStartX > 50) goToSlide(carIndex - 1);
-  }, { passive: true });
+  // Desktop Mouse Drag & Mobile Touch Gestures
+  const onDragStart = (clientX) => {
+    isCarouselDragging = true;
+    hasCarDragMoved = false;
+    carDragStartX = clientX;
+    carDragCurrentX = clientX;
+    clearInterval(carTimer);
+    track.classList.add('is-dragging');
+  };
 
-  // Pause on hover
-  carouselEl?.addEventListener('mouseenter', () => clearInterval(carTimer));
-  carouselEl?.addEventListener('mouseleave', () => startCarouselAuto());
+  const onDragMove = (clientX) => {
+    if (!isCarouselDragging) return;
+    const diff = clientX - carDragStartX;
+    if (Math.abs(diff) > 5) {
+      hasCarDragMoved = true;
+    }
+    carDragCurrentX = clientX;
+    const trackWidth = track.offsetWidth || 1;
+    const percentDiff = (diff / trackWidth) * 100;
+    const currentPercent = -(carIndex * 100) + percentDiff;
+    track.style.transform = `translateX(${currentPercent}%)`;
+  };
+
+  const onDragEnd = () => {
+    if (!isCarouselDragging) return;
+    isCarouselDragging = false;
+    track.classList.remove('is-dragging');
+    const diff = carDragCurrentX - carDragStartX;
+    const threshold = 40; // min drag distance in px
+
+    if (diff < -threshold) {
+      goToSlide(carIndex + 1);
+    } else if (diff > threshold) {
+      goToSlide(carIndex - 1);
+    } else {
+      goToSlide(carIndex); // snap back
+    }
+    setTimeout(() => { hasCarDragMoved = false; }, 50);
+  };
+
+  // Mouse events
+  track.onmousedown = (e) => {
+    if (e.button !== 0) return; // Left click only
+    onDragStart(e.clientX);
+  };
+  window.onmousemove = (e) => {
+    if (isCarouselDragging) onDragMove(e.clientX);
+  };
+  window.onmouseup = () => {
+    if (isCarouselDragging) onDragEnd();
+  };
+
+  // Touch events
+  track.ontouchstart = (e) => {
+    if (e.touches && e.touches.length) onDragStart(e.touches[0].clientX);
+  };
+  track.ontouchmove = (e) => {
+    if (e.touches && e.touches.length) onDragMove(e.touches[0].clientX);
+  };
+  track.ontouchend = () => {
+    onDragEnd();
+  };
+
+  // Pause on hover, resume on mouseleave
+  if (carouselEl) {
+    carouselEl.onmouseenter = () => clearInterval(carTimer);
+    carouselEl.onmouseleave = () => startCarouselAuto();
+  }
+
+  // Keyboard navigation
+  carouselEl.setAttribute('tabindex', '0');
+  carouselEl.onkeydown = (e) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      goToSlide(carIndex - 1);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      goToSlide(carIndex + 1);
+    }
+  };
 
   goToSlide(0);
 }
@@ -2198,7 +2183,10 @@ function goToSlide(i) {
   if (!BANNER_SLIDES.length) return;
   carIndex = (i + BANNER_SLIDES.length) % BANNER_SLIDES.length;
   const track = document.getElementById("carouselTrack");
-  if (track) track.style.transform = `translateX(-${carIndex * 100}%)`;
+  if (track) {
+    track.classList.remove('is-dragging');
+    track.style.transform = `translateX(-${carIndex * 100}%)`;
+  }
   document.querySelectorAll(".carousel-dots button").forEach((b, idx) => b.classList.toggle("active", idx === carIndex));
   startCarouselAuto();
 }
@@ -2206,7 +2194,11 @@ function goToSlide(i) {
 function startCarouselAuto() {
   clearInterval(carTimer);
   if (BANNER_SLIDES.length > 1) {
-    carTimer = setInterval(() => goToSlide(carIndex + 1), 5000);
+    carTimer = setInterval(() => {
+      if (!isCarouselDragging) {
+        goToSlide(carIndex + 1);
+      }
+    }, 4500);
   }
 }
 
