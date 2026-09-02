@@ -14,8 +14,6 @@ function hidePageLoader() {
    All data is local; cart persists via localStorage.
    ========================================================= */
 
-const img = (seed, size = 400) => `https://picsum.photos/seed/${seed}/${size}/${size}`;
-
 /* ==========================================================================
    NILA STORE — STATIC CATEGORY NAVIGATION
    Configured to match the exact categories & subcategories in your database.
@@ -325,7 +323,13 @@ function variationValuesForProduct(product) {
 
 
 function filterCatalogProducts(items) {
-  return items.filter((product) => product.displayGroup !== false);
+  if (!Array.isArray(items) || !items.length) return [];
+  const reps = items.filter((product) => product.displayGroup !== false);
+  if (!reps.length) {
+    const noParent = items.filter(p => !p.parent);
+    return noParent.length ? noParent : items;
+  }
+  return reps;
 }
 
 /* ============ State ============ */
@@ -585,8 +589,8 @@ async function loadProducts() {
 }
 
 /* ============ Instant Local Storage Cache Layer ============ */
-const CACHE_KEY_PRODUCTS = 'nila_store_products_v3';
-const CACHE_KEY_BANNERS = 'nila_store_banners_v3';
+const CACHE_KEY_PRODUCTS = 'nila_store_products_v5';
+const CACHE_KEY_BANNERS = 'nila_store_banners_v5';
 
 function cleanupLegacyCaches() {
   try {
@@ -596,8 +600,12 @@ function cleanupLegacyCaches() {
       if (key && (
         key.startsWith('nila_store_products_v1') ||
         key.startsWith('nila_store_products_v2') ||
+        key.startsWith('nila_store_products_v3') ||
+        key.startsWith('nila_store_products_v4') ||
         key.startsWith('nila_store_banners_v1') ||
         key.startsWith('nila_store_banners_v2') ||
+        key.startsWith('nila_store_banners_v3') ||
+        key.startsWith('nila_store_banners_v4') ||
         key === 'nila_store_products' ||
         key === 'nila_store_banners'
       )) {
@@ -617,6 +625,7 @@ function minifyProductForCache(p) {
     cat: p.cat || '',
     subcat: p.subcat || '',
     subsubcat: p.subsubcat || '',
+    categoriesPath: Array.isArray(p.categoriesPath) ? p.categoriesPath : parseCategoryPath(p.categoriesLabel || p.categories || p.cat),
     categoriesLabel: p.categoriesLabel || '',
     brand: p.brand || '',
     title: p.title || '',
@@ -645,7 +654,8 @@ function loadProductsFromCache() {
       PRODUCTS = parsed.map(p => ({
         ...p,
         id: String(p.id || p.sku || ''),
-        sku: String(p.sku || p.id || '')
+        sku: String(p.sku || p.id || ''),
+        categoriesPath: Array.isArray(p.categoriesPath) ? p.categoriesPath : parseCategoryPath(p.categoriesLabel || p.categories || p.cat)
       }));
       groupVariantProducts(PRODUCTS);
       return true;
@@ -1718,8 +1728,18 @@ async function renderCategoryPage() {
   let items = [];
   if (cat || subcat || subsubcat) {
     items = catalog.filter((p) => matchCat(p, cat) && matchSub(p, subcat) && matchSubsub(p, subsubcat));
+    if (!items.length) {
+      const rawMatches = PRODUCTS.filter((p) => matchCat(p, cat) && matchSub(p, subcat) && matchSubsub(p, subsubcat));
+      const seen = new Set();
+      items = rawMatches.filter(p => {
+        const k = p.groupId || p.parent || p.id;
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+    }
   } else {
-    items = catalog;
+    items = catalog.length ? catalog : PRODUCTS;
   }
 
   // Build interactive breadcrumbs matching product page
@@ -1896,54 +1916,29 @@ function renderCategoryChrome() {
       if (!btn) return;
 
       btn.onclick = (e) => {
-        e.stopPropagation();
         if (!dropdown) {
           window.location.href = `category.html?cat=${btn.dataset.catId || slugify(btn.textContent)}`;
           return;
         }
-        const isOpen = wrap.classList.contains('open');
-        wraps.forEach(w => w.classList.remove('open'));
-        if (!isOpen) {
-          positionDropdown(btn, dropdown);
-          wrap.classList.add('open');
-          btn.setAttribute('aria-expanded', 'true');
-        } else {
-          btn.setAttribute('aria-expanded', 'false');
-        }
-      };
-
-      if (dropdown) {
-        wrap.onmouseenter = () => {
-          if (window.innerWidth > 768) {
-            positionDropdown(btn, dropdown);
+        // Toggle on touch/mobile screens
+        if (window.innerWidth <= 768) {
+          e.stopPropagation();
+          const isOpen = wrap.classList.contains('open');
+          wraps.forEach(w => w.classList.remove('open'));
+          if (!isOpen) {
             wrap.classList.add('open');
             btn.setAttribute('aria-expanded', 'true');
-          }
-        };
-        wrap.onmouseleave = () => {
-          if (window.innerWidth > 768) {
-            wrap.classList.remove('open');
+          } else {
             btn.setAttribute('aria-expanded', 'false');
           }
-        };
-      }
+        }
+      };
     });
 
     document.addEventListener('click', () => {
       wraps.forEach(w => w.classList.remove('open'));
       rail.querySelectorAll('.cat-chip').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
     });
-    window.addEventListener('scroll', () => wraps.forEach(w => w.classList.remove('open')), { passive: true });
-    window.addEventListener('resize', () => wraps.forEach(w => w.classList.remove('open')));
-
-    function positionDropdown(btn, dropdown) {
-      const rect = btn.getBoundingClientRect();
-      dropdown.style.top = `${rect.bottom + 8}px`;
-      let left = rect.left;
-      const maxLeft = window.innerWidth - 220;
-      if (left > maxLeft) left = Math.max(8, maxLeft);
-      dropdown.style.left = `${left}px`;
-    }
   }
 
   const mobileNavList = document.getElementById('mobileNavList');
@@ -2017,12 +2012,12 @@ function renderCategorySections() {
 
   const allCatalog = filterCatalogProducts(PRODUCTS);
   if (!allCatalog.length) return;
-  const validCategories = CATEGORIES.filter(c => allCatalog.some(p => p.cat === c.id));
-  const selectedCategories = shuffleArray(validCategories).slice(0, 5);
+  const validCategories = CATEGORIES.filter(c => allCatalog.some(p => p.cat === c.id || slugify(p.cat) === c.id));
+  const selectedCategories = validCategories.slice(0, 6);
 
   container.innerHTML = selectedCategories.map(c => {
-    const catProducts = allCatalog.filter(p => p.cat === c.id);
-    const randomProducts = shuffleArray(catProducts).slice(0, 6);
+    const catProducts = allCatalog.filter(p => p.cat === c.id || slugify(p.cat) === c.id);
+    const randomProducts = shuffleArray(catProducts).slice(0, 8);
     if (!randomProducts.length) return '';
 
     return `
@@ -2030,10 +2025,10 @@ function renderCategorySections() {
         <div class="wrap">
           <div class="section-head">
             <div>
-              <h2>${c.label}</h2>
-              <p class="section-sub">${catProducts.length} items available in this category</p>
+              <h2>${c.emoji ? c.emoji + ' ' : ''}${c.label}</h2>
+              <p class="section-sub">Explore best styles &amp; deals</p>
             </div>
-            <a href="category.html?cat=${c.id}" class="btn btn-outline">View all ${c.label}</a>
+            <a href="category.html?cat=${c.id}" class="view-all-link">View all ›</a>
           </div>
           <div class="product-grid">${randomProducts.map((p, i) => productCard(p, i)).join('')}</div>
         </div>
@@ -2690,9 +2685,9 @@ async function init() {
   renderCarousel();
   renderDeals();
   if (document.getElementById('productPageContent')) {
-    renderProductPage();
+    await renderProductPage();
   } else if (document.getElementById('categoryPageContent')) {
-    renderCategoryPage();
+    await renderCategoryPage();
   } else {
     renderCategorySections();
   }
@@ -2716,10 +2711,8 @@ async function init() {
           renderProductPage();
         }
       } else if (document.getElementById('categoryPageContent')) {
-        if (!hasCachedProducts || PRODUCTS.length !== prevCount) {
-          renderCategoryPage();
-        }
-      } else if (!hasCachedProducts || PRODUCTS.length !== prevCount) {
+        renderCategoryPage();
+      } else {
         renderCategoryChrome();
         renderCarousel();
         renderDeals();
@@ -2732,8 +2725,8 @@ async function init() {
     }
   };
 
-  // Run network sync in background
-  if (!hasCachedProducts) {
+  // Run network sync
+  if (!hasCachedProducts || !PRODUCTS.length) {
     await syncData();
   } else {
     syncData();

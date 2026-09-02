@@ -373,18 +373,33 @@ img {
 .category-rail {
   background: #fff;
   border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 90;
 }
 
 .category-rail-inner {
   display: flex;
   gap: 6px;
-  overflow-x: auto;
-  padding: 12px 20px;
+  padding: 10px 20px;
   scrollbar-width: none;
 }
 
 .category-rail-inner::-webkit-scrollbar {
   display: none;
+}
+
+@media (max-width: 768px) {
+  .category-rail-inner {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (min-width: 769px) {
+  .category-rail,
+  .category-rail-inner {
+    overflow: visible;
+  }
 }
 
 .cat-chip {
@@ -399,6 +414,10 @@ img {
   white-space: nowrap;
   transition: background .15s, color .15s;
   flex-shrink: 0;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  font-family: inherit;
 }
 
 .cat-chip:hover {
@@ -430,18 +449,22 @@ img {
   opacity: .7;
 }
 
+.cat-chip-wrap:hover .cat-chip.has-sub,
 .cat-chip-wrap.open .cat-chip.has-sub {
   background: var(--brand-tint);
   color: var(--brand-dark);
 }
 
+.cat-chip-wrap:hover .chevron,
 .cat-chip-wrap.open .chevron {
   transform: rotate(180deg);
 }
 
 .cat-dropdown {
-  position: fixed;
-  min-width: 190px;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 200px;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -455,12 +478,33 @@ img {
   transform: translateY(-6px);
   transition: opacity .15s, transform .15s, visibility .15s;
   z-index: 999;
+  pointer-events: none;
 }
 
+/* Invisible bridge so mouse hover doesn't break over gap */
+.cat-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+.cat-chip-wrap:hover .cat-dropdown,
 .cat-chip-wrap.open .cat-dropdown {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .cat-dropdown {
+    position: fixed;
+    top: auto;
+    left: auto;
+  }
 }
 
 .cat-dropdown a {
@@ -471,6 +515,7 @@ img {
   color: var(--ink-soft);
   white-space: nowrap;
   transition: background .15s, color .15s;
+  text-decoration: none;
 }
 
 .cat-dropdown a:hover {
