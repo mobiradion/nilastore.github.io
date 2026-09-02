@@ -149,23 +149,56 @@ function categoryColor(id) {
   return '#F3F4F8';
 }
 
+const FALLBACK_PRODUCT_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%23F8FAFC'/%3E%3Ctext x='50%25' y='48%25' font-family='sans-serif' font-size='48' fill='%23CBD5E1' text-anchor='middle' dominant-baseline='middle'%3E🛍️%3C/text%3E%3Ctext x='50%25' y='64%25' font-family='sans-serif' font-size='15' font-weight='600' fill='%2394A3B8' text-anchor='middle'%3ENila Store%3C/text%3E%3C/svg%3E";
+
+function img(id) {
+  return FALLBACK_PRODUCT_IMAGE;
+}
+
+function normalizeProductImage(images) {
+  if (!images) return '';
+  if (typeof images === 'string') {
+    let url = images.trim();
+    if (!url) return '';
+    if (/^(https?:|\/\/|data:)/i.test(url)) return url;
+    // Strip redundant leading "images/", "/images/", "images\", etc.
+    url = url.replace(/^[\/\\]+/, '').replace(/^images[\/\\]+/i, '').replace(/^[\/\\]+/, '');
+    return `images/${url}`;
+  }
+  if (Array.isArray(images) && images.length) {
+    return normalizeProductImage(images[0]);
+  }
+  if (typeof images === 'object' && images.url) {
+    return normalizeProductImage(images.url);
+  }
+  return '';
+}
+const normalizeFirestoreImage = normalizeProductImage;
+
 function normalizeImageList(images) {
   if (!images) return [];
   if (typeof images === 'string') {
     return images
       .split(/[,;\n]+/)
-      .map(i => i.trim())
+      .map(i => normalizeProductImage(i.trim()))
       .filter(Boolean);
   }
   if (Array.isArray(images)) {
     return images.flatMap((item) => {
-      if (typeof item === 'string') return item.trim() ? [item.trim()] : [];
-      if (item && typeof item === 'object') return item.url ? [String(item.url).trim()] : [];
+      if (typeof item === 'string') {
+        const norm = normalizeProductImage(item);
+        return norm ? [norm] : [];
+      }
+      if (item && typeof item === 'object' && item.url) {
+        const norm = normalizeProductImage(item.url);
+        return norm ? [norm] : [];
+      }
       return [];
     });
   }
   if (typeof images === 'object' && images.url) {
-    return [String(images.url).trim()];
+    const norm = normalizeProductImage(images.url);
+    return norm ? [norm] : [];
   }
   return [];
 }
@@ -339,24 +372,6 @@ function inferCategory(categories) {
   }
   return slugify(categories) || 'all';
 }
-
-function normalizeProductImage(images) {
-  if (!images) return '';
-  if (typeof images === 'string') {
-    const url = images.trim();
-    if (!url) return '';
-    if (/^https?:\/\//i.test(url)) return url;
-    return `images/${url.replace(/^\/+/, '')}`;
-  }
-  if (Array.isArray(images) && images.length) {
-    return normalizeProductImage(images[0]);
-  }
-  if (typeof images === 'object' && images.url) {
-    return normalizeProductImage(images.url);
-  }
-  return '';
-}
-const normalizeFirestoreImage = normalizeProductImage;
 
 function mapSupabaseDoc(row) {
   if (!row) return null;
@@ -1252,7 +1267,7 @@ async function renderProductPage() {
       <div class="pdp-thumbs" id="pdpThumbs">
         ${imageSources.map((src) => `
           <button type="button" class="pdp-thumb-btn${src === currentImg ? ' selected' : ''}" data-pdp-img="${esc(src)}" aria-label="View photo">
-            <img src="${esc(src)}" alt="${esc(selectedProduct.title)}" width="64" height="64" loading="lazy" decoding="async">
+            <img src="${esc(src)}" alt="${esc(selectedProduct.title)}" width="64" height="64" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}'">
           </button>
         `).join('')}
       </div>`;
@@ -1320,7 +1335,7 @@ async function renderProductPage() {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                 </button>
               </div>
-              <img id="pdpMainImage" src="${esc(currentImg)}" alt="${esc(selectedProduct.title)}" width="600" height="600" loading="eager" fetchpriority="high" decoding="async">
+              <img id="pdpMainImage" src="${esc(currentImg)}" alt="${esc(selectedProduct.title)}" width="600" height="600" loading="eager" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}'">
             </div>
             ${renderThumbsHtml()}
           </div>
@@ -1968,7 +1983,7 @@ function productCard(p, index) {
         <button type="button" class="wishlist-btn ${isWished ? "active" : ""}" data-wish="${p.id || ''}" aria-label="Toggle wishlist" aria-pressed="${isWished}">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="${isWished ? 'currentColor' : 'none'}"><path d="M12 21s-7.5-4.6-10-9.3C.4 8 2 4.5 5.6 4.1 8 3.8 10 5 12 7.5 14 5 16 3.8 18.4 4.1 22 4.5 23.6 8 22 11.7 19.5 16.4 12 21 12 21z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         </button>
-        <img src="${imageSrc}" alt="${esc(p.title || 'Product')}" loading="${isPriority ? 'eager' : 'lazy'}" decoding="async"${isPriority ? ' fetchpriority="high"' : ''} width="400" height="400">
+        <img src="${imageSrc}" alt="${esc(p.title || 'Product')}" loading="${isPriority ? 'eager' : 'lazy'}" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}'" decoding="async"${isPriority ? ' fetchpriority="high"' : ''} width="400" height="400">
       </div>
       <div class="card-body">
         <div class="card-price-row">
@@ -2445,7 +2460,7 @@ function renderCart() {
     const selectedSize = cartSelectedSize(id);
     return `
       <div class="cart-item">
-        <img src="${p.img}" alt="${esc(p.title)}" width="64" height="64" decoding="async">
+        <img src="${p.img || FALLBACK_PRODUCT_IMAGE}" alt="${esc(p.title)}" width="64" height="64" decoding="async" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}'">
         <div class="cart-item-info">
           <div class="cart-item-title">${esc(p.title)}</div>
           ${selectedSize ? `<div class="cart-item-option">${esc(p.optionName || 'Size')}: ${esc(selectedSize)}</div>` : ''}
@@ -2484,7 +2499,7 @@ function renderWishlist() {
 
   body.innerHTML = items.map((p) => `
     <div class="cart-item">
-      <img src="${p.img}" alt="${esc(p.title)}" width="64" height="64" decoding="async">
+      <img src="${p.img || FALLBACK_PRODUCT_IMAGE}" alt="${esc(p.title)}" width="64" height="64" decoding="async" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}'">
       <div class="cart-item-info">
         <div class="cart-item-title">${esc(p.title)}</div>
         <div class="cart-item-price">${rupee(p.price)}</div>
