@@ -234,10 +234,130 @@ def sync_supabase_to_local():
 def sync_firestore_to_local():
     return sync_supabase_to_local()
 
-def load_banners():
-    if os.path.exists(BANNERS_FILE):
+ORDERS_FILE = "orders.json"
+
+def get_default_sample_orders():
+    now_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    return [
+        {
+            "id": "ORD-2026-1001",
+            "order_number": "ORD-1001",
+            "customer_name": "Priya Sharma",
+            "customer_phone": "+91 98765 43210",
+            "customer_address": "Flat 402, Lotus Apartments, 12th Main, Indiranagar, Bengaluru, Karnataka - 560038",
+            "items": [
+                {
+                    "id": "p_sample_1",
+                    "title": "Floral Print Pure Cotton Saree",
+                    "sku": "SAREE-COT-01",
+                    "size": "Free Size",
+                    "qty": 1,
+                    "price": 899,
+                    "image": "images/banner_saree.jpg"
+                },
+                {
+                    "id": "p_sample_2",
+                    "title": "Embroidered Silk Blend Kurta",
+                    "sku": "KURTI-SLK-04",
+                    "size": "M",
+                    "qty": 2,
+                    "price": 649,
+                    "image": "images/banner_kurti.jpg"
+                }
+            ],
+            "total_items": 3,
+            "subtotal": 2197,
+            "shipping_fee": 0,
+            "total_amount": 2197,
+            "payment_method": "WhatsApp / COD",
+            "payment_status": "Pending",
+            "order_status": "Processing",
+            "tracking_number": "DEL123456789IN",
+            "courier_name": "Delhivery Express",
+            "notes": "Customer requested fast delivery before weekend.",
+            "created_at": now_iso,
+            "updated_at": now_iso
+        },
+        {
+            "id": "ORD-2026-1002",
+            "order_number": "ORD-1002",
+            "customer_name": "Rahul Verma",
+            "customer_phone": "+91 98112 33445",
+            "customer_address": "House No 45, Sector 15, Rohini, New Delhi - 110085",
+            "items": [
+                {
+                    "id": "p_sample_3",
+                    "title": "Men Slim Fit Casual Cotton Shirt",
+                    "sku": "SHIRT-MEN-02",
+                    "size": "L",
+                    "qty": 1,
+                    "price": 799,
+                    "image": ""
+                }
+            ],
+            "total_items": 1,
+            "subtotal": 799,
+            "shipping_fee": 49,
+            "total_amount": 848,
+            "payment_method": "UPI Online",
+            "payment_status": "Paid",
+            "order_status": "Shipped",
+            "tracking_number": "BD994821034IN",
+            "courier_name": "BlueDart Express",
+            "notes": "Prepaid via GPay.",
+            "created_at": now_iso,
+            "updated_at": now_iso
+        },
+        {
+            "id": "ORD-2026-1003",
+            "order_number": "ORD-1003",
+            "customer_name": "Ananya Mukherjee",
+            "customer_phone": "+91 97331 88990",
+            "customer_address": "7B Southern Avenue, Ballygunge, Kolkata, West Bengal - 700029",
+            "items": [
+                {
+                    "id": "p_sample_4",
+                    "title": "Gold-Plated Traditional Necklace Set",
+                    "sku": "JEW-NECK-10",
+                    "size": "One Size",
+                    "qty": 1,
+                    "price": 1299,
+                    "image": ""
+                }
+            ],
+            "total_items": 1,
+            "subtotal": 1299,
+            "shipping_fee": 0,
+            "total_amount": 1299,
+            "payment_method": "WhatsApp / COD",
+            "payment_status": "Paid",
+            "order_status": "Delivered",
+            "tracking_number": "IP3321908IN",
+            "courier_name": "India Post Speed Post",
+            "notes": "Delivered and verified with customer.",
+            "created_at": now_iso,
+            "updated_at": now_iso
+        }
+    ]
+
+def load_orders():
+    """Loads orders from Supabase if table exists, otherwise loads from local orders.json."""
+    ok, data, err = supabase_request("orders?select=*&order=created_at.desc&limit=1000", method="GET")
+    if ok and isinstance(data, list):
+        save_orders_local(data)
+        return data, True, None
+    
+    # Fallback to local orders.json
+    local_orders = load_orders_local()
+    if not local_orders:
+        local_orders = get_default_sample_orders()
+        save_orders_local(local_orders)
+    return local_orders, False, err
+
+def load_orders_local():
+    if os.path.exists(ORDERS_FILE):
         try:
-            with open(BANNERS_FILE, "r", encoding="utf-8") as f:
+            with open(ORDERS_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if isinstance(data, list):
                     return data
@@ -245,19 +365,263 @@ def load_banners():
             pass
     return []
 
-def save_banners(banners_list):
+def save_orders_local(orders_list):
     try:
-        with open(BANNERS_FILE, "w", encoding="utf-8") as f:
-            json.dump(banners_list, f, indent=2)
+        with open(ORDERS_FILE, "w", encoding="utf-8") as f:
+            json.dump(orders_list, f, indent=2)
     except Exception as e:
-        print(f"Warning: Could not save {BANNERS_FILE}: {e}")
-    return banners_list
+        print(f"Warning: Could not save {ORDERS_FILE}: {e}")
+    return orders_list
 
-images_dir = Path("images")
-images_dir.mkdir(parents=True, exist_ok=True)
+def create_order_record(order_data):
+    now_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    order_id = str(order_data.get("id") or "").strip()
+    if not order_id:
+        order_id = f"ORD-{int(time.time())}-{os.urandom(2).hex().upper()}"
+    
+    order_num = str(order_data.get("order_number") or "").strip() or order_id
+    
+    items = order_data.get("items") or []
+    if isinstance(items, str):
+        try:
+            items = json.loads(items)
+        except Exception:
+            items = []
 
-def get_filename_from_url(url, fallback_prefix="image"):
-    parsed = urlparse(url)
+    total_items = int(order_data.get("total_items") or sum(int(it.get("qty", 1)) for it in items if isinstance(it, dict)) or 1)
+    subtotal = float(order_data.get("subtotal") or sum(float(it.get("price", 0)) * int(it.get("qty", 1)) for it in items if isinstance(it, dict)) or 0)
+    shipping_fee = float(order_data.get("shipping_fee") or 0)
+    total_amount = float(order_data.get("total_amount") or (subtotal + shipping_fee))
+
+    doc = {
+        "id": order_id,
+        "order_number": order_num,
+        "customer_name": str(order_data.get("customer_name") or "Guest Customer").strip(),
+        "customer_phone": str(order_data.get("customer_phone") or "").strip(),
+        "customer_address": str(order_data.get("customer_address") or "").strip(),
+        "items": items,
+        "total_items": total_items,
+        "subtotal": subtotal,
+        "shipping_fee": shipping_fee,
+        "total_amount": total_amount,
+        "payment_method": str(order_data.get("payment_method") or "WhatsApp / COD"),
+        "payment_status": str(order_data.get("payment_status") or "Pending"),
+        "order_status": str(order_data.get("order_status") or "Pending"),
+        "tracking_number": str(order_data.get("tracking_number") or "").strip(),
+        "courier_name": str(order_data.get("courier_name") or "").strip(),
+        "notes": str(order_data.get("notes") or "").strip(),
+        "created_at": order_data.get("created_at") or now_iso,
+        "updated_at": now_iso
+    }
+
+    # Save to local orders.json
+    local_orders = load_orders_local()
+    # If exists, replace, else prepend
+    existing_idx = next((i for i, o in enumerate(local_orders) if o.get("id") == order_id), -1)
+    if existing_idx >= 0:
+        local_orders[existing_idx] = doc
+    else:
+        local_orders.insert(0, doc)
+    save_orders_local(local_orders)
+
+    # Attempt Supabase insert
+    sb_ok, sb_res, sb_err = supabase_request("orders", method="POST", data=doc, prefer="return=representation")
+    
+    return doc, sb_ok, sb_err
+
+def update_order_record(order_id, updates):
+    now_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    updates["updated_at"] = now_iso
+
+    # Update local
+    local_orders = load_orders_local()
+    updated_doc = None
+    for i, o in enumerate(local_orders):
+        if o.get("id") == order_id:
+            local_orders[i].update(updates)
+            updated_doc = local_orders[i]
+            break
+    if updated_doc:
+        save_orders_local(local_orders)
+
+    # Update Supabase
+    sb_ok, sb_res, sb_err = supabase_request(f"orders?id=eq.{order_id}", method="PATCH", data=updates, prefer="return=representation")
+    return updated_doc or updates, sb_ok, sb_err
+
+def delete_order_record(order_id):
+    # Remove local
+    local_orders = load_orders_local()
+    local_orders = [o for o in local_orders if o.get("id") != order_id]
+    save_orders_local(local_orders)
+
+    # Supabase delete
+    sb_ok, _, sb_err = supabase_request(f"orders?id=eq.{order_id}", method="DELETE")
+    return True, sb_ok, sb_err
+
+# ==========================================
+# Product Management Helpers
+# ==========================================
+
+def get_all_products_cache(limit=5000):
+    ok, data, err = supabase_request(f"products?select=*&order=created_at.desc&limit={limit}", method="GET")
+    if ok and isinstance(data, list):
+        return data, True, None
+    
+    # Fallback to local data.json
+    if os.path.exists("data.json"):
+        try:
+            with open("data.json", "r", encoding="utf-8") as f:
+                dj = json.load(f)
+                cats = dj.get("catalogs", [])
+                if isinstance(cats, list):
+                    return cats, False, "Loaded from local data.json backup"
+        except Exception:
+            pass
+    return [], False, err or "Failed to fetch products"
+
+def save_or_update_product(prod_dict, is_new=False):
+    now_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    prod_id = str(prod_dict.get("id") or "").strip()
+    if not prod_id:
+        prod_id = f"prod_{int(time.time())}_{os.urandom(2).hex()}"
+        prod_dict["id"] = prod_id
+        is_new = True
+
+    title = str(prod_dict.get("title") or prod_dict.get("name") or "Untitled Product").strip()
+    prod_dict["title"] = title
+    prod_dict["name"] = title
+
+    categories = str(prod_dict.get("categories") or "all").strip()
+    prod_dict["categories"] = categories
+
+    cat_parts = [p.strip() for p in categories.split(">") if p.strip()]
+    if cat_parts:
+        prod_dict["cat"] = cat_parts[0].lower().replace("&", "and").replace(" ", "-")
+        prod_dict["subcat"] = cat_parts[1].lower().replace("&", "and").replace(" ", "-") if len(cat_parts) > 1 else None
+        prod_dict["subsubcat"] = cat_parts[2].lower().replace("&", "and").replace(" ", "-") if len(cat_parts) > 2 else None
+    else:
+        prod_dict["cat"] = "all"
+
+    # Numeric fields
+    try:
+        price = float(prod_dict.get("price") or prod_dict.get("sale_price") or prod_dict.get("regular_price") or 0)
+    except Exception:
+        price = 0.0
+    prod_dict["price"] = price
+
+    try:
+        regular_price = float(prod_dict.get("regular_price") or prod_dict.get("mrp") or price)
+    except Exception:
+        regular_price = price
+    prod_dict["regular_price"] = regular_price
+
+    try:
+        sale_price = float(prod_dict.get("sale_price") or price)
+    except Exception:
+        sale_price = price
+    prod_dict["sale_price"] = sale_price
+
+    try:
+        mrp = float(prod_dict.get("mrp") or regular_price)
+    except Exception:
+        mrp = regular_price
+    prod_dict["mrp"] = mrp
+
+    try:
+        stock = int(prod_dict.get("stock", 100))
+    except Exception:
+        stock = 100
+    prod_dict["stock"] = stock
+
+    in_stock = bool(prod_dict.get("in_stock", True))
+    if stock <= 0:
+        in_stock = False
+    prod_dict["in_stock"] = in_stock
+
+    prod_dict["published"] = bool(prod_dict.get("published", True))
+    prod_dict["deal"] = bool(prod_dict.get("deal", False))
+
+    images = prod_dict.get("images") or []
+    if isinstance(images, str):
+        try:
+            images = json.loads(images)
+        except Exception:
+            images = [images] if images else []
+    prod_dict["images"] = images
+
+    if images and not prod_dict.get("image_url"):
+        first_img = images[0]
+        prod_dict["image_url"] = first_img.get("url") if isinstance(first_img, dict) else str(first_img)
+    elif not prod_dict.get("image_url"):
+        prod_dict["image_url"] = ""
+
+    prod_dict["updated_at"] = now_iso
+    if is_new or not prod_dict.get("created_at"):
+        prod_dict["created_at"] = now_iso
+
+    # Execute Supabase insert or patch
+    if is_new:
+        ok, res, err = supabase_request("products", method="POST", data=prod_dict, prefer="return=representation")
+    else:
+        ok, res, err = supabase_request(f"products?id=eq.{prod_id}", method="PATCH", data=prod_dict, prefer="return=representation")
+
+    return prod_dict, ok, err
+
+def delete_products_batch(ids_list):
+    if not ids_list:
+        return True, 0, None
+    deleted_count = 0
+    errors = []
+    for pid in ids_list:
+        ok, _, err = supabase_request(f"products?id=eq.{pid}", method="DELETE")
+        if ok:
+            deleted_count += 1
+        else:
+            errors.append(f"{pid}: {err}")
+    return deleted_count > 0, deleted_count, "; ".join(errors) if errors else None
+
+def batch_update_products(action, ids_list, value=None):
+    if not ids_list:
+        return True, 0, None
+    
+    patch_data = {}
+    if action == "publish":
+        patch_data = {"published": True}
+    elif action == "unpublish":
+        patch_data = {"published": False}
+    elif action == "mark_in_stock":
+        patch_data = {"in_stock": True, "stock": 100}
+    elif action == "mark_out_of_stock":
+        patch_data = {"in_stock": False, "stock": 0}
+    elif action == "mark_deal":
+        patch_data = {"deal": True}
+    elif action == "unmark_deal":
+        patch_data = {"deal": False}
+    elif action == "change_category" and value:
+        cat_str = str(value).strip()
+        cat_parts = [p.strip() for p in cat_str.split(">") if p.strip()]
+        cat_slug = cat_parts[0].lower().replace("&", "and").replace(" ", "-") if cat_parts else "all"
+        subcat_slug = cat_parts[1].lower().replace("&", "and").replace(" ", "-") if len(cat_parts) > 1 else None
+        patch_data = {
+            "categories": cat_str,
+            "cat": cat_slug,
+            "subcat": subcat_slug
+        }
+    elif action == "delete":
+        return delete_products_batch(ids_list)
+    else:
+        return False, 0, f"Unsupported batch action: {action}"
+
+    updated_count = 0
+    errors = []
+    for pid in ids_list:
+        ok, _, err = supabase_request(f"products?id=eq.{pid}", method="PATCH", data=patch_data)
+        if ok:
+            updated_count += 1
+        else:
+            errors.append(f"{pid}: {err}")
+    return updated_count > 0, updated_count, "; ".join(errors) if errors else None
+
     path = unquote(parsed.path or "")
     name = os.path.basename(path)
     if name:
@@ -662,17 +1026,253 @@ def stream_import_catalogs_to_firestore(catalogs, category_str, regular_markup=3
         event_callback=event_callback
     )
 
+def get_filtered_products_api(params):
+    q = (params.get("q", [""])[0]).strip().lower()
+    cat = (params.get("cat", params.get("category", [""]))[0]).strip()
+    stock_status = (params.get("stock_status", ["all"])[0]).strip().lower()
+    published = (params.get("published", ["all"])[0]).strip().lower()
+    deal = (params.get("deal", ["all"])[0]).strip().lower()
+    sort_by = (params.get("sort_by", ["newest"])[0]).strip().lower()
+
+    try:
+        page = max(1, int(params.get("page", [1])[0]))
+    except Exception:
+        page = 1
+    try:
+        limit = min(1000, max(1, int(params.get("limit", [20])[0])))
+    except Exception:
+        limit = 20
+
+    all_products, db_ok, err = get_all_products_cache(limit=5000)
+
+    # Compute overall facets before filter
+    facets = {
+        "total": len(all_products),
+        "published": sum(1 for p in all_products if p.get("published", True)),
+        "draft": sum(1 for p in all_products if not p.get("published", True)),
+        "in_stock": sum(1 for p in all_products if p.get("in_stock", True) and int(p.get("stock", 0)) > 0),
+        "low_stock": sum(1 for p in all_products if p.get("in_stock", True) and 0 < int(p.get("stock", 0)) < 10),
+        "out_of_stock": sum(1 for p in all_products if not p.get("in_stock", True) or int(p.get("stock", 0)) <= 0),
+        "deals": sum(1 for p in all_products if p.get("deal", False))
+    }
+
+    filtered = []
+    for p in all_products:
+        if q:
+            p_title = str(p.get("title") or p.get("name") or "").lower()
+            p_sku = str(p.get("sku") or p.get("id") or "").lower()
+            p_brand = str(p.get("brand") or "").lower()
+            p_cat = str(p.get("categories") or "").lower()
+            p_desc = str(p.get("description") or "").lower()
+            if q not in p_title and q not in p_sku and q not in p_brand and q not in p_cat and q not in p_desc:
+                continue
+
+        if cat and cat != "all":
+            if not match_product_to_category(p.get("categories"), cat):
+                continue
+
+        is_instock = bool(p.get("in_stock", True))
+        try:
+            stock_qty = int(p.get("stock", 0))
+        except Exception:
+            stock_qty = 0
+
+        if stock_status == "in_stock":
+            if not is_instock or stock_qty <= 0:
+                continue
+        elif stock_status == "low_stock":
+            if not is_instock or stock_qty <= 0 or stock_qty >= 10:
+                continue
+        elif stock_status == "out_of_stock":
+            if is_instock and stock_qty > 0:
+                continue
+
+        if published == "true" and not p.get("published", True):
+            continue
+        elif published == "false" and p.get("published", True):
+            continue
+
+        if deal == "true" and not p.get("deal", False):
+            continue
+        elif deal == "false" and p.get("deal", False):
+            continue
+
+        filtered.append(p)
+
+    if sort_by == "oldest":
+        filtered.sort(key=lambda x: str(x.get("created_at") or ""))
+    elif sort_by == "price_asc":
+        filtered.sort(key=lambda x: float(x.get("price") or 0))
+    elif sort_by == "price_desc":
+        filtered.sort(key=lambda x: float(x.get("price") or 0), reverse=True)
+    elif sort_by == "stock_asc":
+        filtered.sort(key=lambda x: int(x.get("stock") or 0))
+    elif sort_by == "stock_desc":
+        filtered.sort(key=lambda x: int(x.get("stock") or 0), reverse=True)
+    elif sort_by == "title_asc":
+        filtered.sort(key=lambda x: str(x.get("title") or "").lower())
+    elif sort_by == "title_desc":
+        filtered.sort(key=lambda x: str(x.get("title") or "").lower(), reverse=True)
+    else: # newest
+        filtered.sort(key=lambda x: str(x.get("created_at") or ""), reverse=True)
+
+    total_matching = len(filtered)
+    total_pages = max(1, (total_matching + limit - 1) // limit)
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    paginated_items = filtered[start_idx:end_idx]
+
+    return {
+        "success": True,
+        "products": paginated_items,
+        "total": total_matching,
+        "page": page,
+        "limit": limit,
+        "total_pages": total_pages,
+        "facets": facets,
+        "db_connected": db_ok,
+        "error": err
+    }
+
+def get_filtered_orders_api(params):
+    q = (params.get("q", [""])[0]).strip().lower()
+    status = (params.get("status", ["all"])[0]).strip()
+    payment_status = (params.get("payment_status", ["all"])[0]).strip()
+    sort_by = (params.get("sort_by", ["newest"])[0]).strip().lower()
+
+    try:
+        page = max(1, int(params.get("page", [1])[0]))
+    except Exception:
+        page = 1
+    try:
+        limit = min(1000, max(1, int(params.get("limit", [20])[0])))
+    except Exception:
+        limit = 20
+
+    all_orders, db_ok, err = load_orders()
+
+    summary = {
+        "total": len(all_orders),
+        "pending": sum(1 for o in all_orders if str(o.get("order_status") or "").lower() == "pending"),
+        "processing": sum(1 for o in all_orders if str(o.get("order_status") or "").lower() == "processing"),
+        "shipped": sum(1 for o in all_orders if str(o.get("order_status") or "").lower() == "shipped"),
+        "delivered": sum(1 for o in all_orders if str(o.get("order_status") or "").lower() == "delivered"),
+        "cancelled": sum(1 for o in all_orders if str(o.get("order_status") or "").lower() == "cancelled"),
+        "total_revenue": sum(float(o.get("total_amount") or 0) for o in all_orders if str(o.get("order_status") or "").lower() != "cancelled")
+    }
+
+    filtered = []
+    for o in all_orders:
+        if q:
+            o_id = str(o.get("id") or o.get("order_number") or "").lower()
+            o_name = str(o.get("customer_name") or "").lower()
+            o_phone = str(o.get("customer_phone") or "").lower()
+            o_addr = str(o.get("customer_address") or "").lower()
+            if q not in o_id and q not in o_name and q not in o_phone and q not in o_addr:
+                continue
+
+        if status and status.lower() != "all":
+            if str(o.get("order_status") or "").lower() != status.lower():
+                continue
+
+        if payment_status and payment_status.lower() != "all":
+            if str(o.get("payment_status") or "").lower() != payment_status.lower():
+                continue
+
+        filtered.append(o)
+
+    if sort_by == "oldest":
+        filtered.sort(key=lambda x: str(x.get("created_at") or ""))
+    elif sort_by == "amount_desc":
+        filtered.sort(key=lambda x: float(x.get("total_amount") or 0), reverse=True)
+    elif sort_by == "amount_asc":
+        filtered.sort(key=lambda x: float(x.get("total_amount") or 0))
+    else: # newest
+        filtered.sort(key=lambda x: str(x.get("created_at") or ""), reverse=True)
+
+    total_matching = len(filtered)
+    total_pages = max(1, (total_matching + limit - 1) // limit)
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    paginated_items = filtered[start_idx:end_idx]
+
+    return {
+        "success": True,
+        "orders": paginated_items,
+        "total": total_matching,
+        "page": page,
+        "limit": limit,
+        "total_pages": total_pages,
+        "summary": summary,
+        "db_connected": db_ok,
+        "error": err
+    }
+
+def get_dashboard_analytics_api():
+    all_products, p_db_ok, p_err = get_all_products_cache(limit=5000)
+    all_orders, o_db_ok, o_err = load_orders()
+    menu_cats = load_categories()
+
+    total_prods = len(all_products)
+    published_prods = sum(1 for p in all_products if p.get("published", True))
+    out_of_stock = sum(1 for p in all_products if not p.get("in_stock", True) or int(p.get("stock", 0)) <= 0)
+    low_stock = [p for p in all_products if p.get("in_stock", True) and 0 < int(p.get("stock", 0)) < 10]
+
+    order_stats = {
+        "total": len(all_orders),
+        "pending": sum(1 for o in all_orders if str(o.get("order_status") or "").lower() == "pending"),
+        "processing": sum(1 for o in all_orders if str(o.get("order_status") or "").lower() == "processing"),
+        "shipped": sum(1 for o in all_orders if str(o.get("order_status") or "").lower() == "shipped"),
+        "delivered": sum(1 for o in all_orders if str(o.get("order_status") or "").lower() == "delivered"),
+        "cancelled": sum(1 for o in all_orders if str(o.get("order_status") or "").lower() == "cancelled"),
+        "total_revenue": sum(float(o.get("total_amount") or 0) for o in all_orders if str(o.get("order_status") or "").lower() != "cancelled")
+    }
+
+    recent_orders = sorted(all_orders, key=lambda x: str(x.get("created_at") or ""), reverse=True)[:5]
+    recent_products = sorted(all_products, key=lambda x: str(x.get("created_at") or ""), reverse=True)[:5]
+
+    return {
+        "success": True,
+        "products": {
+            "total": total_prods,
+            "published": published_prods,
+            "out_of_stock": out_of_stock,
+            "low_stock_count": len(low_stock),
+            "low_stock_items": low_stock[:8],
+            "total_categories": len(menu_cats),
+            "recent": recent_products
+        },
+        "orders": {
+            "summary": order_stats,
+            "recent": recent_orders
+        },
+        "system": {
+            "supabase_connected": p_db_ok,
+            "error": p_err
+        }
+    }
+
 
 class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
     def end_cors_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 
     def do_OPTIONS(self):
         self.send_response(200)
         self.end_cors_headers()
         self.end_headers()
+
+    def get_parsed_payload(self):
+        content_length = int(self.headers.get("Content-Length", 0))
+        if content_length > 0:
+            post_body = self.rfile.read(content_length).decode("utf-8")
+            try:
+                return json.loads(post_body)
+            except Exception:
+                return {}
+        return {}
 
     def do_GET(self):
         parsed_url = urlparse(self.path)
@@ -680,8 +1280,10 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
         if not path:
             path = "/"
 
-        if path in ["/", "/index.html", "/import", "/variation_import.html"]:
-            self.serve_file("variation_import.html", "text/html; charset=utf-8")
+        # Serve Admin UI (prefer admin.html, fallback to variation_import.html)
+        if path in ["/", "/index.html", "/admin", "/admin.html", "/orders", "/products", "/import", "/variation_import.html"]:
+            admin_file = "admin.html" if os.path.exists("admin.html") else "variation_import.html"
+            self.serve_file(admin_file, "text/html; charset=utf-8")
             return
 
         if path in ["/api/status", "/api/supabase-status", "/api/firebase-status"]:
@@ -696,6 +1298,79 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
                 "config_exists": os.path.exists(CONFIG_FILE),
                 "service_account_exists": os.path.exists(CONFIG_FILE)
             })
+            return
+
+        if path == "/api/dashboard-stats":
+            stats = get_dashboard_analytics_api()
+            self.send_json_response(stats)
+            return
+
+        if path == "/api/products":
+            params = parse_qs(parsed_url.query)
+            result = get_filtered_products_api(params)
+            self.send_json_response(result)
+            return
+
+        if path == "/api/products/get":
+            params = parse_qs(parsed_url.query)
+            pid = (params.get("id", [""])[0]).strip()
+            if not pid:
+                self.send_json_response({"success": False, "error": "Product ID required"}, status=400)
+                return
+            ok, data, err = supabase_request(f"products?id=eq.{pid}", method="GET")
+            if ok and data and isinstance(data, list) and len(data) > 0:
+                prod = data[0]
+                # Check for variations if parent
+                siblings_ok, siblings_data, _ = supabase_request(f"products?parent=eq.{prod.get('sku') or pid}", method="GET")
+                self.send_json_response({
+                    "success": True,
+                    "product": prod,
+                    "variations": siblings_data if siblings_ok and isinstance(siblings_data, list) else []
+                })
+            else:
+                self.send_json_response({"success": False, "error": err or "Product not found"}, status=404)
+            return
+
+        if path == "/api/orders":
+            params = parse_qs(parsed_url.query)
+            result = get_filtered_orders_api(params)
+            self.send_json_response(result)
+            return
+
+        if path == "/api/orders/export-csv":
+            all_orders, _, _ = load_orders()
+            import csv
+            import io
+            output = io.StringIO()
+            writer = csv.writer(output)
+            writer.writerow(["Order ID", "Order Number", "Customer Name", "Phone", "Address", "Items Count", "Subtotal (INR)", "Shipping (INR)", "Total Amount (INR)", "Payment Method", "Payment Status", "Order Status", "Courier", "Tracking Number", "Notes", "Created At"])
+            for o in all_orders:
+                writer.writerow([
+                    o.get("id", ""),
+                    o.get("order_number", ""),
+                    o.get("customer_name", ""),
+                    o.get("customer_phone", ""),
+                    o.get("customer_address", ""),
+                    o.get("total_items", 1),
+                    o.get("subtotal", 0),
+                    o.get("shipping_fee", 0),
+                    o.get("total_amount", 0),
+                    o.get("payment_method", ""),
+                    o.get("payment_status", ""),
+                    o.get("order_status", ""),
+                    o.get("courier_name", ""),
+                    o.get("tracking_number", ""),
+                    o.get("notes", ""),
+                    o.get("created_at", "")
+                ])
+            csv_data = output.getvalue().encode("utf-8-sig")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/csv; charset=utf-8")
+            self.send_header("Content-Disposition", 'attachment; filename="nila_store_orders.csv"')
+            self.send_header("Content-Length", str(len(csv_data)))
+            self.end_cors_headers()
+            self.end_headers()
+            self.wfile.write(csv_data)
             return
 
         if path == "/api/load-sample":
@@ -765,18 +1440,106 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
         if not path:
             path = "/"
 
-        content_length = int(self.headers.get("Content-Length", 0))
-        if content_length > 0:
-            post_body = self.rfile.read(content_length).decode("utf-8")
-        else:
-            post_body = "{}"
+        payload = self.get_parsed_payload()
 
-        try:
-            payload = json.loads(post_body)
-        except Exception as e:
-            self.send_json_response({"success": False, "error": f"Invalid JSON payload: {str(e)}"}, status=400)
+        # Product Management Endpoints
+        if path == "/api/products":
+            saved_prod, ok, err = save_or_update_product(payload, is_new=True)
+            self.send_json_response({
+                "success": ok,
+                "product": saved_prod,
+                "error": err,
+                "message": "Product created successfully" if ok else f"Error creating product: {err}"
+            }, status=200 if ok else 400)
             return
 
+        if path in ["/api/products/update", "/api/products/edit"]:
+            pid = payload.get("id")
+            if not pid:
+                self.send_json_response({"success": False, "error": "Product ID is required for update"}, status=400)
+                return
+            saved_prod, ok, err = save_or_update_product(payload, is_new=False)
+            self.send_json_response({
+                "success": ok,
+                "product": saved_prod,
+                "error": err,
+                "message": "Product updated successfully" if ok else f"Error updating product: {err}"
+            }, status=200 if ok else 400)
+            return
+
+        if path in ["/api/products/delete", "/api/delete-product"]:
+            ids = payload.get("ids") or ([payload.get("id")] if payload.get("id") else [])
+            if not ids:
+                self.send_json_response({"success": False, "error": "Product ID(s) required for deletion"}, status=400)
+                return
+            ok, count, err = delete_products_batch(ids)
+            self.send_json_response({
+                "success": ok,
+                "deleted_count": count,
+                "error": err,
+                "message": f"Successfully deleted {count} product(s)" if ok else f"Failed to delete: {err}"
+            })
+            return
+
+        if path == "/api/products/batch":
+            action = payload.get("action", "")
+            ids = payload.get("ids", [])
+            val = payload.get("value")
+            if not ids or not action:
+                self.send_json_response({"success": False, "error": "Action and product IDs required"}, status=400)
+                return
+            ok, count, err = batch_update_products(action, ids, val)
+            self.send_json_response({
+                "success": ok,
+                "updated_count": count,
+                "error": err,
+                "message": f"Batch '{action}' completed for {count} products" if ok else f"Batch update failed: {err}"
+            })
+            return
+
+        # Order Management Endpoints
+        if path == "/api/orders":
+            doc, ok, err = create_order_record(payload)
+            self.send_json_response({
+                "success": True,
+                "order": doc,
+                "supabase_saved": ok,
+                "error": err,
+                "message": f"Order #{doc.get('id')} placed successfully"
+            })
+            return
+
+        if path in ["/api/orders/update", "/api/orders/edit"]:
+            oid = payload.get("id")
+            if not oid:
+                self.send_json_response({"success": False, "error": "Order ID is required"}, status=400)
+                return
+            updates = payload.get("updates") or payload
+            doc, ok, err = update_order_record(oid, updates)
+            self.send_json_response({
+                "success": True,
+                "order": doc,
+                "supabase_updated": ok,
+                "error": err,
+                "message": f"Order #{oid} updated successfully"
+            })
+            return
+
+        if path in ["/api/orders/delete", "/api/delete-order"]:
+            oid = payload.get("id")
+            if not oid:
+                self.send_json_response({"success": False, "error": "Order ID is required"}, status=400)
+                return
+            ok, sb_ok, err = delete_order_record(oid)
+            self.send_json_response({
+                "success": ok,
+                "order_id": oid,
+                "error": err,
+                "message": f"Order #{oid} deleted"
+            })
+            return
+
+        # Categories & Banners Endpoints
         if path in ["/api/categories", "/api/save-category"]:
             cats = load_categories()
             self.send_json_response({"success": True, "categories": cats})
@@ -839,7 +1602,7 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
                 return
             else:
                 self.send_json_response({"success": False, "error": "No image data provided"}, status=400)
-            return
+                return
 
         if path == "/api/delete-category":
             target_cat = str(payload.get("category", "")).strip()
@@ -921,6 +1684,70 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
 
         self.send_error(404, f"API endpoint not found: {path}")
 
+    def do_PATCH(self):
+        parsed_url = urlparse(self.path)
+        path = parsed_url.path.rstrip("/")
+        payload = self.get_parsed_payload()
+
+        if path == "/api/products":
+            pid = payload.get("id")
+            if not pid:
+                self.send_json_response({"success": False, "error": "Product ID required"}, status=400)
+                return
+            saved_prod, ok, err = save_or_update_product(payload, is_new=False)
+            self.send_json_response({
+                "success": ok,
+                "product": saved_prod,
+                "error": err
+            })
+            return
+
+        if path == "/api/orders":
+            oid = payload.get("id")
+            if not oid:
+                self.send_json_response({"success": False, "error": "Order ID required"}, status=400)
+                return
+            doc, ok, err = update_order_record(oid, payload.get("updates", payload))
+            self.send_json_response({
+                "success": True,
+                "order": doc,
+                "supabase_updated": ok,
+                "error": err
+            })
+            return
+
+        self.send_error(404, f"API endpoint not found for PATCH: {path}")
+
+    def do_PUT(self):
+        self.do_PATCH()
+
+    def do_DELETE(self):
+        parsed_url = urlparse(self.path)
+        path = parsed_url.path.rstrip("/")
+        params = parse_qs(parsed_url.query)
+        payload = self.get_parsed_payload()
+
+        if path == "/api/products":
+            pid = (params.get("id", [""])[0]).strip() or payload.get("id")
+            ids = payload.get("ids") or ([pid] if pid else [])
+            if not ids:
+                self.send_json_response({"success": False, "error": "Product ID required"}, status=400)
+                return
+            ok, count, err = delete_products_batch(ids)
+            self.send_json_response({"success": ok, "deleted_count": count, "error": err})
+            return
+
+        if path == "/api/orders":
+            oid = (params.get("id", [""])[0]).strip() or payload.get("id")
+            if not oid:
+                self.send_json_response({"success": False, "error": "Order ID required"}, status=400)
+                return
+            ok, sb_ok, err = delete_order_record(oid)
+            self.send_json_response({"success": ok, "order_id": oid, "error": err})
+            return
+
+        self.send_error(404, f"API endpoint not found for DELETE: {path}")
+
     def send_json_response(self, data, status=200):
         response_bytes = json.dumps(data, indent=2).encode("utf-8")
         self.send_response(status)
@@ -948,9 +1775,9 @@ def run_server(port=8080):
     server_address = ("", port)
     httpd = ThreadingHTTPServer(server_address, ImporterHTTPRequestHandler)
     print("=" * 60)
-    print(f" 🚀 Nila Store - Supabase Variation Importer Web Server")
+    print(f" 🚀 Nila Store - Admin Panel & Importer Web Server")
     print(f" Server running at: http://localhost:{port}")
-    print(f" Open http://localhost:{port} in your browser to manage catalogs.")
+    print(f" Open http://localhost:{port} in your browser to manage products & orders.")
     print("=" * 60)
     try:
         httpd.serve_forever()
@@ -960,7 +1787,8 @@ def run_server(port=8080):
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Nila Store Supabase Variation Importer Server")
+    parser = argparse.ArgumentParser(description="Nila Store Admin Panel & Variation Importer Server")
     parser.add_argument("--port", type=int, default=8080, help="Port to run web server on (default 8080)")
     args = parser.parse_args()
     run_server(port=args.port)
+

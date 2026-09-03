@@ -1,0 +1,101 @@
+[
+  {
+    "id": "ORD-2026-1001",
+    "order_number": "ORD-1001",
+    "customer_name": "Priya Sharma",
+    "customer_phone": "+91 98765 43210",
+    "customer_address": "Flat 402, Lotus Apartments, 12th Main, Indiranagar, Bengaluru, Karnataka - 560038",
+    "items": [
+      {
+        "id": "p_sample_1",
+        "title": "Floral Print Pure Cotton Saree",
+        "sku": "SAREE-COT-01",
+        "size": "Free Size",
+        "qty": 1,
+        "price": 899,
+        "image": "images/banner_saree.jpg"
+      },
+      {
+        "id": "p_sample_2",
+        "title": "Embroidered Silk Blend Kurta",
+        "sku": "KURTI-SLK-04",
+        "size": "M",
+        "qty": 2,
+        "price": 649,
+        "image": "images/banner_kurti.jpg"
+      }
+    ],
+    "total_items": 3,
+    "subtotal": 2197,
+    "shipping_fee": 0,
+    "total_amount": 2197,
+    "payment_method": "WhatsApp / COD",
+    "payment_status": "Pending",
+    "order_status": "Processing",
+    "tracking_number": "DEL123456789IN",
+    "courier_name": "Delhivery Express",
+    "notes": "Customer requested fast delivery before weekend.",
+    "created_at": "2026-09-03T23:23:40Z",
+    "updated_at": "2026-09-03T23:23:40Z"
+  },
+  {
+    "id": "ORD-2026-1002",
+    "order_number": "ORD-1002",
+    "customer_name": "Rahul Verma",
+    "customer_phone": "+91 98112 33445",
+    "customer_address": "House No 45, Sector 15, Rohini, New Delhi - 110085",
+    "items": [
+      {
+        "id": "p_sample_3",
+        "title": "Men Slim Fit Casual Cotton Shirt",
+        "sku": "SHIRT-MEN-02",
+        "size": "L",
+        "qty": 1,
+        "price": 799,
+        "image": ""
+      }
+    ],
+    "total_items": 1,
+    "subtotal": 799,
+    "shipping_fee": 49,
+    "total_amount": 848,
+    "payment_method": "UPI Online",
+    "payment_status": "Paid",
+    "order_status": "Shipped",
+    "tracking_number": "BD994821034IN",
+    "courier_name": "BlueDart Express",
+    "notes": "Prepaid via GPay.",
+    "created_at": "2026-09-03T23:23:40Z",
+    "updated_at": "2026-09-03T23:23:40Z"
+  },
+  {
+    "id": "ORD-2026-1003",
+    "order_number": "ORD-1003",
+    "customer_name": "Ananya Mukherjee",
+    "customer_phone": "+91 97331 88990",
+    "customer_address": "7B Southern Avenue, Ballygunge, Kolkata, West Bengal - 700029",
+    "items": [
+      {
+        "id": "p_sample_4",
+        "title": "Gold-Plated Traditional Necklace Set",
+        "sku": "JEW-NECK-10",
+        "size": "One Size",
+        "qty": 1,
+        "price": 1299,
+        "image": ""
+      }
+    ],
+    "total_items": 1,
+    "subtotal": 1299,
+    "shipping_fee": 0,
+    "total_amount": 1299,
+    "payment_method": "WhatsApp / COD",
+    "payment_status": "Paid",
+    "order_status": "Delivered",
+    "tracking_number": "IP3321908IN",
+    "courier_name": "India Post Speed Post",
+    "notes": "Delivered and verified with customer.",
+    "created_at": "2026-09-03T23:23:40Z",
+    "updated_at": "2026-09-03T23:23:40Z"
+  }
+]

@@ -2596,7 +2596,7 @@ function closeCheckoutPanel() {
   }
 }
 
-function buildWhatsAppMessage(name, phone, address) {
+function buildWhatsAppMessage(name, phone, address, orderId = '') {
   const cartEntries = Object.entries(cart);
   const items = cartEntries.map(([id, qty]) => {
     const p = findProductById(cartProductId(id));
@@ -2612,25 +2612,28 @@ function buildWhatsAppMessage(name, phone, address) {
     return p ? sum + p.price * qty : sum;
   }, 0);
   const totalItems = cartEntries.reduce((sum, [, qty]) => sum + qty, 0);
-  const message = `Hello Nila Store, I would like to place an order.\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\n\nOrder details:\n${items.join('\n')}\n\nTotal items: ${totalItems}\nSubtotal: ${rupee(subtotal)}\n\nPlease confirm availability and delivery details.`;
+  const orderRefText = orderId ? `\n*Order Reference: #${orderId}*` : '';
+  const message = `Hello Nila Store, I would like to place an order.${orderRefText}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\n\nOrder details:\n${items.join('\n')}\n\nTotal items: ${totalItems}\nSubtotal: ${rupee(subtotal)}\n\nPlease confirm availability and delivery details.`;
   return encodeURIComponent(message);
 }
 
-function showOrderConfirmation() {
+function showOrderConfirmation(orderId = '') {
   const body = document.getElementById('cartBody');
   const foot = document.getElementById('cartFoot');
   if (!body || !foot) return;
+  const orderBadge = orderId ? `<div style="background: #e0f2fe; color: #0284c7; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 700; margin: 0.5rem auto 0.75rem; display: inline-block; font-size: 0.95rem;">Order Reference: #${orderId}</div>` : '';
   body.innerHTML = `
-      <div class="cart-empty">
-        <div class="big-emoji">💬</div>
-        <h3>Redirecting to WhatsApp...</h3>
-        <p>Please submit your order on WhatsApp. This drawer will close in a few seconds.</p>
+      <div class="cart-empty" style="padding: 2rem 1rem; text-align: center;">
+        <div class="big-emoji" style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+        <h3 style="color: #0f172a; font-weight: 800; font-size: 1.25rem;">Order Recorded!</h3>
+        ${orderBadge}
+        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.25rem;">Redirecting to WhatsApp to send your order details. Your order has also been registered in our system.</p>
         <button class="btn btn-primary btn-block" data-action="continue-shopping">Continue shopping</button>
       </div>`;
   foot.style.display = 'none';
 }
 
-function sendCheckoutWhatsApp(event) {
+async function sendCheckoutWhatsApp(event) {
   event.preventDefault();
   const name = document.getElementById('checkoutName')?.value.trim();
   const address = document.getElementById('checkoutAddress')?.value.trim();
@@ -2639,24 +2642,101 @@ function sendCheckoutWhatsApp(event) {
     showToast('Please complete the address and phone fields.');
     return;
   }
-  const cartItems = Object.keys(cart);
-  if (!cartItems.length) {
+  const cartEntries = Object.entries(cart);
+  if (!cartEntries.length) {
     showToast('Your cart is empty. Add items before checkout.');
     return;
   }
-  const text = buildWhatsAppMessage(name, phone, address);
+
+  // 1. Generate Order ID
+  const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+  
+  // 2. Build items payload
+  const itemsArray = cartEntries.map(([id, qty]) => {
+    const p = findProductById(cartProductId(id));
+    if (!p) return null;
+    const selectedSize = cartSelectedSize(id);
+    const itemImg = (p.images && p.images.length > 0) 
+      ? (typeof p.images[0] === 'string' ? p.images[0] : (p.images[0].url || '')) 
+      : (p.image_url || '');
+    return {
+      id: p.id,
+      title: p.title || p.name || 'Product',
+      sku: p.sku || p.id || '',
+      size: selectedSize || (p.attribute_1_value || 'Standard'),
+      qty: Number(qty) || 1,
+      price: Number(p.price || p.sale_price || 0),
+      image: itemImg
+    };
+  }).filter(Boolean);
+
+  const subtotal = cartEntries.reduce((sum, [id, qty]) => {
+    const p = findProductById(cartProductId(id));
+    return p ? sum + (Number(p.price) || 0) * qty : sum;
+  }, 0);
+  const totalItems = cartEntries.reduce((sum, [, qty]) => sum + qty, 0);
+
+  const orderDoc = {
+    id: orderId,
+    order_number: orderId,
+    customer_name: name,
+    customer_phone: phone,
+    customer_address: address,
+    items: itemsArray,
+    total_items: totalItems,
+    subtotal: subtotal,
+    shipping_fee: 0,
+    total_amount: subtotal,
+    payment_method: 'WhatsApp / COD',
+    payment_status: 'Pending',
+    order_status: 'Pending',
+    notes: 'Order placed from Storefront',
+    created_at: new Date().toISOString()
+  };
+
+  // 3. Persist order to Supabase / Backend Server & localStorage
+  try {
+    // Save to local storage
+    try {
+      const localOrders = JSON.parse(localStorage.getItem('nila_orders') || '[]');
+      localOrders.unshift(orderDoc);
+      localStorage.setItem('nila_orders', JSON.stringify(localOrders));
+    } catch (e) {}
+
+    // Post to backend API if available
+    fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderDoc)
+    }).catch(() => {});
+
+    // Save directly to Supabase client
+    const sb = initSupabase();
+    if (sb) {
+      sb.from('orders').insert([orderDoc]).then(({ error }) => {
+        if (error) console.warn('Direct Supabase order insert notice:', error);
+      }).catch(() => {});
+    }
+  } catch (err) {
+    console.warn('Order persistence notice:', err);
+  }
+
+  // 4. Open WhatsApp
+  const text = buildWhatsAppMessage(name, phone, address, orderId);
   openWhatsAppUrl(text);
+
+  // 5. Reset cart and show confirmation
   cart = {};
   saveCart();
   renderCart();
   closeCheckoutPanel();
-  showOrderConfirmation();
-  showToast('Redirecting to Whatsapp. Please submit your order on Whatsapp');
+  showOrderConfirmation(orderId);
+  showToast(`Order #${orderId} created! Redirecting to WhatsApp...`);
   setTimeout(() => {
     if (document.getElementById('cartDrawer')?.classList.contains('open')) {
       closeCart();
     }
-  }, 5000);
+  }, 6000);
 }
 /* ============ Mobile nav ============ */
 function openMobileNav() {

@@ -42,27 +42,35 @@ python migrate_to_supabase.py
 
 ---
 
-## 🛠️ Variation Importer (Web Form & CLI)
+## 🛠️ Admin Panel (Product Management, Orders & Importer)
 
-### 1. Launch Interactive Web Form
+### 1. Launch Admin Panel
 ```bash
 python import_server.py
 ```
-Open **`http://localhost:8080`** in your browser to:
-- Select or create custom category paths (e.g., `Women > Western Wear Ladies > Top`)
-- Paste catalog JSON or upload `.json` product files
-- Configure price markups (Regular Price & Sale Price)
-- Preview size variations, pricing, and images
-- Import directly to Supabase with real-time streaming progress
+Or double-click `start_import_server.bat` to launch and open **`http://localhost:8080/admin.html`** in your browser.
 
-### 2. Command-Line Import
-```bash
-# Import with custom category and JSON file
-python variation_import_supabase.py --category "Women > Ethnic Wear > Kurtis" --file my_catalog.json
-
-# Import with custom pricing markups
-python variation_import_supabase.py --category "Men > Western Wear > Casual Shirts" --regular-markup 350 --sale-markup 75
-```
+### Key Capabilities in Admin:
+- **🛍️ Product Management**:
+  - Full catalog listing with instant search across title, SKU, brand, and category.
+  - Multi-level category filtering, inventory status filters (In Stock, Low Stock, Out of Stock), and sorting.
+  - One-click toggles: Published/Draft, In Stock/Out of Stock, and Deal of the Day ⭐.
+  - Rich Product Editor modal: Create and edit products, manage pricing/MRP/discounts, inventory stock, multiple gallery images, and variable sizes.
+  - Bulk actions: Multi-select products for bulk publish, unpublish, stock updates, and batch delete.
+- **📦 Order Management**:
+  - Live pipeline tracking: Pending ➔ Processing ➔ Shipped ➔ Delivered ➔ Cancelled.
+  - Customer contact details with 1-click WhatsApp customer contact.
+  - Line-item breakdown with product images, sizes, quantities, and price calculation.
+  - Courier & tracking AWB assignment with automated timeline status updates.
+  - Branded printable invoice & packing slip generator.
+  - Manual order creation and 1-click CSV order export.
+- **📥 Catalog Variation Importer**:
+  - Paste catalog JSON or upload `.json` product files.
+  - Dynamic pricing markups (Regular Price & Sale Price).
+  - Preview size variations, pricing, and images before importing.
+  - Real-time streaming progress to Supabase PostgreSQL.
+- **📂 Categories & Banners Manager**:
+  - Add, edit, or delete categories and store slider banners.
 
 ---
 
@@ -80,5 +88,7 @@ python variation_import_supabase.py --category "Men > Western Wear > Casual Shir
 - Deal cards, responsive grid, and live discount tags
 - Variable product size selection and automated sibling variant clustering
 - Slide-in cart and wishlist drawers, persisted via `localStorage`
-- WhatsApp Checkout integration
+- WhatsApp Checkout integration with unique Order ID recording & admin notification
+- Complete Admin Panel with Product Management & Order Management
 - 100% Cloud database-driven with Supabase PostgreSQL
+
