@@ -1683,6 +1683,20 @@ async function renderCategoryPage() {
     if (pageTitle) pageTitle.textContent = `Search results for "${search}"`;
     if (pageDesc) pageDesc.textContent = `${matches.length} product${matches.length === 1 ? '' : 's'} found.`;
 
+    const breadcrumbsEl = document.getElementById('categoryBreadcrumbs');
+    if (breadcrumbsEl) {
+      breadcrumbsEl.innerHTML = `
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Search: "${esc(search)}" (${matches.length})</span>
+      `;
+    }
+
+    const sInput = document.getElementById('searchInput');
+    if (sInput && !sInput.value) sInput.value = search;
+    const sInputM = document.getElementById('searchInputMobile');
+    if (sInputM && !sInputM.value) sInputM.value = search;
+
     if (!matches.length) {
       pageContent.innerHTML = `<div class="empty-state"><div class="big-emoji">🔍</div><h3>No products found for "${esc(search)}"</h3><p>Try searching with product name, SKU / code, or category.</p><a href="index.html" class="btn btn-outline">Back to home</a></div>`;
       return;
@@ -2338,69 +2352,27 @@ function runSearch(term) {
   term = (term || '').trim();
   if (!term) return;
 
-  const catContainer = document.getElementById('categorySections') || document.getElementById('categoryPageContent');
-  if (!catContainer) {
-    window.location.href = `category.html?search=${encodeURIComponent(term)}`;
+  const isCategoryPage = !!document.getElementById('categoryPageContent');
+  if (isCategoryPage) {
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set('search', term);
+    newUrl.searchParams.delete('cat');
+    newUrl.searchParams.delete('subcat');
+    newUrl.searchParams.delete('subsubcat');
+    window.history.pushState({}, '', newUrl.toString());
+
+    const sInput = document.getElementById('searchInput');
+    if (sInput) sInput.value = term;
+    const sInputM = document.getElementById('searchInputMobile');
+    if (sInputM) sInputM.value = term;
+
+    renderCategoryPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     return;
   }
 
-  const catalog = filterCatalogProducts(PRODUCTS);
-  let matches = catalog.filter((p) => matchesSearchQuery(p, term));
-
-  if (!matches.length) {
-    const rawMatches = PRODUCTS.filter((p) => matchesSearchQuery(p, term));
-    const seen = new Set();
-    matches = rawMatches.filter((p) => {
-      const key = p.groupId || p.parent || p.id;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  }
-
-  if (document.getElementById('categoryPageTitle')) {
-    document.getElementById('categoryPageTitle').textContent = `Search results for "${term}"`;
-  }
-  if (document.getElementById('categoryPageDescription')) {
-    document.getElementById('categoryPageDescription').textContent = `${matches.length} product${matches.length === 1 ? '' : 's'} found.`;
-  }
-
-  if (document.getElementById('categoryPageContent')) {
-    if (!matches.length) {
-      document.getElementById('categoryPageContent').innerHTML = `
-        <div class="empty-state">
-          <div class="big-emoji">🔍</div>
-          <h3>No products found for "${esc(term)}"</h3>
-          <p>Try searching with product name, SKU / code, or category.</p>
-          <a href="index.html" class="btn btn-outline">Back to home</a>
-        </div>`;
-      return;
-    }
-    renderProgressiveProductGrid(document.getElementById('categoryPageContent'), matches);
-    return;
-  }
-
-  catContainer.innerHTML = `
-    <section class="cat-section">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <h2>Search results for "${esc(term)}"</h2>
-            <p class="section-sub">${matches.length} product${matches.length === 1 ? '' : 's'} found</p>
-          </div>
-        </div>
-        ${!matches.length ? `
-          <div class="empty-state">
-            <div class="big-emoji">🔍</div>
-            <h3>No products found for "${esc(term)}"</h3>
-            <p>Try searching with product name, SKU / code, or category.</p>
-          </div>
-        ` : `
-          <div class="product-grid">${matches.map((p, i) => productCard(p, i)).join("")}</div>
-        `}
-      </div>
-    </section>`;
-  attachCardEvents(catContainer);
+  // Navigate to dedicated search results page without banners or deals
+  window.location.href = `category.html?search=${encodeURIComponent(term)}`;
 }
 
 /* ============ Toast ============ */
@@ -2952,9 +2924,18 @@ async function init() {
     }
   }
 
+  // If search query is present in URL on any page other than category.html, redirect to category.html search page
+  const initialSearchParam = urlParams.get('search') || urlParams.get('q');
+  if (initialSearchParam && !window.location.pathname.includes('category.html')) {
+    window.location.replace(`category.html?search=${encodeURIComponent(initialSearchParam)}`);
+    return;
+  }
+
   window.addEventListener('popstate', () => {
     if (document.getElementById('productPageContent')) {
       renderProductPage();
+    } else if (document.getElementById('categoryPageContent')) {
+      renderCategoryPage();
     }
   });
 }

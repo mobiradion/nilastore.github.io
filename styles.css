@@ -170,7 +170,7 @@ img {
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 100;
 }
 
 .header-inner {
@@ -531,8 +531,8 @@ img {
     max-height: 65vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    z-index: 1000;
-    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.22);
+    z-index: 9999;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
     border: 1px solid var(--border);
     border-radius: 12px;
     background: #fff;
@@ -543,9 +543,16 @@ img {
   .cat-dropdown {
     position: absolute !important;
     top: calc(100% + 4px) !important;
-    left: 0 !important;
+    left: 0;
+    right: auto;
     width: auto !important;
     max-width: none !important;
+  }
+
+  /* Right-align dropdowns for categories positioned near right edge of the category bar */
+  .cat-chip-wrap:nth-last-child(-n+4) .cat-dropdown {
+    left: auto;
+    right: 0;
   }
 }
 
