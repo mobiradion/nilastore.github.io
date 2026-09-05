@@ -1882,6 +1882,31 @@ function renderProgressiveProductGrid(container, items, queryContext = {}) {
   }
 }
 
+function positionMobileCategoryDropdown(wrap, btn, dropdown) {
+  if (!dropdown || window.innerWidth > 768) return;
+  
+  // Measure button rect relative to viewport
+  const rect = btn.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  
+  // Set vertical position below chip
+  dropdown.style.top = `${Math.round(rect.bottom + 6)}px`;
+  
+  // Determine width constrained by screen
+  const targetWidth = Math.min(230, viewportWidth - 24);
+  dropdown.style.width = `${targetWidth}px`;
+  
+  // Center dropdown below button if possible, but keep within viewport bounds [12px, viewportWidth - targetWidth - 12px]
+  let left = Math.round(rect.left + (rect.width / 2) - (targetWidth / 2));
+  if (left + targetWidth > viewportWidth - 12) {
+    left = viewportWidth - targetWidth - 12;
+  }
+  if (left < 12) {
+    left = 12;
+  }
+  dropdown.style.left = `${left}px`;
+}
+
 function renderCategoryChrome() {
   populateSearchCategoryDropdown();
 
@@ -1910,6 +1935,14 @@ function renderCategoryChrome() {
     }
 
     const wraps = rail.querySelectorAll('.cat-chip-wrap');
+    const closeAllCategoryDropdowns = () => {
+      wraps.forEach(w => {
+        w.classList.remove('open');
+        const b = w.querySelector('.cat-chip');
+        if (b) b.setAttribute('aria-expanded', 'false');
+      });
+    };
+
     wraps.forEach(wrap => {
       const btn = wrap.querySelector('.cat-chip');
       const dropdown = wrap.querySelector('.cat-dropdown');
@@ -1924,20 +1957,36 @@ function renderCategoryChrome() {
         if (window.innerWidth <= 768) {
           e.stopPropagation();
           const isOpen = wrap.classList.contains('open');
-          wraps.forEach(w => w.classList.remove('open'));
+          closeAllCategoryDropdowns();
           if (!isOpen) {
+            positionMobileCategoryDropdown(wrap, btn, dropdown);
             wrap.classList.add('open');
             btn.setAttribute('aria-expanded', 'true');
-          } else {
-            btn.setAttribute('aria-expanded', 'false');
           }
         }
       };
     });
 
-    document.addEventListener('click', () => {
-      wraps.forEach(w => w.classList.remove('open'));
-      rail.querySelectorAll('.cat-chip').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+    // Close open dropdowns when scrolling the horizontal rail
+    rail.addEventListener('scroll', closeAllCategoryDropdowns, { passive: true });
+
+    // Close open dropdowns when scrolling the window or resizing
+    window.addEventListener('scroll', closeAllCategoryDropdowns, { passive: true });
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        rail.querySelectorAll('.cat-dropdown').forEach(d => {
+          d.style.top = '';
+          d.style.left = '';
+          d.style.width = '';
+        });
+      }
+      closeAllCategoryDropdowns();
+    }, { passive: true });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.cat-chip-wrap')) {
+        closeAllCategoryDropdowns();
+      }
     });
   }
 
