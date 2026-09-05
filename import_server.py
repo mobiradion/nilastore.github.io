@@ -24,19 +24,146 @@ if sys.platform == "win32":
     except Exception:
         pass
 
+CATEGORIES_FILE = "categories.json"
 BANNERS_FILE = "banners.json"
 CONFIG_FILE = "supabase_config.json"
 
+DEFAULT_CATEGORIES = [
+    "Women > Sarees > Cotton Sarees",
+    "Women > Sarees > Silk Sarees",
+    "Women > Western Wear Ladies > Top",
+    "Women > Western Wear > Tops",
+    "Women > Western Wear > Dresses",
+    "Women > Kurtis & Suits > Kurtis",
+    "Women > Ethnic Wear > Lehengas",
+    "Women > Ethnic Wear > Gowns",
+    "Men > Shirts",
+    "Men > T-Shirts",
+    "Men > Topwear > Shirts",
+    "Men > Topwear > T-Shirts",
+    "Men > Bottomwear > Jeans",
+    "Men > Bottomwear > Trousers",
+    "Men > Footwear > Casual Shoes",
+    "Kids > Boys",
+    "Kids > Girls",
+    "Kids > Boys > Clothing",
+    "Kids > Girls > Clothing",
+    "Kids > Toys & Games > Educational Toys",
+    "Jewellery > Bangles & Bracelets",
+    "Jewellery > Bangles and Bracelets",
+    "Jewellery > Earrings",
+    "Jewellery > Jewellery Sets",
+    "Jewellery > Necklaces & Chains",
+    "Jewellery > Necklaces and Chains",
+    "Beauty > Face Wash",
+    "Beauty > Hair Oil & Shampoo",
+    "Beauty > Lipstick",
+    "Beauty > Personal Care > Face Wash",
+    "Beauty > Hair Care > Hair Oil & Shampoo",
+    "Beauty > Makeup > Lipstick",
+    "Kitchen > Kitchen Appliances",
+    "Kitchen > Kitchen Tools",
+    "Kitchen > Cookware & Tools > Kitchen Tools",
+    "Kitchen > Storage & Organisers",
+    "Kitchen > Storage and Organisers",
+    "Home > Bedsheets",
+    "Home > Bedding > Bedsheets",
+    "Home > Living Decor > Pillow, Cushion & Covers",
+    "Home > Pillow, Cushion & Covers",
+    "Home > Pillow, Cushion and Covers",
+    "Electronics > Bluetooth Headphones",
+    "Electronics > Bluetooth Speakers",
+    "Electronics > Audio > Bluetooth Headphones",
+    "Electronics > Audio > Bluetooth Speakers",
+    "Health > Ayurveda & Nutrition",
+    "Health > Ayurveda and Nutrition",
+    "Health > Healthcare > Ayurveda & Nutrition"
+]
+
+def load_saved_custom_categories():
+    """Loads custom saved categories from categories.json."""
+    if os.path.exists(CATEGORIES_FILE):
+        try:
+            with open(CATEGORIES_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    return [str(c).strip() for c in data if str(c).strip()]
+        except Exception as e:
+            print(f"Warning: Could not read {CATEGORIES_FILE}: {e}")
+    return []
+
+def save_custom_categories(cats_list):
+    """Saves custom categories list to categories.json."""
+    if not isinstance(cats_list, list):
+        return False
+    try:
+        with open(CATEGORIES_FILE, "w", encoding="utf-8") as f:
+            json.dump(cats_list, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"Error saving {CATEGORIES_FILE}: {e}")
+        return False
+
 def load_categories():
-    """Loads distinct categories directly and exclusively from the Supabase products table."""
-    cats = []
-    ok, data, _ = supabase_request("products?select=categories&limit=5000")
+    """Loads all distinct categories from default taxonomy, saved custom categories, and Supabase database."""
+    cats_set = set()
+    cats_list = []
+
+    def add_cat(c):
+        c_str = str(c or "").strip()
+        if not c_str:
+            return
+        norm = normalize_cat_str(c_str)
+        if norm and norm not in cats_set:
+            cats_set.add(norm)
+            cats_list.append(c_str)
+
+    # 1. Base standard categories
+    for c in DEFAULT_CATEGORIES:
+        add_cat(c)
+
+    # 2. Saved custom categories
+    for c in load_saved_custom_categories():
+        add_cat(c)
+
+    # 3. Categories existing in Supabase products table
+    ok, data, _ = supabase_request("products?select=categories,cat&limit=5000")
     if ok and isinstance(data, list):
         for item in data:
-            c = str(item.get("categories") or "").strip()
-            if c and c not in cats:
-                cats.append(c)
-    return sorted(cats, key=lambda s: s.lower())
+            c = str(item.get("categories") or item.get("cat") or "").strip()
+            if c:
+                add_cat(c)
+
+    return sorted(cats_list, key=lambda s: s.lower())
+
+def load_banners():
+    """Loads slider banners from banners.json file or Supabase banners table."""
+    if os.path.exists(BANNERS_FILE):
+        try:
+            with open(BANNERS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    return data
+        except Exception as e:
+            print(f"Warning: Could not read {BANNERS_FILE}: {e}")
+
+    ok, data, _ = supabase_request("banners?select=*")
+    if ok and isinstance(data, list) and len(data) > 0:
+        return data
+
+    return []
+
+def save_banners(banners_list):
+    """Saves slider banners to banners.json file."""
+    if not isinstance(banners_list, list):
+        return False
+    try:
+        with open(BANNERS_FILE, "w", encoding="utf-8") as f:
+            json.dump(banners_list, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"Error saving {BANNERS_FILE}: {e}")
+        return False
 
 def normalize_cat_str(s):
     if not s:
@@ -1541,8 +1668,15 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
 
         # Categories & Banners Endpoints
         if path in ["/api/categories", "/api/save-category"]:
+            cat_name = str(payload.get("category", "")).strip() if isinstance(payload, dict) else ""
+            if cat_name:
+                custom_cats = load_saved_custom_categories()
+                norm_new = normalize_cat_str(cat_name)
+                if not any(normalize_cat_str(c) == norm_new for c in custom_cats):
+                    custom_cats.append(cat_name)
+                    save_custom_categories(custom_cats)
             cats = load_categories()
-            self.send_json_response({"success": True, "categories": cats})
+            self.send_json_response({"success": True, "category": cat_name, "categories": cats})
             return
 
         if path == "/api/edit-category":
@@ -1551,6 +1685,21 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
             if not old_cat or not new_cat:
                 self.send_json_response({"success": False, "error": "Both old and new category names are required"}, status=400)
                 return
+
+            # Update in custom categories if present
+            custom_cats = load_saved_custom_categories()
+            norm_old = normalize_cat_str(old_cat)
+            updated_custom = []
+            found_in_custom = False
+            for c in custom_cats:
+                if normalize_cat_str(c) == norm_old:
+                    updated_custom.append(new_cat)
+                    found_in_custom = True
+                else:
+                    updated_custom.append(c)
+            if not found_in_custom:
+                updated_custom.append(new_cat)
+            save_custom_categories(updated_custom)
 
             new_cat_parts = [p.strip() for p in new_cat.split(">") if p.strip()]
             new_cat_slug = new_cat_parts[0].lower().replace("&", "and").replace(" ", "-") if new_cat_parts else "all"
@@ -1572,7 +1721,7 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/banners":
-            banners = payload.get("banners", [])
+            banners = payload.get("banners", []) if isinstance(payload, dict) else []
             if isinstance(banners, list):
                 save_banners(banners)
                 self.send_json_response({"success": True, "banners": banners})
@@ -1581,7 +1730,7 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/upload-banner":
-            image_data_url = payload.get("image_data", "")
+            image_data_url = payload.get("image_data", "") if isinstance(payload, dict) else ""
             if image_data_url and "base64," in image_data_url:
                 import base64
                 header, encoded = image_data_url.split("base64,", 1)
@@ -1605,11 +1754,17 @@ class ImporterHTTPRequestHandler(BaseHTTPRequestHandler):
                 return
 
         if path == "/api/delete-category":
-            target_cat = str(payload.get("category", "")).strip()
-            delete_products = bool(payload.get("delete_products", True))
+            target_cat = str(payload.get("category", "")).strip() if isinstance(payload, dict) else ""
+            delete_products = bool(payload.get("delete_products", True)) if isinstance(payload, dict) else True
             if not target_cat:
                 self.send_json_response({"success": False, "error": "No category specified for deletion"}, status=400)
                 return
+
+            custom_cats = load_saved_custom_categories()
+            norm_target = normalize_cat_str(target_cat)
+            updated_custom = [c for c in custom_cats if normalize_cat_str(c) != norm_target]
+            if len(updated_custom) != len(custom_cats):
+                save_custom_categories(updated_custom)
 
             if delete_products:
                 supabase_request(f"products?categories=eq.{target_cat}", method="DELETE")

@@ -1472,8 +1472,13 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="prodFormCategories">Category Path (Level 1 &gt; Level 2 &gt; Level 3)</label>
-              <input type="text" id="prodFormCategories" class="form-control" list="categoryDatalistModal" placeholder="e.g. Women > Sarees > Cotton Sarees">
+              <label class="form-label" for="prodFormCategories">Category Path (Level 1 &gt; Level 2 &gt; Level 3) *</label>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <select id="prodFormCategorySelect" class="form-control" onchange="onProdCategorySelectChange(this.value)">
+                  <option value="">-- 🔍 Choose an Existing Category Path --</option>
+                </select>
+                <input type="text" id="prodFormCategories" class="form-control" list="categoryDatalistModal" placeholder="Or type / edit custom category path (e.g. Women > Sarees > Cotton Sarees)" autocomplete="off" oninput="onProdCategoryInputChange(this.value)">
+              </div>
               <datalist id="categoryDatalistModal"></datalist>
             </div>
 
@@ -2383,7 +2388,9 @@
       document.getElementById('prodFormSku').value = prod ? (prod.sku || '') : '';
       document.getElementById('prodFormBrand').value = prod ? (prod.brand || '') : '';
       document.getElementById('prodFormType').value = prod ? (prod.type || 'simple') : 'simple';
-      document.getElementById('prodFormCategories').value = prod ? (prod.categories || '') : 'Women > Western Wear Ladies > Top';
+      const initialCat = prod ? (prod.categories || prod.cat || '') : '';
+      document.getElementById('prodFormCategories').value = initialCat;
+      syncCategorySelectDropdown(initialCat);
       document.getElementById('prodFormDescription').value = prod ? (prod.description || '') : '';
 
       document.getElementById('prodFormSalePrice').value = prod ? (prod.price || prod.sale_price || '') : '';
@@ -2513,6 +2520,7 @@
         closeProductModal();
         loadProductsTable();
         loadDashboardStats();
+        loadCategoriesList();
       } else {
         showToast(`Save failed: ${res.error}`, 'error');
       }
@@ -2976,18 +2984,96 @@
     /* ========================================================= */
     /* CATEGORIES & BANNERS LOGIC */
     /* ========================================================= */
+    function onProdCategorySelectChange(val) {
+      if (val) {
+        document.getElementById('prodFormCategories').value = val;
+      }
+    }
+
+    function onProdCategoryInputChange(val) {
+      syncCategorySelectDropdown(val);
+    }
+
+    function syncCategorySelectDropdown(val) {
+      const select = document.getElementById('prodFormCategorySelect');
+      if (!select) return;
+      val = (val || '').trim();
+      let matched = false;
+      for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value && select.options[i].value.toLowerCase() === val.toLowerCase()) {
+          select.selectedIndex = i;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        select.value = '';
+      }
+    }
+
+    function populateCategorySelectDropdown(selectEl, categories) {
+      if (!selectEl) return;
+      const groups = {
+        '👗 Women': [],
+        '👔 Men': [],
+        '🧸 Kids': [],
+        '💍 Jewellery': [],
+        '💄 Beauty': [],
+        '🍳 Kitchen': [],
+        '🛋️ Home': [],
+        '💻 Electronics': [],
+        '💊 Health': [],
+        '📁 Other Categories': []
+      };
+
+      categories.forEach(c => {
+        const lower = c.toLowerCase();
+        if (lower.startsWith('women')) groups['👗 Women'].push(c);
+        else if (lower.startsWith('men')) groups['👔 Men'].push(c);
+        else if (lower.startsWith('kid')) groups['🧸 Kids'].push(c);
+        else if (lower.startsWith('jewel')) groups['💍 Jewellery'].push(c);
+        else if (lower.startsWith('beauty')) groups['💄 Beauty'].push(c);
+        else if (lower.startsWith('kitchen')) groups['🍳 Kitchen'].push(c);
+        else if (lower.startsWith('home')) groups['🛋️ Home'].push(c);
+        else if (lower.startsWith('electro') || lower.startsWith('mobile')) groups['💻 Electronics'].push(c);
+        else if (lower.startsWith('health')) groups['💊 Health'].push(c);
+        else groups['📁 Other Categories'].push(c);
+      });
+
+      let html = '<option value="">-- 🔍 Choose an Existing Category Path --</option>';
+      for (const [groupName, items] of Object.entries(groups)) {
+        if (items.length > 0) {
+          html += `<optgroup label="${escapeHtml(groupName)}">`;
+          items.forEach(item => {
+            html += `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`;
+          });
+          html += '</optgroup>';
+        }
+      }
+      selectEl.innerHTML = html;
+    }
+
     async function loadCategoriesList() {
       const res = await apiRequest('/api/categories');
       if (res.success && Array.isArray(res.categories)) {
         categoryTree = res.categories;
         const filterSelect = document.getElementById('prodCategoryFilter');
         const datalist = document.getElementById('categoryDatalistModal');
+        const prodCatSelect = document.getElementById('prodFormCategorySelect');
 
-        filterSelect.innerHTML = '<option value="all">All Categories</option>' + 
-          categoryTree.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+        if (filterSelect) {
+          filterSelect.innerHTML = '<option value="all">All Categories</option>' + 
+            categoryTree.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+        }
 
         if (datalist) {
-          datalist.innerHTML = categoryTree.map(c => `<option value="${escapeHtml(c)}">`).join('');
+          datalist.innerHTML = categoryTree.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+        }
+
+        if (prodCatSelect) {
+          populateCategorySelectDropdown(prodCatSelect, categoryTree);
+          const currentVal = document.getElementById('prodFormCategories')?.value || '';
+          if (currentVal) syncCategorySelectDropdown(currentVal);
         }
       }
     }
@@ -3010,6 +3096,8 @@
             </button>
           </div>
         `).join('');
+      } else {
+        listContainer.innerHTML = `<div style="text-align: center; color: var(--danger); padding: 1.5rem;">Failed to load categories: ${escapeHtml(res.error || 'Server error')}</div>`;
       }
     }
 
@@ -3026,6 +3114,8 @@
         document.getElementById('newCatInputModal').value = '';
         openCategoryManagerModal();
         loadCategoriesList();
+      } else {
+        showToast(`Failed to save category: ${res.error || 'Server error'}`, 'error');
       }
     }
 
@@ -3038,6 +3128,8 @@
         loadCategoriesList();
         loadProductsTable();
         loadDashboardStats();
+      } else {
+        showToast(`Failed to delete category: ${res.error || 'Server error'}`, 'error');
       }
     }
 
@@ -3049,16 +3141,22 @@
 
       const res = await apiRequest('/api/banners');
       if (res.success && Array.isArray(res.banners)) {
+        if (res.banners.length === 0) {
+          list.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No active banners found. Add a new banner above.</div>';
+          return;
+        }
         list.innerHTML = res.banners.map((b, idx) => `
-          <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm);">
-            <img src="${escapeHtml(b.image)}" style="width: 80px; height: 45px; object-fit: cover; border-radius: 4px;" onerror="this.src='images/placeholder.jpg'">
-            <div style="flex: 1; font-size: 0.8rem;">
-              <strong>${escapeHtml(b.title || `Banner ${idx + 1}`)}</strong>
-              <div style="color: var(--text-muted);">Target: ${escapeHtml(b.category || 'Home')}</div>
+          <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem; background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+            <img src="${escapeHtml(b.image || b.imageUrl || '')}" style="width: 80px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);" onerror="this.src='images/placeholder.jpg'">
+            <div style="flex: 1; font-size: 0.8rem; overflow: hidden;">
+              <strong style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(b.title || `Banner ${idx + 1}`)}</strong>
+              <div style="color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.75rem;">Target: ${escapeHtml(b.url || b.category || '#')}</div>
             </div>
-            <button type="button" class="btn btn-outline btn-sm" style="color: var(--danger);" onclick="deleteBanner(${idx})">🗑️</button>
+            <button type="button" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: #fecaca;" onclick="deleteBanner(${idx})" title="Delete Banner">🗑️</button>
           </div>
         `).join('');
+      } else {
+        list.innerHTML = `<div style="text-align: center; color: var(--danger); padding: 1.5rem;">Failed to load banners: ${escapeHtml(res.error || 'Server error')}</div>`;
       }
     }
 
@@ -3069,28 +3167,45 @@
     async function addBannerFromModal() {
       const image = document.getElementById('bannerUrlInput').value.trim();
       const title = document.getElementById('bannerTitleInput').value.trim() || 'Store Banner';
-      const category = document.getElementById('bannerLinkInput').value.trim() || 'all';
+      const link = document.getElementById('bannerLinkInput').value.trim() || '#';
       if (!image) {
         showToast('Image URL is required', 'error');
         return;
       }
       const res = await apiRequest('/api/banners');
       let banners = (res.success && Array.isArray(res.banners)) ? res.banners : [];
-      banners.push({ image, title, category });
+      banners.push({
+        id: `banner-${Date.now()}`,
+        image: image,
+        url: link,
+        category: link,
+        title: title,
+        active: true
+      });
       const saveRes = await apiRequest('/api/banners', 'POST', { banners });
       if (saveRes.success) {
-        showToast('Banner added', 'success');
+        showToast('Banner added successfully', 'success');
+        document.getElementById('bannerUrlInput').value = '';
+        document.getElementById('bannerTitleInput').value = '';
+        document.getElementById('bannerLinkInput').value = '';
         openBannerManagerModal();
+      } else {
+        showToast(`Failed to add banner: ${saveRes.error || 'Server error'}`, 'error');
       }
     }
 
     async function deleteBanner(index) {
+      if (!confirm('Are you sure you want to remove this banner?')) return;
       const res = await apiRequest('/api/banners');
       if (res.success && Array.isArray(res.banners)) {
         res.banners.splice(index, 1);
-        await apiRequest('/api/banners', 'POST', { banners: res.banners });
-        showToast('Banner removed', 'success');
-        openBannerManagerModal();
+        const saveRes = await apiRequest('/api/banners', 'POST', { banners: res.banners });
+        if (saveRes.success) {
+          showToast('Banner removed successfully', 'success');
+          openBannerManagerModal();
+        } else {
+          showToast(`Failed to remove banner: ${saveRes.error || 'Server error'}`, 'error');
+        }
       }
     }
 
