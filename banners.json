@@ -12,5 +12,13 @@
     "url": "https://nilastore.in/contact.html",
     "title": "Special Offer",
     "active": true
+  },
+  {
+    "id": "banner-1793578148539",
+    "image": "images/diwalioffer.PNG",
+    "url": "#",
+    "category": "#",
+    "title": "Diwali Offer",
+    "active": true
   }
 ]

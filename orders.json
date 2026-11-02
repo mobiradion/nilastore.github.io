@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": "ORD-625493",
+    "order_number": "ORD-625493",
+    "customer_name": "Ranjith Kumar",
+    "customer_phone": "9787658479",
+    "customer_address": "No.16-1B,sri ragava lojestic,srikalahasthi road, TADA,nellore(D),Andhara pradesh -524401",
+    "items": [
+      {
+        "id": "prod_1788629608071_copy",
+        "qty": 1,
+        "sku": "SHIK1KG",
+        "size": "Standard",
+        "image": "images/shikaikaai.jpg",
+        "price": 1080,
+        "title": "Nila's Herbal Shikaikaai Powder  - 1 KG"
+      }
+    ],
+    "total_items": 1,
+    "subtotal": 1080,
+    "shipping_fee": 0,
+    "total_amount": 1080,
+    "payment_method": "WhatsApp / COD",
+    "payment_status": "Pending",
+    "order_status": "Pending",
+    "tracking_number": "",
+    "courier_name": "",
+    "notes": "Order placed from Storefront",
+    "created_at": "2026-10-12T07:28:37.407+00:00",
+    "updated_at": "2026-10-12T07:28:39.629759+00:00"
+  }
+]
